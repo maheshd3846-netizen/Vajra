@@ -1,0 +1,256 @@
+"use client";
+
+import React, { useState } from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  LayoutDashboard,
+  FileText,
+  Target,
+  Mic,
+  Award,
+  Globe,
+  Settings,
+  LogOut,
+  Bell,
+  Menu,
+  X,
+} from "lucide-react";
+
+interface DashboardClientLayoutProps {
+  children: React.ReactNode;
+  profile: {
+    id: string;
+    full_name: string | null;
+    avatar_url: string | null;
+    role: string;
+  } | null;
+  email: string | undefined;
+}
+
+export default function DashboardClientLayout({
+  children,
+  profile,
+  email,
+}: DashboardClientLayoutProps) {
+  const pathname = usePathname();
+  const router = useRouter();
+  const supabase = createClient();
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+
+  const menuItems = [
+    { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+    { name: "AI Resume Analyzer", href: "/dashboard/resume", icon: FileText },
+    { name: "Internship Matcher", href: "/dashboard/internships", icon: Target },
+    { name: "AI Mock Interview", href: "/dashboard/interviews", icon: Mic },
+    { name: "Skill Passport & Certs", href: "/dashboard/certificates", icon: Award },
+    { name: "Portfolio Generator", href: "/dashboard/portfolio", icon: Globe },
+    { name: "Settings", href: "/dashboard/settings", icon: Settings },
+  ];
+
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        toast.error("Logout failed.");
+        return;
+      }
+      toast.success("Successfully logged out.");
+      router.push("/login");
+    } catch {
+      toast.error("An unexpected error occurred during logout.");
+    }
+  };
+
+  const userInitials = profile?.full_name
+    ? profile.full_name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+    : email?.substring(0, 2).toUpperCase() || "US";
+
+  return (
+    <div className="min-h-screen bg-slate-950 flex font-sans overflow-x-hidden text-foreground">
+      {/* 1. Desktop Sidebar */}
+      <aside className="hidden lg:flex flex-col w-64 bg-slate-900 border-r border-white/10 shrink-0 sticky top-0 h-screen z-20">
+        {/* Brand Logo */}
+        <div className="h-20 border-b border-white/10 flex items-center px-6">
+          <Link href="/" className="text-xl font-bold font-heading tracking-widest bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
+            VAJRA
+          </Link>
+        </div>
+
+        {/* Navigation links */}
+        <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={`flex items-center gap-3 px-4 py-3.5 rounded-xl text-xs font-semibold tracking-wide transition-all ${
+                  isActive
+                    ? "bg-blue-500/10 border border-blue-500/20 text-white"
+                    : "text-slate-400 hover:text-white border border-transparent hover:bg-slate-950/40"
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                {item.name}
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* Footer Profile card */}
+        <div className="p-4 border-t border-white/10 flex flex-col gap-3">
+          <div className="flex items-center gap-3 px-2">
+            <div className="h-10 w-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center font-bold text-sm text-blue-400">
+              {userInitials}
+            </div>
+            <div className="min-w-0 flex-1">
+              <h4 className="text-xs font-semibold text-white truncate">
+                {profile?.full_name || "Vajra User"}
+              </h4>
+              <p className="text-[10px] text-muted-foreground truncate">{email}</p>
+            </div>
+          </div>
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold text-red-400 hover:text-red-300 hover:bg-red-500/5 transition-all cursor-pointer"
+          >
+            <LogOut className="w-4 h-4" />
+            Log Out
+          </button>
+        </div>
+      </aside>
+
+      {/* 2. Main Page Area */}
+      <div className="flex-1 flex flex-col min-w-0">
+        
+        {/* Top Navbar */}
+        <header className="h-20 border-b border-white/10 bg-slate-900/60 backdrop-blur-md sticky top-0 z-10 flex items-center justify-between px-6">
+          <div className="flex items-center gap-4">
+            {/* Mobile menu toggle */}
+            <button
+              onClick={() => setIsMobileOpen(!isMobileOpen)}
+              className="lg:hidden p-2 text-slate-400 hover:text-white focus:outline-none"
+              aria-label="Toggle Menu"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-200 font-sans hidden sm:block">
+              {menuItems.find((item) => item.href === pathname)?.name || "Dashboard"}
+            </h2>
+          </div>
+
+          <div className="flex items-center gap-4">
+            {/* Role Status Pill */}
+            <span className="text-[10px] uppercase font-mono tracking-widest text-blue-400 bg-blue-500/10 border border-blue-500/20 px-3 py-1 rounded-full">
+              Explorer 🚀
+            </span>
+
+            {/* Notification Bell */}
+            <button className="p-2 rounded-xl bg-slate-950 border border-white/5 text-slate-400 hover:text-white hover:border-white/10 transition-all relative">
+              <Bell className="w-4 h-4" />
+              <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-blue-400 animate-ping" />
+            </button>
+
+            {/* Profile Avatar */}
+            <div className="h-10 w-10 rounded-xl bg-slate-950 border border-white/5 flex items-center justify-center font-bold text-xs text-slate-300 sm:hidden">
+              {userInitials}
+            </div>
+          </div>
+        </header>
+
+        {/* Children Page content */}
+        <main className="flex-1 p-6 relative">
+          {children}
+        </main>
+      </div>
+
+      {/* 3. Mobile Navigation Overlay Drawer */}
+      <AnimatePresence>
+        {isMobileOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.5 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMobileOpen(false)}
+              className="fixed inset-0 bg-black z-30 lg:hidden"
+            />
+            {/* Drawer */}
+            <motion.aside
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", bounce: 0, duration: 0.4 }}
+              className="fixed top-0 bottom-0 left-0 w-64 bg-slate-900 border-r border-white/10 z-40 lg:hidden flex flex-col"
+            >
+              <div className="h-20 border-b border-white/10 flex items-center justify-between px-6">
+                <span className="text-xl font-bold font-heading tracking-widest bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
+                  VAJRA
+                </span>
+                <button
+                  onClick={() => setIsMobileOpen(false)}
+                  className="p-1 text-slate-400 hover:text-white"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
+                {menuItems.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = pathname === item.href;
+                  return (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      onClick={() => setIsMobileOpen(false)}
+                      className={`flex items-center gap-3 px-4 py-3.5 rounded-xl text-xs font-semibold tracking-wide transition-all ${
+                        isActive
+                          ? "bg-blue-500/10 border border-blue-500/20 text-white"
+                          : "text-slate-400 hover:text-white border border-transparent hover:bg-slate-950/40"
+                      }`}
+                    >
+                      <Icon className="w-4 h-4" />
+                      {item.name}
+                    </Link>
+                  );
+                })}
+              </nav>
+
+              <div className="p-4 border-t border-white/10 flex flex-col gap-3">
+                <div className="flex items-center gap-3 px-2">
+                  <div className="h-10 w-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center font-bold text-sm text-blue-400">
+                    {userInitials}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h4 className="text-xs font-semibold text-white truncate">
+                      {profile?.full_name || "Vajra User"}
+                    </h4>
+                    <p className="text-[10px] text-muted-foreground truncate">{email}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold text-red-400 hover:text-red-300 hover:bg-red-500/5 transition-all cursor-pointer"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Log Out
+                </button>
+              </div>
+            </motion.aside>
+          </>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
