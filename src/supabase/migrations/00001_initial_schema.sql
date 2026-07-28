@@ -1,8 +1,9 @@
 -- VAJRA Database Migration - Initial Schema Setup
 -- Target Schema: public
 
--- Enable UUID extension
+-- Enable UUID and Cryptographic extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- 1. Create App Role Enum
 CREATE TYPE public.app_role AS ENUM (
@@ -223,14 +224,25 @@ CREATE TABLE public.audit_logs (
 );
 
 -- 20. Triggers for updated_at
+DROP TRIGGER IF EXISTS update_users_updated_at ON public.users;
 CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON public.users FOR EACH ROW EXECUTE FUNCTION public.set_current_timestamp_updated_at();
+
+DROP TRIGGER IF EXISTS update_student_profiles_updated_at ON public.student_profiles;
 CREATE TRIGGER update_student_profiles_updated_at BEFORE UPDATE ON public.student_profiles FOR EACH ROW EXECUTE FUNCTION public.set_current_timestamp_updated_at();
+
+DROP TRIGGER IF EXISTS update_companies_updated_at ON public.companies;
 CREATE TRIGGER update_companies_updated_at BEFORE UPDATE ON public.companies FOR EACH ROW EXECUTE FUNCTION public.set_current_timestamp_updated_at();
-CREATE TRIGGER update_mentors_updated_at BEFORE UPDATE ON public.mentors FOR EACH ROW EXECUTE FUNCTION RECENTLY_COMPLETED_TESTS FOR EACH ROW EXECUTE FUNCTION public.set_current_timestamp_updated_at();
-ALTER TABLE public.mentors DROP TRIGGER IF EXISTS update_mentors_updated_at ON public.mentors;
+
+DROP TRIGGER IF EXISTS update_mentors_updated_at ON public.mentors;
 CREATE TRIGGER update_mentors_updated_at BEFORE UPDATE ON public.mentors FOR EACH ROW EXECUTE FUNCTION public.set_current_timestamp_updated_at();
+
+DROP TRIGGER IF EXISTS update_internships_updated_at ON public.internships;
 CREATE TRIGGER update_internships_updated_at BEFORE UPDATE ON public.internships FOR EACH ROW EXECUTE FUNCTION public.set_current_timestamp_updated_at();
+
+DROP TRIGGER IF EXISTS update_applications_updated_at ON public.applications;
 CREATE TRIGGER update_applications_updated_at BEFORE UPDATE ON public.applications FOR EACH ROW EXECUTE FUNCTION public.set_current_timestamp_updated_at();
+
+DROP TRIGGER IF EXISTS update_projects_updated_at ON public.projects;
 CREATE TRIGGER update_projects_updated_at BEFORE UPDATE ON public.projects FOR EACH ROW EXECUTE FUNCTION public.set_current_timestamp_updated_at();
 
 -- 21. Automatic replication trigger from auth.users to public.users
@@ -267,7 +279,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE TRIGGER on_auth_user_created
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 

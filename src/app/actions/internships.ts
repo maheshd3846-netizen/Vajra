@@ -102,8 +102,10 @@ export async function fetchFilteredInternshipsAction(): Promise<{
       internships: processedInternships,
     };
   } catch (err: unknown) {
-    const errorMessage = err instanceof Error ? err.message : "Could not retrieve internship listings.";
-    console.error("fetchFilteredInternshipsAction failed:", err);
+    const errorObj = err as Record<string, unknown> | null;
+    const errorMessage = (errorObj?.message as string) || (err instanceof Error ? err.message : "Could not retrieve internship listings.");
+    console.error("fetchFilteredInternshipsAction failed:", errorObj?.message || err);
+    console.error("fetchFilteredInternshipsAction detailed error:", JSON.stringify(err, null, 2));
     return {
       success: false,
       error: errorMessage,
@@ -146,8 +148,10 @@ export async function applyToInternshipAction(
       success: true,
     };
   } catch (err: unknown) {
-    const errorMessage = err instanceof Error ? err.message : "Failed to submit application.";
-    console.error("applyToInternshipAction failed:", err);
+    const errorObj = err as Record<string, unknown> | null;
+    const errorMessage = (errorObj?.message as string) || (err instanceof Error ? err.message : "Failed to submit application.");
+    console.error("applyToInternshipAction failed:", errorObj?.message || err);
+    console.error("applyToInternshipAction detailed error:", JSON.stringify(err, null, 2));
     return {
       success: false,
       error: errorMessage,
