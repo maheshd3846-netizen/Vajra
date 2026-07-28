@@ -60,7 +60,13 @@ export default function RegisterPage() {
       });
 
       if (error) {
-        toast.error(error.message || "Sign up failed. Please try again.");
+        let errorMsg = error.message || "Sign up failed. Please try again.";
+        if (error.message.includes("User already exists") || error.status === 422) {
+          errorMsg = "Email already registered. Please sign in or use a different email.";
+        } else if (error.message.toLowerCase().includes("failed to fetch") || error.message.toLowerCase().includes("network")) {
+          errorMsg = "Supabase service unavailable or database connection failed. Please check your network.";
+        }
+        toast.error(errorMsg);
         setIsLoading(false);
         return;
       }
@@ -78,7 +84,7 @@ export default function RegisterPage() {
         }
       }
     } catch {
-      toast.error("An unexpected error occurred during registration.");
+      toast.error("An unexpected error occurred during registration. Please try again.");
     } finally {
       setIsLoading(false);
     }

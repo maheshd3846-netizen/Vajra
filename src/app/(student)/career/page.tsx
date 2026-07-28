@@ -1,11 +1,11 @@
 import React from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import MockInterviewWorkspace from "@/components/dashboard/interviews/MockInterviewWorkspace";
+import CareerHubClient from "@/components/dashboard/career/CareerHubClient";
 
 export const dynamic = "force-dynamic";
 
-export default async function InterviewsPage() {
+export default async function CareerPage() {
   const supabase = await createClient();
   const {
     data: { user },
@@ -24,5 +24,5 @@ export default async function InterviewsPage() {
 
   const targetRole = studentProfile?.major || "Software Engineer";
 
-  return <MockInterviewWorkspace targetRole={targetRole} />;
+  return <CareerHubClient targetRole={targetRole} />;
 }

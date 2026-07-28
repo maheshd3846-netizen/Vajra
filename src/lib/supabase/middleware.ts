@@ -38,9 +38,22 @@ export async function updateSession(request: NextRequest) {
 
   const path = request.nextUrl.pathname;
 
-  // Define protected route groups
-  const protectedRoutes = ["/student", "/company", "/mentor", "/admin"];
-  const isProtected = protectedRoutes.some((route) => path.startsWith(route));
+  // Define protected routes
+  const protectedRoutes = [
+    "/dashboard",
+    "/career",
+    "/internships",
+    "/mentorship",
+    "/portfolio",
+    "/settings",
+    "/company",
+    "/mentor",
+    "/admin",
+    "/onboarding"
+  ];
+  const isProtected = protectedRoutes.some((route) => 
+    path === route || path.startsWith(route + "/")
+  );
 
   if (isProtected && !user) {
     // User is not authenticated; redirect to login
@@ -51,15 +64,22 @@ export async function updateSession(request: NextRequest) {
   }
 
   if (user) {
-    const userRole = user.user_metadata?.role; // expected: 'student', 'company', 'mentor', 'admin'
+    const userRole = user.user_metadata?.role; // expected: 'student', 'company', 'mentor', 'admin', 'super_admin'
 
-    // If an authenticated user attempts to access login/signup pages, redirect to dashboard
-    if (path.startsWith("/login") || path.startsWith("/signup")) {
+    // If an authenticated user attempts to access auth pages, redirect to dashboard
+    if (
+      path === "/login" || path.startsWith("/login/") ||
+      path === "/register" || path.startsWith("/register/") ||
+      path === "/forgot-password" || path.startsWith("/forgot-password/")
+    ) {
       return redirectToRoleDashboard(request, userRole);
     }
 
     // Route restriction based on roles
-    if (path.startsWith("/student") && userRole !== "student" && userRole !== "admin") {
+    const studentRoutes = ["/dashboard", "/career", "/internships", "/mentorship", "/portfolio", "/settings"];
+    const isStudentRoute = studentRoutes.some((route) => path === route || path.startsWith(route + "/"));
+
+    if (isStudentRoute && userRole !== "student" && userRole !== "admin") {
       return redirectToRoleDashboard(request, userRole);
     }
     if (path.startsWith("/company") && userRole !== "company" && userRole !== "admin") {
@@ -68,7 +88,7 @@ export async function updateSession(request: NextRequest) {
     if (path.startsWith("/mentor") && userRole !== "mentor" && userRole !== "admin") {
       return redirectToRoleDashboard(request, userRole);
     }
-    if (path.startsWith("/admin") && userRole !== "admin") {
+    if (path.startsWith("/admin") && userRole !== "admin" && userRole !== "super_admin") {
       return redirectToRoleDashboard(request, userRole);
     }
   }
@@ -79,13 +99,13 @@ export async function updateSession(request: NextRequest) {
 function redirectToRoleDashboard(request: NextRequest, role: string | undefined) {
   const url = request.nextUrl.clone();
   if (role === "student") {
-    url.pathname = "/student";
+    url.pathname = "/dashboard";
   } else if (role === "company") {
-    url.pathname = "/company";
+    url.pathname = "/company/dashboard";
   } else if (role === "mentor") {
-    url.pathname = "/mentor";
-  } else if (role === "admin") {
-    url.pathname = "/admin";
+    url.pathname = "/mentor/dashboard";
+  } else if (role === "admin" || role === "super_admin") {
+    url.pathname = "/admin/dashboard";
   } else {
     url.pathname = "/";
   }

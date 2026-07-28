@@ -10,14 +10,18 @@ import {
   LayoutDashboard,
   FileText,
   Target,
-  Mic,
-  Award,
   Globe,
   Settings,
   LogOut,
   Bell,
   Menu,
   X,
+  Users,
+  MessageSquare,
+  Building,
+  GraduationCap,
+  BarChart3,
+  Briefcase,
 } from "lucide-react";
 
 interface DashboardClientLayoutProps {
@@ -41,15 +45,60 @@ export default function DashboardClientLayout({
   const supabase = createClient();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-  const menuItems = [
-    { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { name: "AI Resume Analyzer", href: "/dashboard/resume", icon: FileText },
-    { name: "Internship Matcher", href: "/dashboard/internships", icon: Target },
-    { name: "AI Mock Interview", href: "/dashboard/interviews", icon: Mic },
-    { name: "Skill Passport & Certs", href: "/dashboard/certificates", icon: Award },
-    { name: "Portfolio Generator", href: "/dashboard/portfolio", icon: Globe },
-    { name: "Settings", href: "/dashboard/settings", icon: Settings },
-  ];
+  const role = profile?.role || "student";
+
+  const MENU_ITEMS = {
+    student: [
+      { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+      { name: "Career DNA", href: "/career", icon: FileText },
+      { name: "Internships", href: "/internships", icon: Target },
+      { name: "Mentorship", href: "/mentorship", icon: Users },
+      { name: "Portfolio", href: "/portfolio", icon: Globe },
+      { name: "Settings", href: "/settings", icon: Settings },
+    ],
+    company: [
+      { name: "Dashboard", href: "/company/dashboard", icon: LayoutDashboard },
+      { name: "Internships", href: "/company/internships", icon: Briefcase },
+      { name: "Applicants", href: "/company/applicants", icon: Users },
+      { name: "Settings", href: "/company/settings", icon: Settings },
+    ],
+    mentor: [
+      { name: "Dashboard", href: "/mentor/dashboard", icon: LayoutDashboard },
+      { name: "Students", href: "/mentor/students", icon: GraduationCap },
+      { name: "Feedback", href: "/mentor/feedback", icon: MessageSquare },
+      { name: "Settings", href: "/mentor/settings", icon: Settings },
+    ],
+    admin: [
+      { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
+      { name: "Companies", href: "/admin/companies", icon: Building },
+      { name: "Internships", href: "/admin/internships", icon: Briefcase },
+      { name: "Students", href: "/admin/students", icon: GraduationCap },
+      { name: "Mentors", href: "/admin/mentors", icon: Users },
+      { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
+      { name: "Settings", href: "/admin/settings", icon: Settings },
+    ],
+    super_admin: [
+      { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
+      { name: "Companies", href: "/admin/companies", icon: Building },
+      { name: "Internships", href: "/admin/internships", icon: Briefcase },
+      { name: "Students", href: "/admin/students", icon: GraduationCap },
+      { name: "Mentors", href: "/admin/mentors", icon: Users },
+      { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
+      { name: "Settings", href: "/admin/settings", icon: Settings },
+    ],
+  };
+
+  const menuItems = MENU_ITEMS[role as keyof typeof MENU_ITEMS] || MENU_ITEMS.student;
+
+  const dashboardLink = role === "student"
+    ? "/dashboard"
+    : role === "company"
+    ? "/company/dashboard"
+    : role === "mentor"
+    ? "/mentor/dashboard"
+    : role === "admin" || role === "super_admin"
+    ? "/admin/dashboard"
+    : "/";
 
   const handleLogout = async () => {
     try {
@@ -79,7 +128,7 @@ export default function DashboardClientLayout({
       <aside className="hidden lg:flex flex-col w-64 bg-slate-900 border-r border-white/10 shrink-0 sticky top-0 h-screen z-20">
         {/* Brand Logo */}
         <div className="h-20 border-b border-white/10 flex items-center px-6">
-          <Link href="/" className="text-xl font-bold font-heading tracking-widest bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
+          <Link href={dashboardLink} className="text-xl font-bold font-heading tracking-widest bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
             VAJRA
           </Link>
         </div>
@@ -151,7 +200,7 @@ export default function DashboardClientLayout({
           <div className="flex items-center gap-4">
             {/* Role Status Pill */}
             <span className="text-[10px] uppercase font-mono tracking-widest text-blue-400 bg-blue-500/10 border border-blue-500/20 px-3 py-1 rounded-full">
-              Explorer 🚀
+              {role} 🚀
             </span>
 
             {/* Notification Bell */}

@@ -43,7 +43,15 @@ export default function LoginPage() {
       });
 
       if (authError) {
-        toast.error(authError.message || "Failed to sign in. Please verify your credentials.");
+        let errorMsg = authError.message || "Failed to sign in. Please try again.";
+        if (authError.message.includes("Invalid login credentials") || authError.status === 400) {
+          errorMsg = "Invalid credentials. Please check your email and password.";
+        } else if (authError.message.includes("Email not confirmed")) {
+          errorMsg = "Email address not verified. Please check your inbox for the confirmation email.";
+        } else if (authError.message.toLowerCase().includes("failed to fetch") || authError.message.toLowerCase().includes("network")) {
+          errorMsg = "Supabase service unavailable or database connection failed. Please check your network.";
+        }
+        toast.error(errorMsg);
         setIsLoading(false);
         return;
       }
@@ -62,7 +70,7 @@ export default function LoginPage() {
         .single();
 
       if (profileError || !userProfile) {
-        toast.error("Could not fetch user profile details.");
+        toast.error("Profile creation failed or could not fetch user profile details.");
         setIsLoading(false);
         return;
       }
@@ -84,16 +92,16 @@ export default function LoginPage() {
           router.push("/dashboard");
         }
       } else if (userProfile.role === "company") {
-        router.push("/company");
+        router.push("/company/dashboard");
       } else if (userProfile.role === "mentor") {
-        router.push("/mentor");
+        router.push("/mentor/dashboard");
       } else if (userProfile.role === "admin" || userProfile.role === "super_admin") {
-        router.push("/admin");
+        router.push("/admin/dashboard");
       } else {
         router.push("/");
       }
     } catch {
-      toast.error("An unexpected error occurred during login.");
+      toast.error("An unexpected error occurred during login. Please try again later.");
     } finally {
       setIsLoading(false);
     }

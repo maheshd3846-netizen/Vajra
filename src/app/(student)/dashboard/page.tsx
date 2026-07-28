@@ -53,7 +53,7 @@ export default async function DashboardPage() {
       location: string;
       salary: number;
       companies: { name: string } | null;
-    }[]) || [];
+      }[]) || [];
 
   return (
     <StudentDashboardView
