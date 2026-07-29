@@ -73,7 +73,6 @@ export default function RootLayout({
   `;
 
   return (
-<<<<<<< HEAD
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${spaceGrotesk.variable} antialiased min-h-screen bg-background text-foreground`}>
         <Script id="theme-init" strategy="beforeInteractive">
@@ -96,27 +95,6 @@ export default function RootLayout({
             />
           </AuthProvider>
         </ThemeProvider>
-=======
-    <html lang="en" className="dark" style={{ colorScheme: "dark" }} suppressHydrationWarning>
-      <body className={`${inter.variable} ${spaceGrotesk.variable} antialiased min-h-screen bg-[#020617] text-foreground`}>
-        <AuthProvider>
-          {children}
-          <Toaster
-            theme="dark"
-            position="bottom-right"
-            toastOptions={{
-              style: {
-                background: "rgba(15, 23, 42, 0.95)",
-                border: "1px solid rgba(255, 255, 255, 0.1)",
-                color: "#ffffff",
-                fontSize: "12px",
-                borderRadius: "14px",
-                backdropFilter: "blur(12px)",
-              },
-            }}
-          />
-        </AuthProvider>
->>>>>>> 03665dce1bbee32c9280c9884c4aaee70d7fbd2f
       </body>
     </html>
   );

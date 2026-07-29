@@ -1,16 +1,9 @@
 import React from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-<<<<<<< HEAD
-import { Settings as SettingsIcon } from "lucide-react";
-import { StudentSettingsForm } from "@/components/student/StudentSettingsForm";
-import { Container } from "@/components/ui/container";
-import { Section } from "@/components/ui/section";
-=======
 import StudentSettingsClient, {
   type StudentProfileInitialData,
 } from "@/components/student/StudentSettingsClient";
->>>>>>> 03665dce1bbee32c9280c9884c4aaee70d7fbd2f
 
 export const dynamic = "force-dynamic";
 
@@ -24,8 +17,8 @@ export default async function SettingsPage() {
     redirect("/login");
   }
 
-  // Fetch student profile & user details
-  const { data: rawStudentProfile, error: profileError } = await supabase
+  // Attempt to fetch full student profile including extended 00006 schema fields
+  let { data: studentProfile } = await supabase
     .from("student_profiles")
     .select(`
       bio,
@@ -37,31 +30,20 @@ export default async function SettingsPage() {
       gpa,
       cgpa,
       target_role,
+      linkedin_url,
+      github_url,
       portfolio_url,
       phone,
-      location,
-      github_url,
-      linkedin_url
+      location
     `)
     .eq("id", user.id)
     .maybeSingle();
 
-  let studentProfile = rawStudentProfile;
-
-  // Fallback if migration 00006 columns (degree, branch, cgpa, etc.) are not yet in PostgREST schema cache
-  if (profileError) {
-    console.warn("[SettingsPage] Extended columns query notice:", profileError.message);
+  if (!studentProfile) {
+    // Schema fallback check for older database instances
     const { data: baseProfile } = await supabase
       .from("student_profiles")
-      .select(`
-        bio,
-        university,
-        major,
-        graduation_year,
-        gpa,
-        github_url,
-        linkedin_url
-      `)
+      .select("bio, university, major, graduation_year, gpa, github_url, linkedin_url")
       .eq("id", user.id)
       .maybeSingle();
 
@@ -69,12 +51,12 @@ export default async function SettingsPage() {
       studentProfile = {
         bio: baseProfile.bio,
         university: baseProfile.university,
-        degree: null,
+        degree: baseProfile.major,
         branch: baseProfile.major,
         major: baseProfile.major,
         graduation_year: baseProfile.graduation_year,
         gpa: baseProfile.gpa,
-        cgpa: baseProfile.gpa ? Number((baseProfile.gpa * 2.5).toFixed(2)) : null,
+        cgpa: baseProfile.gpa,
         target_role: null,
         portfolio_url: null,
         phone: null,
@@ -91,40 +73,6 @@ export default async function SettingsPage() {
     .eq("id", user.id)
     .maybeSingle();
 
-<<<<<<< HEAD
-  return (
-    <Container className="py-8 sm:py-10">
-      <Section className="space-y-8">
-        <div className="space-y-2">
-        <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-primary">
-          <SettingsIcon className="w-4 h-4" />
-          User Profile settings
-        </div>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground font-heading">
-          Settings
-        </h1>
-        <p className="max-w-xl text-sm text-muted-foreground font-sans">
-          Manage your account credentials, edit your personal details, and configure your public portfolio settings.
-        </p>
-        </div>
-
-        <StudentSettingsForm
-          initialFullName={userProfile?.full_name || ""}
-          email={user.email || ""}
-          initialProfile={{
-            bio: studentProfile?.bio || "",
-            university: studentProfile?.university || "",
-            major: studentProfile?.major || "",
-            graduationYear: studentProfile?.graduation_year?.toString() || "",
-            gpa: studentProfile?.gpa?.toString() || "",
-            githubUrl: studentProfile?.github_url || "",
-            linkedinUrl: studentProfile?.linkedin_url || "",
-          }}
-        />
-      </Section>
-    </Container>
-  );
-=======
   const { data: studentSkills } = await supabase
     .from("student_skills")
     .select("skill_name")
@@ -152,5 +100,4 @@ export default async function SettingsPage() {
   };
 
   return <StudentSettingsClient initialData={initialData} />;
->>>>>>> 03665dce1bbee32c9280c9884c4aaee70d7fbd2f
 }
