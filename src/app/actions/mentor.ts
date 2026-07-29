@@ -110,6 +110,17 @@ export async function addStudentByMentorAction(
       return { success: false, error: "Unauthorized access." };
     }
 
+    const { data: mentorRole } = await supabase
+      .from("users")
+      .select("role")
+      .eq("id", currentMentor.id)
+      .maybeSingle();
+
+    const role = mentorRole?.role || currentMentor.user_metadata?.role;
+    if (!role || (role !== "mentor" && role !== "admin" && role !== "super_admin")) {
+      return { success: false, error: "Forbidden: Only mentors or admins can assign students." };
+    }
+
     const emailTrimmed = payload.email.trim().toLowerCase();
 
     // Check if user email already exists in public.users

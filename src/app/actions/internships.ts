@@ -370,9 +370,11 @@ export async function fetchFilteredInternshipsAction(
       results.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
     } else if (options?.sortBy === "stipend") {
       const getVal = (s: string | null) => {
-        if (!s) return 0;
-        const match = s.match(/\d+/g);
-        return match ? parseInt(match.join("")) : 0;
+        if (!s || s.toLowerCase().includes("unpaid")) return 0;
+        const matches = s.match(/\d+([.,]\d+)?/g);
+        if (!matches) return 0;
+        const nums = matches.map((m) => parseInt(m.replace(/,/g, ""), 10)).filter((n) => !isNaN(n));
+        return nums.length > 0 ? Math.max(...nums) : 0;
       };
       results.sort((a, b) => getVal(b.salary_range) - getVal(a.salary_range));
     } else {

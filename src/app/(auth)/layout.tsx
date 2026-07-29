@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
 
 export default function AuthLayout({
   children,
@@ -7,22 +8,26 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-background p-4">
-      {/* Ambient background glows */}
-      <div className="pointer-events-none absolute top-1/4 left-1/2 h-[400px] w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-3xl" />
-      <div className="pointer-events-none absolute bottom-1/4 left-1/3 h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-500/10 blur-3xl" />
-
+    <div className="relative flex min-h-screen w-full flex-col items-center justify-center bg-background p-4 antialiased">
       {/* Brand Logo Header */}
-      <div className="mb-6 z-10">
-        <Link href="/" className="flex items-center gap-2 group">
-          <span className="text-3xl font-bold font-heading tracking-widest bg-gradient-to-r from-primary via-indigo-400 to-violet-500 bg-clip-text text-transparent group-hover:opacity-85 transition-opacity">
+      <div className="mb-6 z-10 text-center space-y-1">
+        <Link href="/" className="inline-flex items-center gap-2 group">
+          <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-mono text-sm font-black shadow-xs">
+            V
+          </div>
+          <span className="text-lg font-semibold tracking-wider text-foreground font-mono">
             VAJRA
           </span>
         </Link>
+        <div>
+          <Badge variant="outline" className="text-[10px] uppercase font-mono px-2 py-0">
+            Career Intelligence Platform
+          </Badge>
+        </div>
       </div>
 
       {/* Card Container */}
-      <div className="glass-card relative z-10 w-full max-w-md rounded-2xl border-border/70 p-8 shadow-2xl">
+      <div className="relative z-10 w-full max-w-md rounded-xl border border-border bg-card p-6 sm:p-8 shadow-xs">
         {children}
       </div>
     </div>

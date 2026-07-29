@@ -155,7 +155,7 @@ export default function DashboardClientLayout({
               <span className="text-sm font-semibold tracking-wider text-sidebar-foreground font-mono leading-none">
                 VAJRA
               </span>
-              <span className="text-[9px] text-muted-foreground font-mono tracking-widest uppercase">
+              <span className="text-[9px] text-slate-500 dark:text-slate-400 font-mono tracking-widest uppercase mt-0.5">
                 Intelligence
               </span>
             </div>
@@ -167,7 +167,7 @@ export default function DashboardClientLayout({
 
         {/* Workspace Nav Header */}
         <div className="px-3 pt-4 pb-2">
-          <div className="flex items-center justify-between px-2 text-[10px] uppercase font-mono tracking-widest text-muted-foreground font-semibold">
+          <div className="flex items-center justify-between px-2 text-[10px] uppercase font-mono tracking-widest text-slate-500 dark:text-slate-400 font-semibold">
             <span>Navigation</span>
             <span className="text-primary font-bold uppercase">{role}</span>
           </div>
@@ -184,14 +184,14 @@ export default function DashboardClientLayout({
                 href={item.href}
                 className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all group ${
                   isActive
-                    ? "bg-sidebar-accent text-sidebar-accent-foreground font-semibold border border-sidebar-border shadow-xs"
-                    : "text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent/50"
+                    ? "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 font-semibold border border-indigo-200 dark:border-indigo-800/60 shadow-xs"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100/80 dark:hover:bg-slate-800/50"
                 }`}
               >
                 <div className="flex items-center gap-2.5">
                   <Icon
                     className={`w-4 h-4 transition-colors ${
-                      isActive ? "text-primary" : "text-muted-foreground group-hover:text-sidebar-foreground"
+                      isActive ? "text-indigo-600 dark:text-indigo-400" : "text-slate-400 dark:text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-200"
                     }`}
                   />
                   <span>{item.name}</span>
@@ -208,20 +208,20 @@ export default function DashboardClientLayout({
 
         {/* Footer Profile Box */}
         <div className="p-3 border-t border-sidebar-border flex flex-col gap-2">
-          <div className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg border border-sidebar-border bg-sidebar-accent/30">
-            <div className="h-7 w-7 rounded-md bg-primary/10 border border-primary/20 flex items-center justify-center font-mono font-bold text-xs text-primary shrink-0">
+          <div className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60">
+            <div className="h-7 w-7 rounded-md bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800 flex items-center justify-center font-mono font-bold text-xs text-indigo-600 dark:text-indigo-400 shrink-0">
               {userInitials}
             </div>
             <div className="min-w-0 flex-1">
-              <h4 className="text-xs font-semibold text-sidebar-foreground truncate leading-none">
+              <h4 className="text-xs font-semibold text-slate-900 dark:text-slate-100 truncate leading-none">
                 {profile?.full_name || "Vajra User"}
               </h4>
-              <p className="text-[10px] text-muted-foreground truncate mt-0.5">{email}</p>
+              <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate mt-1">{email}</p>
             </div>
           </div>
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium text-destructive hover:bg-destructive/10 transition-colors cursor-pointer"
+            className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors cursor-pointer"
           >
             <LogOut className="w-3.5 h-3.5" />
             <span>Sign out</span>
@@ -232,23 +232,23 @@ export default function DashboardClientLayout({
       {/* 2. Main Area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top Navbar */}
-        <header className="h-14 border-b border-border bg-card/70 backdrop-blur-md sticky top-0 z-10 flex items-center justify-between px-4 sm:px-6">
+        <header className="h-14 border-b border-border bg-card/80 backdrop-blur-md sticky top-0 z-10 flex items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setIsMobileOpen(!isMobileOpen)}
-              className="lg:hidden rounded-lg border border-border p-1.5 text-muted-foreground hover:text-foreground"
+              className="lg:hidden rounded-lg border border-border p-1.5 text-slate-500 hover:text-slate-900 dark:hover:text-slate-100"
               aria-label="Toggle Menu"
             >
               <Menu className="w-4 h-4" />
             </button>
 
             {/* Breadcrumbs */}
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <span className="font-mono text-[11px] uppercase font-semibold text-foreground/70">
+            <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+              <span className="font-mono text-[11px] uppercase font-semibold text-slate-700 dark:text-slate-300">
                 {role}
               </span>
-              <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/60" />
-              <span className="font-semibold text-foreground">
+              <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+              <span className="font-semibold text-slate-900 dark:text-slate-100">
                 {currentItem?.name || "Overview"}
               </span>
             </div>
@@ -257,25 +257,25 @@ export default function DashboardClientLayout({
           {/* Right Header Actions */}
           <div className="flex items-center gap-3">
             {/* Quick Command Trigger */}
-            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border bg-input/40 text-muted-foreground text-xs cursor-pointer hover:border-foreground/20">
-              <Search className="w-3.5 h-3.5 text-muted-foreground" />
+            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 text-slate-500 dark:text-slate-400 text-xs cursor-pointer hover:border-slate-300 dark:hover:border-slate-700">
+              <Search className="w-3.5 h-3.5 text-slate-400" />
               <span className="text-[11px]">Search platform...</span>
-              <kbd className="ml-2 font-mono text-[9px] bg-muted px-1.5 py-0.5 rounded border border-border">
+              <kbd className="ml-2 font-mono text-[9px] bg-white dark:bg-slate-800 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
                 ⌘K
               </kbd>
             </div>
 
             {/* Theme Toggle */}
-            <ThemeToggle className="h-8 w-8 rounded-lg" />
+            <ThemeToggle className="h-8 w-8 rounded-lg border-slate-200 dark:border-slate-800" />
 
             {/* Notification Bell */}
-            <button className="relative rounded-lg border border-border p-2 text-muted-foreground transition-all hover:text-foreground hover:bg-secondary cursor-pointer">
+            <button className="relative rounded-lg border border-slate-200 dark:border-slate-800 p-2 text-slate-500 dark:text-slate-400 transition-all hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
               <Bell className="w-3.5 h-3.5" />
               <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-primary" />
             </button>
 
             {/* User Initials Avatar (Mobile) */}
-            <div className="flex h-7 w-7 items-center justify-center rounded-md border border-border bg-primary/10 text-xs font-mono font-bold text-primary sm:hidden">
+            <div className="flex h-7 w-7 items-center justify-center rounded-md border border-indigo-200 bg-indigo-50 text-xs font-mono font-bold text-indigo-700 sm:hidden">
               {userInitials}
             </div>
           </div>
@@ -296,7 +296,7 @@ export default function DashboardClientLayout({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsMobileOpen(false)}
-              className="fixed inset-0 z-30 bg-background/80 backdrop-blur-xs lg:hidden"
+              className="fixed inset-0 z-30 bg-slate-950/40 backdrop-blur-xs lg:hidden"
             />
             <motion.aside
               initial={{ x: "-100%" }}
@@ -316,7 +316,7 @@ export default function DashboardClientLayout({
                 </div>
                 <button
                   onClick={() => setIsMobileOpen(false)}
-                  className="rounded-lg p-1 text-muted-foreground hover:text-foreground"
+                  className="rounded-lg p-1 text-slate-500 hover:text-slate-900 dark:hover:text-slate-100"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -333,8 +333,8 @@ export default function DashboardClientLayout({
                       onClick={() => setIsMobileOpen(false)}
                       className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all ${
                         isActive
-                          ? "bg-sidebar-accent text-sidebar-accent-foreground font-semibold border border-sidebar-border"
-                          : "text-muted-foreground hover:text-sidebar-foreground"
+                          ? "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 font-semibold border border-indigo-200 dark:border-indigo-800/60"
+                          : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100"
                       }`}
                     >
                       <div className="flex items-center gap-2.5">
@@ -352,20 +352,20 @@ export default function DashboardClientLayout({
               </nav>
 
               <div className="p-3 border-t border-sidebar-border flex flex-col gap-2">
-                <div className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg border border-sidebar-border bg-sidebar-accent/30">
-                  <div className="h-7 w-7 rounded-md bg-primary/10 border border-primary/20 flex items-center justify-center font-mono font-bold text-xs text-primary shrink-0">
+                <div className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60">
+                  <div className="h-7 w-7 rounded-md bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800 flex items-center justify-center font-mono font-bold text-xs text-indigo-600 dark:text-indigo-400 shrink-0">
                     {userInitials}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h4 className="text-xs font-semibold text-sidebar-foreground truncate leading-none">
+                    <h4 className="text-xs font-semibold text-slate-900 dark:text-slate-100 truncate leading-none">
                       {profile?.full_name || "Vajra User"}
                     </h4>
-                    <p className="text-[10px] text-muted-foreground truncate mt-0.5">{email}</p>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate mt-1">{email}</p>
                   </div>
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium text-destructive hover:bg-destructive/10 transition-colors cursor-pointer"
+                  className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors cursor-pointer"
                 >
                   <LogOut className="w-3.5 h-3.5" />
                   <span>Sign out</span>

@@ -33,6 +33,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const activeUserIdRef = useRef<string | null>(null);
   const renderCountRef = useRef(0);
   renderCountRef.current += 1;
 
@@ -45,6 +46,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchProfile = useCallback(
     async (userId: string, email: string) => {
+      activeUserIdRef.current = userId;
       console.log("[INIT STAGE 5] Profile fetch started", { userId, email });
       try {
         const { data, error } = await supabase
@@ -52,6 +54,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           .select("id, email, role, full_name, avatar_url")
           .eq("id", userId)
           .maybeSingle();
+
+        // Race condition check: abort if active user changed or signed out during fetch
+        if (activeUserIdRef.current !== userId) {
+          console.log("[AuthProvider] Stale profile fetch discarded for user:", userId);
+          return;
+        }
 
         if (data) {
           console.log("[INIT STAGE 6] Profile fetch completed", { role: data.role });
@@ -92,6 +100,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (currentSession?.user) {
         await fetchProfile(currentSession.user.id, currentSession.user.email || "");
       } else {
+        activeUserIdRef.current = null;
         setProfile(null);
       }
     } catch (err) {
@@ -124,6 +133,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (currentSession?.user) {
           await fetchProfile(currentSession.user.id, currentSession.user.email || "");
         } else {
+          activeUserIdRef.current = null;
           setProfile(null);
         }
       } catch (err) {
@@ -154,8 +164,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(currentSession?.user || null);
 
         if (currentSession?.user) {
-          await fetchProfile(currentSession.user.id, currentSession.user.email || "");
+          // Avoid duplicate fetch on initial auth state event if already fetched
+          if (activeUserIdRef.current !== currentSession.user.id) {
+            await fetchProfile(currentSession.user.id, currentSession.user.email || "");
+          }
         } else {
+          activeUserIdRef.current = null;
           setProfile(null);
         }
       } catch (err) {
@@ -175,6 +189,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     setIsLoading(true);
+    activeUserIdRef.current = null;
     console.log("[AuthProvider] Signing out user globally:", user?.email);
     try {
       await supabase.auth.signOut({ scope: "global" });

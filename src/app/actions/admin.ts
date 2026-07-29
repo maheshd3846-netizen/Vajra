@@ -62,9 +62,9 @@ export async function fetchAdminCompanyVerificationQueueAction(): Promise<{
       .eq("id", user.id)
       .maybeSingle();
 
-    if (!userRole || (userRole.role !== "admin" && userRole.role !== "super_admin")) {
-      // Fallback: grant demo access if role isn't admin in sandbox
-      console.warn("User role is not admin, checking credentials for sandbox execution");
+    const role = userRole?.role || user.user_metadata?.role;
+    if (!role || (role !== "admin" && role !== "super_admin")) {
+      return { success: false, error: "Forbidden: Admin privileges required." };
     }
 
     // Query companies
@@ -163,6 +163,17 @@ export async function updateCompanyVerificationStatusAction(
       return { success: false, error: "Unauthorized access. Sign in as admin." };
     }
 
+    const { data: userRole } = await supabase
+      .from("users")
+      .select("role")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    const role = userRole?.role || user.user_metadata?.role;
+    if (!role || (role !== "admin" && role !== "super_admin")) {
+      return { success: false, error: "Forbidden: Admin privileges required." };
+    }
+
     // Fetch existing company record
     const { data: oldCompany, error: oldError } = await supabase
       .from("companies")
@@ -235,6 +246,24 @@ export async function fetchAdminAuditLogsAction(): Promise<{
 }> {
   try {
     const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { success: false, error: "Unauthorized access. Sign in as admin." };
+    }
+
+    const { data: userRole } = await supabase
+      .from("users")
+      .select("role")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    const role = userRole?.role || user.user_metadata?.role;
+    if (!role || (role !== "admin" && role !== "super_admin")) {
+      return { success: false, error: "Forbidden: Admin privileges required." };
+    }
 
     const { data: logs, error } = await supabase
       .from("audit_logs")

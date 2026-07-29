@@ -8,19 +8,19 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-primary/10 border border-primary/20 text-primary hover:bg-primary/15",
+          "bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 text-indigo-700 dark:text-indigo-300 font-semibold",
         secondary:
-          "bg-secondary border border-border text-secondary-foreground hover:bg-secondary/80",
+          "bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300",
         destructive:
-          "bg-destructive/10 border border-destructive/20 text-destructive hover:bg-destructive/15",
+          "bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-700 dark:text-red-400 font-semibold",
         success:
-          "bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 hover:bg-emerald-500/15",
+          "bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400 font-semibold",
         warning:
-          "bg-amber-500/10 border border-amber-500/20 text-amber-500 hover:bg-amber-500/15",
+          "bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 text-amber-800 dark:text-amber-400 font-semibold",
         outline:
-          "border border-border text-muted-foreground hover:text-foreground",
+          "border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-900/50",
         ai:
-          "bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 font-semibold hover:bg-indigo-500/15",
+          "bg-indigo-50 dark:bg-indigo-500/15 border border-indigo-200 dark:border-indigo-500/30 text-indigo-700 dark:text-indigo-300 font-semibold",
       },
     },
     defaultVariants: {

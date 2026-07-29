@@ -51,30 +51,38 @@
 }
 
 :root {
-  --background: #fafafa;
-  --background-soft: #f4f4f5;
-  --background-deep: #e4e4e7;
-  --foreground: #09090b;
+  /* Premium Off-White Enterprise Light Canvas (Linear / Stripe / Vercel style) */
+  --background: #f8fafc;
+  --background-soft: #f1f5f9;
+  --background-deep: #e2e8f0;
   
+  /* Primary Text: High-contrast Slate 900 */
+  --foreground: #0f172a;
+  
+  /* Pure White Cards */
   --card: #ffffff;
-  --card-foreground: #09090b;
+  --card-foreground: #0f172a;
   
   --popover: #ffffff;
-  --popover-foreground: #09090b;
+  --popover-foreground: #0f172a;
   
+  /* Primary Accent: Indigo (#4F46E5) */
   --primary: #4f46e5;
   --primary-foreground: #ffffff;
   
-  --secondary: #f4f4f5;
-  --secondary-foreground: #18181b;
+  /* Secondary: Slate Gray (#64748B) */
+  --secondary: #f1f5f9;
+  --secondary-foreground: #1e293b;
   
-  --muted: #f4f4f5;
-  --muted-foreground: #71717a;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
   
+  /* Accent Tint */
   --accent: #eef2ff;
   --accent-foreground: #3730a3;
   
-  --destructive: #f43f5e;
+  /* Status Colors */
+  --destructive: #ef4444;
   --destructive-foreground: #ffffff;
   
   --success: #10b981;
@@ -83,19 +91,21 @@
   --warning: #f59e0b;
   --warning-foreground: #ffffff;
   
-  --border: #e4e4e7;
-  --input: #f4f4f5;
-  --ring: #6366f1;
+  /* Crisp 1px Borders */
+  --border: #e2e8f0;
+  --input: #f8fafc;
+  --ring: #4f46e5;
   --radius: 10px;
   
+  /* Sidebar Tokens */
   --sidebar: #ffffff;
-  --sidebar-foreground: #09090b;
+  --sidebar-foreground: #0f172a;
   --sidebar-primary: #4f46e5;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f4f4f5;
-  --sidebar-accent-foreground: #09090b;
-  --sidebar-border: #e4e4e7;
-  --sidebar-ring: #6366f1;
+  --sidebar-accent: #f1f5f9;
+  --sidebar-accent-foreground: #0f172a;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #4f46e5;
   
   --chart-1: #4f46e5;
   --chart-2: #0284c7;
@@ -105,22 +115,23 @@
 }
 
 .dark {
+  /* Midnight Dark Canvas */
   --background: #090d16;
   --background-soft: #0e1320;
   --background-deep: #060910;
-  --foreground: #f4f4f5;
+  --foreground: #f8fafc;
   
   --card: #111726;
-  --card-foreground: #f4f4f5;
+  --card-foreground: #f8fafc;
   
   --popover: #111726;
-  --popover-foreground: #f4f4f5;
+  --popover-foreground: #f8fafc;
   
   --primary: #6366f1;
   --primary-foreground: #ffffff;
   
   --secondary: #192236;
-  --secondary-foreground: #f4f4f5;
+  --secondary-foreground: #f8fafc;
   
   --muted: #161e30;
   --muted-foreground: #94a3b8;
@@ -128,7 +139,7 @@
   --accent: rgba(99, 102, 241, 0.15);
   --accent-foreground: #e0e7ff;
   
-  --destructive: #f43f5e;
+  --destructive: #ef4444;
   --destructive-foreground: #ffffff;
   
   --success: #10b981;
@@ -143,11 +154,11 @@
   --radius: 10px;
   
   --sidebar: #0e1320;
-  --sidebar-foreground: #f4f4f5;
+  --sidebar-foreground: #f8fafc;
   --sidebar-primary: #6366f1;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #192236;
-  --sidebar-accent-foreground: #f4f4f5;
+  --sidebar-accent-foreground: #f8fafc;
   --sidebar-border: rgba(255, 255, 255, 0.08);
   --sidebar-ring: #6366f1;
   
@@ -163,18 +174,18 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground selection:bg-primary/20 selection:text-foreground antialiased;
+    @apply bg-background text-foreground selection:bg-primary/15 selection:text-foreground antialiased;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
   html {
     @apply font-sans scroll-smooth;
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-sans tracking-tight;
+    @apply font-sans tracking-tight text-foreground font-semibold;
   }
 }
 
-/* Custom Scrollbar - Minimal & Subtle */
+/* Minimal Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
@@ -183,36 +194,36 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(161, 161, 170, 0.25);
+  background: rgba(148, 163, 184, 0.35);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(161, 161, 170, 0.45);
+  background: rgba(148, 163, 184, 0.55);
 }
 
-/* Enterprise SaaS Cards & Utility Components */
+/* Enterprise Light & Dark SaaS Cards & Utility Components */
 .saas-card {
-  @apply bg-card text-card-foreground border border-border rounded-xl shadow-xs transition-all duration-200;
+  @apply bg-card text-card-foreground border border-border rounded-xl shadow-xs transition-all duration-150;
 }
 
 .saas-card-interactive {
-  @apply bg-card text-card-foreground border border-border rounded-xl shadow-xs transition-all duration-200 hover:border-foreground/20 hover:shadow-sm;
+  @apply bg-card text-card-foreground border border-border rounded-xl shadow-xs transition-all duration-150 hover:border-foreground/20 hover:shadow-sm;
 }
 
 .glass-card {
-  @apply bg-card/90 backdrop-blur-md border border-border rounded-xl shadow-xs;
+  @apply bg-card/95 backdrop-blur-md border border-border rounded-xl shadow-xs;
 }
 
 .section-card {
-  @apply bg-card border border-border rounded-2xl p-6 shadow-xs;
+  @apply bg-card border border-border rounded-xl p-6 shadow-xs;
 }
 
 .premium-card {
-  @apply bg-card border border-border rounded-xl p-5 transition-all duration-200 hover:border-primary/40 hover:shadow-sm;
+  @apply bg-card border border-border rounded-xl p-5 transition-all duration-150 hover:border-primary/40 hover:shadow-sm;
 }
 
 .theme-input {
-  @apply bg-input/60 border border-border text-foreground rounded-lg px-3.5 py-2 text-xs transition-all placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary;
+  @apply bg-input/60 border border-border text-foreground rounded-lg px-3.5 py-2 text-xs transition-all placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary;
 }
 
 .selector-btn {
@@ -224,12 +235,4 @@
 
 .btn-secondary-light {
   @apply border border-border bg-card text-muted-foreground rounded-lg px-3 py-1.5 text-xs font-medium transition-all hover:text-foreground hover:bg-secondary;
-}
-
-/* Micro Focus & Transitions */
-.theme-transition,
-.theme-transition * {
-  transition-property: background-color, border-color, color, box-shadow;
-  transition-duration: 200ms;
-  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
 }

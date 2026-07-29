@@ -484,6 +484,22 @@ export async function updateApplicationStatusAction(
 
     if (!user) return { success: false, error: "Unauthorized access." };
 
+    // Verify company ownership of this application's internship listing
+    const { data: applicationRecord } = await supabase
+      .from("applications")
+      .select("id, internship_id, internships ( company_id )")
+      .eq("id", applicationId)
+      .maybeSingle();
+
+    if (!applicationRecord) {
+      return { success: false, error: "Application record not found." };
+    }
+
+    const internshipOwner = (applicationRecord.internships as unknown as { company_id: string } | null)?.company_id;
+    if (internshipOwner !== user.id) {
+      return { success: false, error: "Forbidden: You can only manage applicants for your own company listings." };
+    }
+
     const { error: updateError } = await supabase
       .from("applications")
       .update({ status: newStatus })
