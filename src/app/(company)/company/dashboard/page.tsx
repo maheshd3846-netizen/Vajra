@@ -7,6 +7,7 @@ import CompanyDashboardClient from "@/components/company/CompanyDashboardClient"
 export const dynamic = "force-dynamic";
 
 export default async function CompanyDashboardPage() {
+  console.log("[Server Component Audit] Rendering CompanyDashboardPage...");
   const supabase = await createClient();
   const {
     data: { user },
@@ -19,6 +20,7 @@ export default async function CompanyDashboardPage() {
   const res = await fetchCompanyDashboardAction();
 
   if (!res.success || !res.data) {
+    console.error("[Server Component Audit] fetchCompanyDashboardAction returned error:", res.error);
     redirect("/login");
   }
 

@@ -36,7 +36,7 @@ export default async function CompanySettingsPage() {
       official_email
     `)
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
 
   const initialData: CompanyProfileInitialData = {
     name: company?.name || "",

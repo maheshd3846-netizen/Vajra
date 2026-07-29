@@ -74,7 +74,7 @@ export async function fetchCompanyDashboardAction(): Promise<{
       return { success: false, error: "Unauthorized access. Please sign in as recruiter." };
     }
 
-    const { data: company, error: compError } = await supabase
+    const { data: initialCompany, error: compError } = await supabase
       .from("companies")
       .select(`
         id,
@@ -96,10 +96,67 @@ export async function fetchCompanyDashboardAction(): Promise<{
         trust_score
       `)
       .eq("id", user.id)
-      .single();
+      .maybeSingle();
+
+    let company = initialCompany;
 
     if (compError || !company) {
-      return { success: false, error: "Company profile record not found." };
+      console.warn("[Company Action] Company profile not found for user:", user.id, "- Auto-provisioning...");
+
+      const meta = user.user_metadata || {};
+      const companyName =
+        meta.company_name || meta.full_name || meta.name || user.email?.split("@")[0] || "Company";
+
+      // 1. Ensure public.users entry exists
+      await supabase.from("users").upsert(
+        {
+          id: user.id,
+          email: user.email!,
+          role: "company",
+          full_name: companyName,
+        },
+        { onConflict: "id" }
+      );
+
+      // 2. Ensure public.companies entry exists
+      const { data: createdCompany, error: createCompErr } = await supabase
+        .from("companies")
+        .upsert(
+          {
+            id: user.id,
+            name: companyName,
+            contact_email: user.email,
+            official_email: user.email,
+          },
+          { onConflict: "id" }
+        )
+        .select(`
+          id,
+          name,
+          website,
+          industry,
+          logo_url,
+          description,
+          is_verified,
+          verification_status,
+          gst_number,
+          official_email,
+          company_size,
+          headquarters,
+          contact_email,
+          contact_phone,
+          hr_name,
+          registration_doc_url,
+          trust_score
+        `)
+        .single();
+
+      if (createCompErr || !createdCompany) {
+        console.error("[Company Action Error] Auto-provisioning company record failed:", createCompErr);
+        return { success: false, error: "Company profile record not found." };
+      }
+
+      company = createdCompany;
     }
 
     const { data: companyInternshipIds } = await supabase

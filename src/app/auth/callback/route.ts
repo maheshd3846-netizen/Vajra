@@ -106,7 +106,12 @@ export async function GET(request: Request) {
         .single();
 
       if (userInsertError) {
-        console.error("[Auth Callback Error] Failed to create public.users record:", userInsertError);
+        console.error("[Auth Callback Error] Failed to create public.users record:", {
+          code: userInsertError.code,
+          message: userInsertError.message,
+          details: userInsertError.details,
+          hint: userInsertError.hint,
+        });
       } else if (newUser?.role) {
         userRole = newUser.role;
       }
@@ -124,19 +129,50 @@ export async function GET(request: Request) {
 
       if (!studentProfile) {
         console.log("[Auth Callback] Creating missing student_profiles record...");
-        await supabase.from("student_profiles").upsert({ id: user.id }, { onConflict: "id" });
+        const { error: studentProfileErr } = await supabase
+          .from("student_profiles")
+          .upsert({ id: user.id }, { onConflict: "id" });
+
+        if (studentProfileErr) {
+          console.error("[Auth Callback Error] Failed to upsert student_profiles record:", {
+            code: studentProfileErr.code,
+            message: studentProfileErr.message,
+            details: studentProfileErr.details,
+            hint: studentProfileErr.hint,
+          });
+        }
       } else if (studentProfile.university && studentProfile.major) {
         isStudentProfileComplete = true;
       }
     } else if (userRole === "company") {
       console.log("[Auth Callback] Ensuring company profile record...");
       const meta = user.user_metadata || {};
-      await supabase
+      const { error: compProfileErr } = await supabase
         .from("companies")
         .upsert({ id: user.id, name: meta.company_name || meta.full_name || "My Company" }, { onConflict: "id" });
+
+      if (compProfileErr) {
+        console.error("[Auth Callback Error] Failed to upsert companies record:", {
+          code: compProfileErr.code,
+          message: compProfileErr.message,
+          details: compProfileErr.details,
+          hint: compProfileErr.hint,
+        });
+      }
     } else if (userRole === "mentor") {
       console.log("[Auth Callback] Ensuring mentor profile record...");
-      await supabase.from("mentors").upsert({ id: user.id }, { onConflict: "id" });
+      const { error: mentorProfileErr } = await supabase
+        .from("mentors")
+        .upsert({ id: user.id }, { onConflict: "id" });
+
+      if (mentorProfileErr) {
+        console.error("[Auth Callback Error] Failed to upsert mentors record:", {
+          code: mentorProfileErr.code,
+          message: mentorProfileErr.message,
+          details: mentorProfileErr.details,
+          hint: mentorProfileErr.hint,
+        });
+      }
     }
 
     // 7. Determine Redirect Destination

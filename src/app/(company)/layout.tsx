@@ -10,10 +10,13 @@ interface LayoutProps {
 }
 
 export default async function CompanyLayout({ children }: LayoutProps) {
+  console.log("[Server Component Audit] Rendering CompanyLayout...");
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  console.log("[Server Component Audit] CompanyLayout Auth User:", user?.email || "NO USER");
 
   if (!user) {
     redirect("/login");
@@ -28,7 +31,7 @@ export default async function CompanyLayout({ children }: LayoutProps) {
 
   // Role validation
   if (profile && profile.role !== "company" && profile.role !== "admin") {
-    // If not a company or admin, redirect them to their dashboard
+    console.log("[Server Component Audit] Role mismatch in CompanyLayout:", profile.role);
     if (profile.role === "student") {
       redirect("/dashboard");
     } else if (profile.role === "mentor") {
