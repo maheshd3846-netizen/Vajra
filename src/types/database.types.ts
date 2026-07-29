@@ -48,6 +48,13 @@ export interface Database {
           gpa: number | null
           github_url: string | null
           linkedin_url: string | null
+          degree: string | null
+          branch: string | null
+          cgpa: number | null
+          target_role: string | null
+          portfolio_url: string | null
+          phone: string | null
+          location: string | null
           created_at: string
           updated_at: string
         }
@@ -60,6 +67,13 @@ export interface Database {
           gpa?: number | null
           github_url?: string | null
           linkedin_url?: string | null
+          degree?: string | null
+          branch?: string | null
+          cgpa?: number | null
+          target_role?: string | null
+          portfolio_url?: string | null
+          phone?: string | null
+          location?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -72,6 +86,13 @@ export interface Database {
           gpa?: number | null
           github_url?: string | null
           linkedin_url?: string | null
+          degree?: string | null
+          branch?: string | null
+          cgpa?: number | null
+          target_role?: string | null
+          portfolio_url?: string | null
+          phone?: string | null
+          location?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -85,6 +106,11 @@ export interface Database {
           logo_url: string | null
           description: string | null
           is_verified: boolean
+          company_size: string | null
+          headquarters: string | null
+          contact_email: string | null
+          contact_phone: string | null
+          hr_name: string | null
           created_at: string
           updated_at: string
         }
@@ -96,6 +122,11 @@ export interface Database {
           logo_url?: string | null
           description?: string | null
           is_verified?: boolean
+          company_size?: string | null
+          headquarters?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          hr_name?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -107,6 +138,11 @@ export interface Database {
           logo_url?: string | null
           description?: string | null
           is_verified?: boolean
+          company_size?: string | null
+          headquarters?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          hr_name?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -120,6 +156,11 @@ export interface Database {
           expertise: string[]
           linkedin_url: string | null
           is_verified: boolean
+          experience: string | null
+          skills: string[]
+          website_url: string | null
+          availability: string | null
+          contact_email: string | null
           created_at: string
           updated_at: string
         }
@@ -131,6 +172,11 @@ export interface Database {
           expertise?: string[]
           linkedin_url?: string | null
           is_verified?: boolean
+          experience?: string | null
+          skills?: string[]
+          website_url?: string | null
+          availability?: string | null
+          contact_email?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -142,6 +188,11 @@ export interface Database {
           expertise?: string[]
           linkedin_url?: string | null
           is_verified?: boolean
+          experience?: string | null
+          skills?: string[]
+          website_url?: string | null
+          availability?: string | null
+          contact_email?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -157,7 +208,13 @@ export interface Database {
           requirements: string[]
           skills_needed: string[]
           salary_range: string | null
-          status: "open" | "closed"
+          status: "draft" | "published" | "open" | "closed"
+          internship_type: string | null
+          duration: string | null
+          stipend: string | null
+          eligibility: string | null
+          deadline: string | null
+          openings_count: number
           created_at: string
           updated_at: string
         }
@@ -171,7 +228,13 @@ export interface Database {
           requirements?: string[]
           skills_needed?: string[]
           salary_range?: string | null
-          status?: "open" | "closed"
+          status?: "draft" | "published" | "open" | "closed"
+          internship_type?: string | null
+          duration?: string | null
+          stipend?: string | null
+          eligibility?: string | null
+          deadline?: string | null
+          openings_count?: number
           created_at?: string
           updated_at?: string
         }
@@ -185,7 +248,13 @@ export interface Database {
           requirements?: string[]
           skills_needed?: string[]
           salary_range?: string | null
-          status?: "open" | "closed"
+          status?: "draft" | "published" | "open" | "closed"
+          internship_type?: string | null
+          duration?: string | null
+          stipend?: string | null
+          eligibility?: string | null
+          deadline?: string | null
+          openings_count?: number
           created_at?: string
           updated_at?: string
         }
@@ -197,7 +266,7 @@ export interface Database {
           student_id: string
           resume_url: string
           cover_letter: string | null
-          status: "applied" | "reviewing" | "interviewing" | "accepted" | "rejected"
+          status: "applied" | "reviewing" | "shortlisted" | "interviewing" | "accepted" | "rejected"
           applied_at: string
           updated_at: string
         }
@@ -207,7 +276,7 @@ export interface Database {
           student_id: string
           resume_url: string
           cover_letter?: string | null
-          status?: "applied" | "reviewing" | "interviewing" | "accepted" | "rejected"
+          status?: "applied" | "reviewing" | "shortlisted" | "interviewing" | "accepted" | "rejected"
           applied_at?: string
           updated_at?: string
         }
@@ -217,8 +286,61 @@ export interface Database {
           student_id?: string
           resume_url?: string
           cover_letter?: string | null
-          status?: "applied" | "reviewing" | "interviewing" | "accepted" | "rejected"
+          status?: "applied" | "reviewing" | "shortlisted" | "interviewing" | "accepted" | "rejected"
           applied_at?: string
+          updated_at?: string
+        }
+      }
+      company_interns: {
+        Row: {
+          id: string
+          company_id: string
+          student_id: string
+          internship_id: string | null
+          mentor_id: string | null
+          joining_date: string
+          progress_pct: number
+          attendance_pct: number
+          status: "active" | "completed" | "terminated"
+          notes: string | null
+          rating: number | null
+          weekly_reports: Json
+          assigned_tasks: Json
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          company_id: string
+          student_id: string
+          internship_id?: string | null
+          mentor_id?: string | null
+          joining_date?: string
+          progress_pct?: number
+          attendance_pct?: number
+          status?: "active" | "completed" | "terminated"
+          notes?: string | null
+          rating?: number | null
+          weekly_reports?: Json
+          assigned_tasks?: Json
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          company_id?: string
+          student_id?: string
+          internship_id?: string | null
+          mentor_id?: string | null
+          joining_date?: string
+          progress_pct?: number
+          attendance_pct?: number
+          status?: "active" | "completed" | "terminated"
+          notes?: string | null
+          rating?: number | null
+          weekly_reports?: Json
+          assigned_tasks?: Json
+          created_at?: string
           updated_at?: string
         }
       }
