@@ -22,23 +22,23 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "p-12 rounded-3xl bg-slate-900/60 border border-white/10 text-center space-y-4 max-w-md mx-auto my-6",
+        "glass-card mx-auto my-6 max-w-md space-y-4 rounded-3xl border-border/70 p-12 text-center",
         className
       )}
     >
       {icon && (
-        <div className="w-14 h-14 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 mx-auto">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-primary/20 bg-primary/10 text-primary">
           {icon}
         </div>
       )}
       <div className="space-y-1">
-        <h3 className="text-base font-bold text-white font-heading">{title}</h3>
-        <p className="text-xs text-slate-400 leading-relaxed font-sans">{description}</p>
+        <h3 className="font-heading text-base font-bold text-foreground">{title}</h3>
+        <p className="font-sans text-xs leading-relaxed text-muted-foreground">{description}</p>
       </div>
       {actionLabel && onAction && (
         <Button
           onClick={onAction}
-          className="mt-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-semibold px-5 py-2.5 rounded-xl cursor-pointer"
+          className="mt-2 rounded-xl bg-gradient-to-r from-primary to-violet-500 px-5 py-2.5 text-xs font-semibold text-primary-foreground cursor-pointer hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/20"
         >
           {actionLabel}
         </Button>

@@ -233,30 +233,30 @@ export default function InternshipMatcherWorkspace({
   };
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto text-white font-sans">
+    <div className="space-y-8 max-w-7xl mx-auto text-foreground font-sans">
       {/* Header & Mode Switcher */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-6">
+      <div className="flex flex-col justify-between gap-4 border-b border-[#BFDFFF] pb-6 md:flex-row md:items-center">
         <div className="space-y-1">
-          <div className="flex items-center gap-2 text-blue-400 text-xs font-mono uppercase tracking-widest">
+          <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-primary">
             <Sparkles className="w-4 h-4" />
             AI Career Intelligence Marketplace
           </div>
-          <h1 className="text-3xl font-bold font-heading tracking-tight">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground font-heading">
             Internship Matching Platform
           </h1>
-          <p className="text-sm text-slate-400 max-w-2xl font-sans">
+          <p className="max-w-2xl text-sm text-muted-foreground font-sans">
             AI-calibrated internship recommendations matched against your Career DNA, verified technical skills, and portfolio projects.
           </p>
         </div>
 
         {/* Main Tabs */}
-        <div className="flex items-center gap-2 bg-slate-950 p-1.5 rounded-2xl border border-white/10 shrink-0">
+        <div className="flex shrink-0 items-center gap-2 rounded-2xl border border-[#BFDFFF] bg-white p-1.5">
           <button
             onClick={() => setActiveMainTab("explore")}
             className={`px-5 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer ${
               activeMainTab === "explore"
-                ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md"
-                : "text-slate-400 hover:text-white"
+                ? "bg-gradient-to-r from-primary via-sky-500 to-indigo-600 text-white shadow-md"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             <Sparkles className="w-4 h-4" />
@@ -266,8 +266,8 @@ export default function InternshipMatcherWorkspace({
             onClick={() => setActiveMainTab("applications")}
             className={`px-5 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer ${
               activeMainTab === "applications"
-                ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md"
-                : "text-slate-400 hover:text-white"
+                ? "bg-gradient-to-r from-primary via-sky-500 to-indigo-600 text-white shadow-md"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             <Clock className="w-4 h-4" />
@@ -280,29 +280,29 @@ export default function InternshipMatcherWorkspace({
       {activeMainTab === "explore" && (
         <div className="space-y-6">
           {/* Filter Bar */}
-          <div className="flex flex-col lg:flex-row gap-4 justify-between items-stretch lg:items-center bg-slate-900/80 p-4 rounded-2xl border border-white/10">
+          <div className="glass-card flex flex-col items-stretch justify-between gap-4 rounded-[28px] p-4 lg:flex-row lg:items-center">
             {/* Search */}
             <div className="relative flex-1">
-              <Search className="w-4 h-4 absolute left-3.5 top-3.5 text-slate-400" />
+              <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search roles, technologies, or partner companies..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-slate-950 border-white/10 text-white rounded-xl text-xs py-5"
+                className="theme-input pl-10 text-xs py-5"
               />
             </div>
 
             {/* Quick Filters */}
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[10px] text-slate-500 font-mono uppercase mr-1">Filter:</span>
+              <span className="mr-1 font-mono text-[10px] uppercase text-muted-foreground">Filter:</span>
               {(["all", "remote", "high", "paid", "verified", "saved"] as const).map((m) => (
                 <button
                   key={m}
                   onClick={() => setFilterMode(m)}
                   className={`px-3 py-1.5 rounded-xl text-[11px] font-medium uppercase font-mono tracking-wider transition-all cursor-pointer ${
                     filterMode === m
-                      ? "bg-blue-500/20 text-blue-400 border border-blue-500/40"
-                      : "bg-slate-950 text-slate-400 border border-white/5 hover:border-white/10"
+                      ? "bg-primary/10 text-primary border border-primary/30"
+                      : "bg-background/80 text-muted-foreground border border-border/70 hover:border-primary/20"
                   }`}
                 >
                   {m === "all" && "All Roles"}
@@ -314,13 +314,13 @@ export default function InternshipMatcherWorkspace({
                 </button>
               ))}
 
-              <div className="h-4 w-px bg-white/10 mx-1 hidden sm:block" />
+              <div className="mx-1 hidden h-4 w-px bg-border/70 sm:block" />
 
               {/* Sort By */}
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as "match" | "newest" | "stipend")}
-                className="bg-slate-950 border border-white/10 text-xs text-slate-300 rounded-xl px-3 py-2 focus:outline-none cursor-pointer"
+                className="theme-input cursor-pointer rounded-xl px-3 py-2 text-xs"
               >
                 <option value="match">Sort: Highest Match</option>
                 <option value="newest">Sort: Newest</option>
@@ -332,10 +332,10 @@ export default function InternshipMatcherWorkspace({
           {/* Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {filteredJobs.length === 0 ? (
-              <div className="md:col-span-2 p-12 rounded-3xl bg-slate-900/60 border border-white/10 text-center space-y-3">
-                <Briefcase className="w-10 h-10 text-slate-500 mx-auto" />
-                <p className="text-sm font-bold text-white">No internships found</p>
-                <p className="text-xs text-slate-400 max-w-sm mx-auto font-sans">
+              <div className="md:col-span-2 space-y-3 rounded-[28px] border border-[#BFDFFF] bg-white/80 p-12 text-center">
+                <Briefcase className="mx-auto h-10 w-10 text-slate-500" />
+                <p className="text-sm font-bold text-foreground">No internships found</p>
+                <p className="mx-auto max-w-sm text-xs text-muted-foreground font-sans">
                   No open job listings match your current search query or active filter selections.
                 </p>
               </div>
@@ -348,21 +348,21 @@ export default function InternshipMatcherWorkspace({
                     key={job.id}
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-slate-900/80 backdrop-blur-md border border-white/10 hover:border-white/20 rounded-3xl p-6 transition-all space-y-5 flex flex-col justify-between relative overflow-hidden"
+                    className="glass-card relative flex flex-col justify-between space-y-5 overflow-hidden rounded-[28px] p-6 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_12px_40px_rgba(59,130,246,0.10)]"
                   >
                     <div className="space-y-4">
                       {/* Top Header Row */}
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 rounded-2xl bg-slate-950 border border-white/10 flex items-center justify-center font-bold text-white text-lg shrink-0">
+                          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[#BFDFFF] bg-white text-lg font-bold text-foreground">
                             {job.company.name.charAt(0)}
                           </div>
                           <div>
                             <div className="flex items-center gap-2">
-                              <h3 className="text-base font-bold text-white leading-tight">{job.title}</h3>
+                              <h3 className="text-base font-bold leading-tight text-foreground">{job.title}</h3>
                             </div>
                             <div className="flex items-center gap-2 pt-0.5">
-                              <span className="text-xs text-slate-400 font-sans">{job.company.name}</span>
+                              <span className="text-xs text-muted-foreground font-sans">{job.company.name}</span>
                               <span
                                 className={`text-[9px] uppercase font-mono tracking-wider px-2 py-0.5 rounded-full border ${job.company.trustBadgeClass.bg} ${job.company.trustBadgeClass.border} ${job.company.trustBadgeClass.text}`}
                               >
@@ -373,16 +373,16 @@ export default function InternshipMatcherWorkspace({
                         </div>
 
                         {/* Match Score Badge */}
-                        <div className="p-2.5 bg-blue-500/10 border border-blue-500/20 rounded-2xl text-center shrink-0">
-                          <span className="text-[8px] uppercase font-mono text-slate-400 block">AI Match</span>
-                          <span className="text-base font-black font-mono text-blue-400">
+                        <div className="shrink-0 rounded-2xl border border-primary/20 bg-primary/10 p-2.5 text-center">
+                          <span className="block text-[8px] uppercase font-mono text-muted-foreground">AI Match</span>
+                          <span className="font-mono text-base font-black text-primary">
                             {job.matchResult.matchScore}%
                           </span>
                         </div>
                       </div>
 
                       {/* Specs Row */}
-                      <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400 font-sans pt-1">
+                      <div className="flex flex-wrap items-center gap-3 pt-1 text-xs text-muted-foreground font-sans">
                         <span className="flex items-center gap-1">
                           <MapPin className="w-3.5 h-3.5 text-slate-500" />
                           {job.location || "Remote"}
@@ -391,16 +391,16 @@ export default function InternshipMatcherWorkspace({
                           <DollarSign className="w-3.5 h-3.5 text-slate-500" />
                           {job.salary_range || "Stipend Negotiable"}
                         </span>
-                        <span className="capitalize px-2.5 py-0.5 rounded-full bg-slate-950 text-[10px] text-blue-400 border border-blue-500/10 font-mono">
+                        <span className="rounded-full border border-primary/20 bg-white px-2.5 py-0.5 text-[10px] capitalize text-primary font-mono">
                           {job.type}
                         </span>
-                        <span className="text-[10px] text-slate-500 font-mono">
+                        <span className="font-mono text-[10px] text-muted-foreground">
                           Readiness: {job.matchResult.expectedReadiness}%
                         </span>
                       </div>
 
                       {/* AI Fit Summary */}
-                      <p className="text-xs text-slate-300/80 leading-relaxed font-sans line-clamp-2 bg-slate-950/40 p-3 rounded-xl border border-white/5">
+                      <p className="line-clamp-2 rounded-xl border border-[#BFDFFF] bg-white/80 p-3 text-xs leading-relaxed text-muted-foreground font-sans">
                         💡 {job.matchResult.aiFitSummary}
                       </p>
 
@@ -415,8 +415,8 @@ export default function InternshipMatcherWorkspace({
                               key={i}
                               className={`text-[9px] font-semibold font-mono px-2 py-0.5 rounded border ${
                                 isMatch
-                                  ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
-                                  : "bg-slate-950 border-white/5 text-slate-400"
+                                  ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-500"
+                                  : "bg-white border-border/70 text-muted-foreground"
                               }`}
                             >
                               {sk}
@@ -427,14 +427,14 @@ export default function InternshipMatcherWorkspace({
                     </div>
 
                     {/* Actions Footer */}
-                    <div className="flex items-center justify-between gap-3 pt-4 border-t border-white/5">
+                    <div className="flex items-center justify-between gap-3 border-t border-border/70 pt-4">
                       <div className="flex items-center gap-2">
                         <button
                           onClick={(e) => handleToggleSave(job.id, e)}
                           className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
                             job.isSaved
-                              ? "bg-amber-500/20 border-amber-500/40 text-amber-400"
-                              : "bg-slate-950 border-white/10 text-slate-400 hover:text-white"
+                              ? "bg-amber-500/20 border-amber-500/40 text-amber-500"
+                              : "bg-white border-border/70 text-muted-foreground hover:text-foreground"
                           }`}
                           title="Bookmark Internship"
                         >
@@ -442,7 +442,7 @@ export default function InternshipMatcherWorkspace({
                         </button>
                         <button
                           onClick={(e) => handleShareLink(job, e)}
-                          className="p-2.5 rounded-xl bg-slate-950 border border-white/10 text-slate-400 hover:text-white transition-all cursor-pointer"
+                          className="cursor-pointer rounded-xl border border-border/70 bg-white p-2.5 text-muted-foreground transition-all hover:-translate-y-0.5 hover:text-foreground"
                           title="Share Link"
                         >
                           <Share2 className="w-4 h-4" />
@@ -453,7 +453,7 @@ export default function InternshipMatcherWorkspace({
                         <Button
                           variant="outline"
                           onClick={() => handleOpenAiReview(job)}
-                          className="bg-slate-950 border-blue-500/20 text-blue-400 hover:text-white hover:bg-blue-600/20 text-xs py-2 px-3 rounded-xl cursor-pointer"
+                          className="border border-primary/20 bg-white text-xs py-2 px-3 rounded-xl text-primary cursor-pointer hover:bg-primary/10"
                         >
                           <FileCheck className="w-3.5 h-3.5 mr-1" /> AI Review
                         </Button>
@@ -465,7 +465,7 @@ export default function InternshipMatcherWorkspace({
                         ) : (
                           <Button
                             onClick={() => setActiveModalJob(job)}
-                            className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-semibold py-2 px-4 rounded-xl shadow-md cursor-pointer"
+                            className="bg-gradient-to-r from-primary via-sky-500 to-indigo-600 text-xs font-semibold py-2 px-4 rounded-xl text-white shadow-md cursor-pointer hover:shadow-[0_18px_40px_rgba(59,130,246,0.20)]"
                           >
                             Quick Apply
                           </Button>

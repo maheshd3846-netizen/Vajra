@@ -57,7 +57,7 @@ export default function ForgotPasswordPage() {
   return (
     <div className="space-y-6">
       <div className="space-y-2 text-center">
-        <h2 className="text-2xl font-bold tracking-tight font-heading text-white">
+        <h2 className="text-2xl font-bold tracking-tight font-heading text-foreground">
           Reset Password
         </h2>
         <p className="text-xs text-muted-foreground font-sans">
@@ -69,11 +69,11 @@ export default function ForgotPasswordPage() {
 
       {isSubmitted ? (
         <div className="space-y-4">
-          <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 text-center text-xs text-blue-400 font-sans">
+          <div className="rounded-xl border border-primary/20 bg-primary/10 p-4 text-center text-xs text-primary font-sans">
             We have sent a password reset link to your registered email address. Click the link in the email to configure a new password.
           </div>
           <Link href="/login" className="w-full">
-            <Button className="w-full py-6 rounded-xl bg-slate-950 border border-white/10 hover:bg-slate-900 text-slate-300 hover:text-white transition-colors flex items-center justify-center gap-1.5 cursor-pointer">
+            <Button className="w-full rounded-xl border-border/70 bg-background/70 py-6 text-foreground transition-colors flex items-center justify-center gap-1.5 cursor-pointer hover:bg-muted/70">
               <ArrowLeft className="w-4 h-4" />
               Back to Login
             </Button>
@@ -83,16 +83,16 @@ export default function ForgotPasswordPage() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Email */}
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-xs font-semibold text-slate-200">
+            <Label htmlFor="email" className="text-xs font-semibold text-foreground/80">
               Email Address
             </Label>
             <div className="relative">
-              <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-500" />
+              <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
                 id="email"
                 placeholder="name@university.edu"
                 type="email"
-                className="pl-10 bg-slate-950/50 border-white/10 text-white rounded-xl placeholder:text-slate-600 focus-visible:ring-blue-500"
+                className="pl-10 rounded-xl border-border/70 bg-background/70 text-foreground placeholder:text-muted-foreground/70"
                 {...register("email")}
               />
             </div>
@@ -105,7 +105,7 @@ export default function ForgotPasswordPage() {
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full py-6 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-medium hover:shadow-indigo-500/10 transition-all flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full rounded-xl bg-gradient-to-r from-primary to-violet-500 py-6 font-medium text-white transition-all flex items-center justify-center gap-2 cursor-pointer hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/20"
           >
             {isLoading ? (
               <>
@@ -121,7 +121,7 @@ export default function ForgotPasswordPage() {
           <div className="text-center">
             <Link
               href="/login"
-              className="text-xs text-muted-foreground hover:text-white flex items-center justify-center gap-1 transition-colors"
+              className="flex items-center justify-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               Back to Login

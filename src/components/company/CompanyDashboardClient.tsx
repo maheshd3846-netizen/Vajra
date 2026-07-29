@@ -148,7 +148,7 @@ export default function CompanyDashboardClient({
   };
 
   return (
-    <div className="space-y-8 max-w-6xl mx-auto text-white font-sans">
+    <div className="space-y-8 max-w-6xl mx-auto text-foreground font-sans">
       {/* Status Notice Banners */}
       {isPending && (
         <div className="p-4 rounded-2xl bg-yellow-500/10 border border-yellow-500/30 flex items-start gap-3">
@@ -182,7 +182,7 @@ export default function CompanyDashboardClient({
       )}
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-6">
+      <div className="flex flex-col justify-between gap-4 border-b border-border/70 pb-6 sm:flex-row sm:items-center">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <h1 className="text-3xl font-bold font-heading tracking-tight">
@@ -194,7 +194,7 @@ export default function CompanyDashboardClient({
               {data.trustScoreResult.badgeLabel}
             </span>
           </div>
-          <p className="text-sm text-slate-400 max-w-2xl font-sans">
+          <p className="text-sm text-muted-foreground max-w-2xl font-sans">
             Recruiter & Employer Command Center. Track candidate application pipelines and manage verified postings.
           </p>
         </div>
@@ -204,7 +204,7 @@ export default function CompanyDashboardClient({
           <Button
             onClick={() => setShowEditProfileModal(true)}
             variant="outline"
-            className="bg-slate-900 border-white/10 text-slate-300 hover:text-white text-xs py-5 rounded-xl cursor-pointer"
+            className="border-border/70 bg-background/70 text-xs py-5 rounded-xl cursor-pointer text-muted-foreground hover:text-foreground"
           >
             Edit Credentials
           </Button>
@@ -219,8 +219,8 @@ export default function CompanyDashboardClient({
             disabled={!isVerified}
             className={`py-5 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer ${
               isVerified
-                ? "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-lg shadow-blue-500/20"
-                : "bg-slate-800 text-slate-500 border border-white/5 cursor-not-allowed"
+                ? "bg-gradient-to-r from-primary to-violet-500 text-white shadow-lg shadow-primary/20 hover:shadow-primary/30"
+                : "bg-muted text-muted-foreground border border-border/70 cursor-not-allowed"
             }`}
           >
             <Plus className="w-4 h-4" />
@@ -232,64 +232,61 @@ export default function CompanyDashboardClient({
       {/* Top Stats Grid */}
       <div className="grid gap-6 sm:grid-cols-3">
         {/* Verification & Trust Score */}
-        <div className="p-6 rounded-3xl bg-slate-900/80 border border-white/10 flex items-center justify-between gap-4 relative overflow-hidden">
+        <div className="glass-card relative overflow-hidden flex items-center justify-between gap-4 rounded-3xl border-border/70 p-6">
           <div className="space-y-1">
-            <span className="text-[10px] uppercase font-mono text-slate-400">AI Trust Score</span>
+            <span className="text-[10px] uppercase font-mono text-muted-foreground">AI Trust Score</span>
             <div className="flex items-baseline gap-2">
-              <h3 className="text-3xl font-bold font-mono text-blue-400">{data.trustScoreResult.trustScore}</h3>
-              <span className="text-xs text-slate-500 font-mono">/100</span>
+              <h3 className="text-3xl font-bold font-mono text-primary">{data.trustScoreResult.trustScore}</h3>
+              <span className="text-xs font-mono text-muted-foreground">/100</span>
             </div>
-            <p className="text-[11px] text-slate-400 font-sans">
+            <p className="text-[11px] text-muted-foreground font-sans">
               {data.trustScoreResult.summaryExplanation.slice(0, 65)}...
             </p>
           </div>
-          <div className="w-14 h-14 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">
+          <div className="w-14 h-14 rounded-2xl border border-primary/20 bg-primary/10 flex items-center justify-center text-primary shrink-0">
             <ShieldCheck className="w-7 h-7" />
           </div>
         </div>
 
         {/* Active Postings */}
-        <div className="p-6 rounded-3xl bg-slate-900/80 border border-white/10 flex items-center justify-between gap-4">
+        <div className="glass-card flex items-center justify-between gap-4 rounded-3xl border-border/70 p-6">
           <div className="space-y-1">
-            <span className="text-[10px] uppercase font-mono text-slate-400">Internships Listed</span>
-            <h3 className="text-3xl font-bold font-mono text-white">{data.internshipsCount}</h3>
-            <p className="text-[11px] text-slate-400 font-sans">
+            <span className="text-[10px] uppercase font-mono text-muted-foreground">Internships Listed</span>
+            <h3 className="text-3xl font-bold font-mono text-foreground">{data.internshipsCount}</h3>
+            <p className="text-[11px] text-muted-foreground font-sans">
               {isVerified ? "Active & open for applications" : "Listings pending account approval"}
             </p>
           </div>
-          <div className="w-14 h-14 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 shrink-0">
+          <div className="w-14 h-14 rounded-2xl border border-violet-500/20 bg-violet-500/10 flex items-center justify-center text-violet-400 shrink-0">
             <Briefcase className="w-7 h-7" />
           </div>
         </div>
 
         {/* Active Candidates */}
-        <div className="p-6 rounded-3xl bg-slate-900/80 border border-white/10 flex items-center justify-between gap-4">
+        <div className="glass-card flex items-center justify-between gap-4 rounded-3xl border-border/70 p-6">
           <div className="space-y-1">
-            <span className="text-[10px] uppercase font-mono text-slate-400">Total Applicants</span>
+            <span className="text-[10px] uppercase font-mono text-muted-foreground">Total Applicants</span>
             <h3 className="text-3xl font-bold font-mono text-emerald-400">{data.applicantsCount}</h3>
-            <p className="text-[11px] text-slate-400 font-sans">
+            <p className="text-[11px] text-muted-foreground font-sans">
               Candidates in recruitment pipeline
             </p>
           </div>
-          <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
+          <div className="w-14 h-14 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 flex items-center justify-center text-emerald-400 shrink-0">
             <Users className="w-7 h-7" />
           </div>
         </div>
       </div>
 
       {/* AI Trust Score Breakdown */}
-      <div className="bg-slate-900/60 border border-white/10 rounded-3xl p-6 space-y-4">
+      <div className="glass-card rounded-3xl border-border/70 p-6 space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-blue-400" />
-            <h3 className="text-sm font-bold text-white uppercase font-mono tracking-wider">
+            <Sparkles className="w-4 h-4 text-primary" />
+            <h3 className="text-sm font-bold uppercase font-mono tracking-wider text-foreground">
               Company Trust Engine Diagnostic
             </h3>
           </div>
-          <button
-            onClick={() => setShowEditProfileModal(true)}
-            className="text-xs text-blue-400 hover:underline font-semibold"
-          >
+          <button onClick={() => setShowEditProfileModal(true)} className="text-xs font-semibold text-primary hover:underline">
             Improve Trust Score →
           </button>
         </div>
@@ -298,17 +295,17 @@ export default function CompanyDashboardClient({
           {data.trustScoreResult.breakdown.map((item, i) => (
             <div
               key={i}
-              className={`p-4 rounded-2xl border ${
-                item.passed ? "bg-slate-950/60 border-white/10" : "bg-yellow-500/5 border-yellow-500/20"
-              } space-y-1.5`}
+              className={`space-y-1.5 rounded-2xl border p-4 ${
+                item.passed ? "border-border/70 bg-background/70" : "border-yellow-500/20 bg-yellow-500/5"
+              }`}
             >
               <div className="flex items-center justify-between">
-                <span className="text-[10px] uppercase font-mono text-slate-400 truncate">{item.dimension}</span>
+                <span className="text-[10px] uppercase font-mono truncate text-muted-foreground">{item.dimension}</span>
                 <span className={`text-xs font-mono font-bold ${item.passed ? "text-emerald-400" : "text-yellow-400"}`}>
                   {item.score}/{item.maxScore}
                 </span>
               </div>
-              <p className="text-[10px] text-slate-400 leading-relaxed font-sans line-clamp-2">
+              <p className="text-[10px] leading-relaxed font-sans text-muted-foreground line-clamp-2">
                 {item.explanation}
               </p>
             </div>
@@ -319,44 +316,41 @@ export default function CompanyDashboardClient({
       {/* CREATE INTERNSHIP MODAL */}
       <AnimatePresence>
         {showCreateModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md overflow-y-auto">
+          <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-foreground/60 p-4 backdrop-blur-md">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-slate-900 border border-white/10 rounded-3xl p-6 max-w-lg w-full space-y-5 my-8"
+              className="glass-card w-full max-w-lg space-y-5 rounded-3xl border-border/70 p-6 my-8"
             >
-              <div className="flex items-center justify-between border-b border-white/5 pb-4">
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
-                  <Briefcase className="w-5 h-5 text-blue-400" /> Post New Internship Role
+              <div className="flex items-center justify-between border-b border-border/70 pb-4">
+                <h3 className="flex items-center gap-2 text-base font-bold text-foreground">
+                  <Briefcase className="w-5 h-5 text-primary" /> Post New Internship Role
                 </h3>
-                <button
-                  onClick={() => setShowCreateModal(false)}
-                  className="text-slate-400 hover:text-white text-sm"
-                >
+                <button onClick={() => setShowCreateModal(false)} className="text-sm text-muted-foreground hover:text-foreground">
                   ✕
                 </button>
               </div>
 
               <form onSubmit={handleCreateInternship} className="space-y-4">
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-slate-300">Internship Title</Label>
+                  <Label className="text-xs text-muted-foreground">Internship Title</Label>
                   <Input
                     placeholder="e.g. Frontend Engineering Intern"
                     value={newTitle}
                     onChange={(e) => setNewTitle(e.target.value)}
-                    className="bg-slate-950 border-white/10 text-white rounded-xl text-xs py-5"
+                    className="rounded-xl border-border/70 bg-background/70 py-5 text-xs text-foreground"
                     required
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
-                    <Label className="text-xs text-slate-300">Work Model</Label>
+                    <Label className="text-xs text-muted-foreground">Work Model</Label>
                     <select
                       value={newType}
                       onChange={(e) => setNewType(e.target.value as "remote" | "hybrid" | "on-site")}
-                      className="w-full bg-slate-950 border border-white/10 text-white rounded-xl p-3 text-xs focus:outline-none focus:border-blue-500"
+                      className="w-full rounded-xl border border-border/70 bg-background/70 p-3 text-xs text-foreground focus:outline-none focus:border-primary"
                     >
                       <option value="remote">Remote</option>
                       <option value="hybrid">Hybrid</option>
@@ -365,44 +359,44 @@ export default function CompanyDashboardClient({
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label className="text-xs text-slate-300">Location</Label>
+                    <Label className="text-xs text-muted-foreground">Location</Label>
                     <Input
                       placeholder="e.g. Bengaluru / Remote"
                       value={newLocation}
                       onChange={(e) => setNewLocation(e.target.value)}
-                      className="bg-slate-950 border-white/10 text-white rounded-xl text-xs py-5"
+                      className="rounded-xl border-border/70 bg-background/70 py-5 text-xs text-foreground"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-slate-300">Stipend / Salary Range</Label>
+                  <Label className="text-xs text-muted-foreground">Stipend / Salary Range</Label>
                   <Input
                     placeholder="e.g. ₹25,000 - ₹35,000 / month"
                     value={newSalary}
                     onChange={(e) => setNewSalary(e.target.value)}
-                    className="bg-slate-950 border-white/10 text-white rounded-xl text-xs py-5"
+                    className="rounded-xl border-border/70 bg-background/70 py-5 text-xs text-foreground"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-slate-300">Required Skills (Comma separated)</Label>
+                  <Label className="text-xs text-muted-foreground">Required Skills (Comma separated)</Label>
                   <Input
                     placeholder="React, TypeScript, Node.js, PostgreSQL"
                     value={newSkills}
                     onChange={(e) => setNewSkills(e.target.value)}
-                    className="bg-slate-950 border-white/10 text-white rounded-xl text-xs py-5"
+                    className="rounded-xl border-border/70 bg-background/70 py-5 text-xs text-foreground"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-slate-300">Job Description & Responsibilities</Label>
+                  <Label className="text-xs text-muted-foreground">Job Description & Responsibilities</Label>
                   <textarea
                     rows={4}
                     placeholder="Describe role expectations, deliverables, and tech stack..."
                     value={newDescription}
                     onChange={(e) => setNewDescription(e.target.value)}
-                    className="w-full bg-slate-950 border border-white/10 text-xs text-white rounded-xl p-3 placeholder:text-slate-600 focus:outline-none focus:border-blue-500 resize-none"
+                    className="w-full rounded-xl border border-border/70 bg-background/70 p-3 text-xs text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary resize-none"
                     required
                   />
                 </div>
@@ -412,14 +406,14 @@ export default function CompanyDashboardClient({
                     type="button"
                     variant="outline"
                     onClick={() => setShowCreateModal(false)}
-                    className="bg-transparent border-white/10 text-slate-400 text-xs cursor-pointer"
+                    className="border-border/70 bg-transparent text-xs text-muted-foreground cursor-pointer"
                   >
                     Cancel
                   </Button>
                   <Button
                     type="submit"
                     disabled={isSubmitting}
-                    className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-semibold px-5 cursor-pointer"
+                    className="bg-gradient-to-r from-primary to-violet-500 text-xs font-semibold px-5 text-white cursor-pointer hover:shadow-lg hover:shadow-primary/20"
                   >
                     {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Publish Listing"}
                   </Button>
@@ -433,20 +427,20 @@ export default function CompanyDashboardClient({
       {/* EDIT CREDENTIALS MODAL */}
       <AnimatePresence>
         {showEditProfileModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md overflow-y-auto">
+          <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-foreground/60 p-4 backdrop-blur-md">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-slate-900 border border-white/10 rounded-3xl p-6 max-w-lg w-full space-y-5 my-8"
+              className="glass-card w-full max-w-lg space-y-5 rounded-3xl border-border/70 p-6 my-8"
             >
               <div className="flex items-center justify-between border-b border-white/5 pb-4">
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
-                  <Building className="w-5 h-5 text-blue-400" /> Corporate Credentials & Profile
+                <h3 className="flex items-center gap-2 text-base font-bold text-foreground">
+                  <Building className="w-5 h-5 text-primary" /> Corporate Credentials & Profile
                 </h3>
                 <button
                   onClick={() => setShowEditProfileModal(false)}
-                  className="text-slate-400 hover:text-white text-sm"
+                  className="text-sm text-muted-foreground hover:text-foreground"
                 >
                   ✕
                 </button>
@@ -454,55 +448,55 @@ export default function CompanyDashboardClient({
 
               <form onSubmit={handleUpdateProfile} className="space-y-4">
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-slate-300">Official Website URL</Label>
+                  <Label className="text-xs text-muted-foreground">Official Website URL</Label>
                   <Input
                     placeholder="https://yourcompany.com"
                     value={editWebsite}
                     onChange={(e) => setEditWebsite(e.target.value)}
-                    className="bg-slate-950 border-white/10 text-white rounded-xl text-xs py-5"
+                    className="rounded-xl border-border/70 bg-background/70 py-5 text-xs text-foreground"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
-                    <Label className="text-xs text-slate-300">GST Registration Number</Label>
+                    <Label className="text-xs text-muted-foreground">GST Registration Number</Label>
                     <Input
                       placeholder="e.g. 29ABCDE1234F1Z5"
                       value={editGst}
                       onChange={(e) => setEditGst(e.target.value)}
-                      className="bg-slate-950 border-white/10 text-white rounded-xl text-xs py-5 font-mono"
+                      className="rounded-xl border-border/70 bg-background/70 py-5 text-xs font-mono text-foreground"
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label className="text-xs text-slate-300">Official Recruiter Email</Label>
+                    <Label className="text-xs text-muted-foreground">Official Recruiter Email</Label>
                     <Input
                       placeholder="hiring@yourcompany.com"
                       value={editOfficialEmail}
                       onChange={(e) => setEditOfficialEmail(e.target.value)}
-                      className="bg-slate-950 border-white/10 text-white rounded-xl text-xs py-5 font-mono"
+                      className="rounded-xl border-border/70 bg-background/70 py-5 text-xs font-mono text-foreground"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-slate-300">Industry Sector</Label>
+                  <Label className="text-xs text-muted-foreground">Industry Sector</Label>
                   <Input
                     placeholder="e.g. Artificial Intelligence & SaaS"
                     value={editIndustry}
                     onChange={(e) => setEditIndustry(e.target.value)}
-                    className="bg-slate-950 border-white/10 text-white rounded-xl text-xs py-5"
+                    className="rounded-xl border-border/70 bg-background/70 py-5 text-xs text-foreground"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-slate-300">Company Overview</Label>
+                  <Label className="text-xs text-muted-foreground">Company Overview</Label>
                   <textarea
                     rows={3}
                     placeholder="Brief summary of your company mission and technical focus..."
                     value={editDescription}
                     onChange={(e) => setEditDescription(e.target.value)}
-                    className="w-full bg-slate-950 border border-white/10 text-xs text-white rounded-xl p-3 placeholder:text-slate-600 focus:outline-none focus:border-blue-500 resize-none"
+                    className="w-full rounded-xl border border-border/70 bg-background/70 p-3 text-xs text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary resize-none"
                   />
                 </div>
 
@@ -511,14 +505,14 @@ export default function CompanyDashboardClient({
                     type="button"
                     variant="outline"
                     onClick={() => setShowEditProfileModal(false)}
-                    className="bg-transparent border-white/10 text-slate-400 text-xs cursor-pointer"
+                    className="border-border/70 bg-transparent text-xs text-muted-foreground cursor-pointer"
                   >
                     Cancel
                   </Button>
                   <Button
                     type="submit"
                     disabled={isSubmitting}
-                    className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-5 cursor-pointer"
+                    className="bg-gradient-to-r from-primary to-violet-500 text-xs font-semibold px-5 text-white cursor-pointer hover:shadow-lg hover:shadow-primary/20"
                   >
                     {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save Changes"}
                   </Button>

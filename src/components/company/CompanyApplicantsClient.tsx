@@ -67,34 +67,34 @@ export default function CompanyApplicantsClient({
   };
 
   return (
-    <div className="space-y-8 max-w-5xl mx-auto text-white font-sans">
+    <div className="space-y-8 max-w-5xl mx-auto text-foreground font-sans">
       {/* Header */}
-      <div className="space-y-2 border-b border-white/10 pb-6">
-        <div className="flex items-center gap-2 text-blue-400 text-xs font-mono uppercase tracking-widest">
+      <div className="space-y-2 border-b border-[#BFDFFF] pb-6">
+        <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-primary">
           <Sparkles className="w-4 h-4" />
           Applicant Tracking & Pipeline Manager
         </div>
-        <h1 className="text-3xl font-bold font-heading tracking-tight">
+        <h1 className="text-3xl font-bold tracking-tight font-heading text-foreground">
           Manage Candidate Applications
         </h1>
-        <p className="text-sm text-slate-400 max-w-2xl font-sans">
+        <p className="text-sm text-muted-foreground max-w-2xl font-sans">
           Review candidate profile benchmarks, inspect PDF resumes, and advance candidates through recruitment stages.
         </p>
       </div>
 
       {/* Candidates Pipeline */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between border-b border-white/10 pb-3">
-          <h2 className="text-sm font-bold text-white uppercase font-mono tracking-wider">
+        <div className="flex items-center justify-between border-b border-[#BFDFFF] pb-3">
+          <h2 className="text-sm font-bold uppercase font-mono tracking-wider text-foreground">
             Candidates Pipeline ({candidates.length})
           </h2>
         </div>
 
         {candidates.length === 0 ? (
-          <div className="p-12 rounded-3xl bg-slate-900/60 border border-white/10 text-center space-y-3">
-            <Users className="w-10 h-10 text-slate-500 mx-auto" />
-            <p className="text-sm font-bold text-white">No applications received yet</p>
-            <p className="text-xs text-slate-400 max-w-sm mx-auto font-sans">
+          <div className="space-y-3 rounded-[28px] border border-[#BFDFFF] bg-white/80 p-12 text-center">
+            <Users className="mx-auto h-10 w-10 text-slate-500" />
+            <p className="text-sm font-bold text-foreground">No applications received yet</p>
+            <p className="mx-auto max-w-sm text-xs text-muted-foreground font-sans">
               As student engineers apply to your active job listings, candidate records and resume cards will populate here in real-time.
             </p>
           </div>
@@ -103,17 +103,17 @@ export default function CompanyApplicantsClient({
             {candidates.map((cand) => (
               <div
                 key={cand.id}
-                className="p-6 rounded-3xl bg-slate-900/80 border border-white/10 hover:border-white/20 transition-all space-y-4"
+                className="space-y-4 rounded-[28px] border border-[#BFDFFF] bg-white/90 p-6 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_12px_40px_rgba(59,130,246,0.10)]"
               >
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div className="space-y-1">
-                    <h3 className="text-base font-bold text-white">{cand.studentName}</h3>
-                    <p className="text-xs text-slate-400 font-sans">
+                    <h3 className="text-base font-bold text-foreground">{cand.studentName}</h3>
+                    <p className="text-xs text-muted-foreground font-sans">
                       {cand.major || "Engineering"} at {cand.university || "Institute of Technology"}
                     </p>
                     <div className="flex items-center gap-2 text-xs font-mono pt-1">
                       <span className="text-slate-500">Applied Role:</span>
-                      <span className="text-blue-400 font-bold">{cand.internshipTitle}</span>
+                      <span className="font-bold text-primary">{cand.internshipTitle}</span>
                     </div>
                   </div>
 
@@ -124,26 +124,26 @@ export default function CompanyApplicantsClient({
                         href={cand.resume_url}
                         target="_blank"
                         rel="noreferrer"
-                        className="flex items-center gap-1.5 text-xs text-slate-300 hover:text-white bg-slate-950 px-3.5 py-2.5 rounded-xl border border-white/10 hover:border-white/20 transition-all font-sans cursor-pointer"
+                        className="flex cursor-pointer items-center gap-1.5 rounded-[18px] border border-[#BFDFFF] bg-white px-3.5 py-2.5 text-xs text-muted-foreground font-sans transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:text-foreground hover:shadow-[0_12px_24px_rgba(59,130,246,0.10)]"
                       >
-                        <FileText className="w-3.5 h-3.5 text-blue-400" />
+                        <FileText className="w-3.5 h-3.5 text-primary" />
                         View Resume
                       </a>
                     )}
 
-                    <div className="flex items-center gap-1.5 bg-slate-950 px-3 py-1.5 rounded-xl border border-white/10">
+                    <div className="flex items-center gap-1.5 rounded-[18px] border border-[#BFDFFF] bg-white px-3 py-1.5">
                       {updatingId === cand.id ? (
-                        <Loader2 className="w-4 h-4 animate-spin text-blue-400" />
+                        <Loader2 className="w-4 h-4 animate-spin text-primary" />
                       ) : (
                         <select
                           value={cand.status}
                           onChange={(e) =>
                             handleStatusChange(cand.id, e.target.value as CandidateItem["status"])
                           }
-                          className="bg-transparent text-xs font-mono uppercase font-bold text-blue-400 focus:outline-none cursor-pointer"
+                          className="cursor-pointer bg-transparent text-xs font-mono uppercase font-bold text-primary focus:outline-none"
                         >
                           {PIPELINE_STAGES.map((stage) => (
-                            <option key={stage} value={stage} className="bg-slate-900 text-white capitalize font-sans">
+                            <option key={stage} value={stage} className="bg-white capitalize font-sans text-foreground">
                               Stage: {stage.toUpperCase()}
                             </option>
                           ))}
@@ -154,7 +154,7 @@ export default function CompanyApplicantsClient({
                 </div>
 
                 {cand.cover_letter && (
-                  <div className="p-3 bg-slate-950/60 rounded-2xl border border-white/5 text-xs text-slate-400 font-sans italic leading-relaxed">
+                  <div className="rounded-[18px] border border-[#BFDFFF] bg-white/80 p-3 text-xs leading-relaxed text-muted-foreground font-sans italic">
                     &ldquo;{cand.cover_letter}&rdquo;
                   </div>
                 )}

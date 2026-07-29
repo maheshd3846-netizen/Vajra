@@ -545,7 +545,7 @@ export default function PredictiveCareerPanel({
             <Button
               onClick={onRecalibrate}
               size="sm"
-              className="bg-primary hover:bg-primary/90 text-white text-[10px] font-bold rounded-xl h-8 px-3 cursor-pointer"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground text-[10px] font-bold rounded-xl h-8 px-3 cursor-pointer"
             >
               <RefreshCw className="w-3 h-3 mr-1.5" />
               Recalibrate

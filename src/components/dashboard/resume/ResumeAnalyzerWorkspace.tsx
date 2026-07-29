@@ -200,14 +200,14 @@ ${analysis.found_keywords.join(", ")}
       {/* Header Info */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-white font-heading">
+          <h1 className="text-xl font-bold tracking-tight text-foreground font-heading">
             AI Resume Analyzer & ATS Optimizer 📄
           </h1>
           <p className="text-xs text-muted-foreground font-sans mt-0.5">
             Scan your resume against real-world ATS filters and get instant, AI-tailored improvements.
           </p>
         </div>
-        <span className="text-[10px] uppercase font-mono tracking-wider px-3 py-1 rounded bg-blue-500/10 border border-blue-500/20 text-blue-400 self-start md:self-auto">
+        <span className="self-start rounded-[18px] border border-primary/20 bg-primary/10 px-3 py-1 text-[10px] uppercase tracking-wider text-primary md:self-auto">
           Analyzing for: {targetRole}
         </span>
       </div>
@@ -218,10 +218,10 @@ ${analysis.found_keywords.join(", ")}
         {/* Left Column: Upload & Options */}
         <div className="lg:col-span-5 space-y-6">
           
-          <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 rounded-2xl p-6 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-2xl pointer-events-none" />
+          <div className="glass-card relative overflow-hidden rounded-[28px] border-[#BFDFFF] p-6 backdrop-blur-xl">
+            <div className="pointer-events-none absolute top-0 right-0 h-32 w-32 rounded-full bg-sky-400/10 blur-2xl" />
             
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-200 font-sans mb-4">
+            <h3 className="mb-4 text-xs font-bold uppercase tracking-wider text-slate-600 font-sans">
               Resume Document
             </h3>
 
@@ -231,12 +231,12 @@ ${analysis.found_keywords.join(", ")}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
               onClick={triggerFileSelect}
-              className={`border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all ${
+              className={`flex flex-col items-center justify-center rounded-[20px] border-2 border-dashed p-8 text-center cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_28px_rgba(59,130,246,0.10)] ${
                 isDragOver
-                  ? "border-blue-500 bg-blue-500/10"
+                  ? "border-primary bg-primary/10"
                   : selectedFile
                   ? "border-emerald-500/50 bg-emerald-500/5"
-                  : "border-white/10 hover:border-white/20 bg-slate-950/40"
+                  : "border-[#BFDFFF] bg-white/80 hover:border-primary/40"
               }`}
             >
               <input
@@ -249,10 +249,10 @@ ${analysis.found_keywords.join(", ")}
 
               {selectedFile ? (
                 <>
-                  <div className="h-12 w-12 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-3 animate-pulse">
+                  <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/15 text-emerald-500 animate-pulse">
                     <FileText className="w-6 h-6" />
                   </div>
-                  <h4 className="text-xs font-bold text-white max-w-[200px] truncate">
+                  <h4 className="max-w-[200px] truncate text-xs font-bold text-foreground">
                     {selectedFile.name}
                   </h4>
                   <p className="text-[10px] text-muted-foreground font-mono mt-1">
@@ -261,26 +261,26 @@ ${analysis.found_keywords.join(", ")}
                 </>
               ) : (
                 <>
-                  <UploadCloud className="w-8 h-8 text-slate-500 mb-3" />
-                  <h4 className="text-xs font-bold text-slate-300">Drag & drop your resume</h4>
+                  <UploadCloud className="mb-3 w-8 h-8 text-slate-500" />
+                  <h4 className="text-xs font-bold text-slate-600">Drag & drop your resume</h4>
                   <p className="text-[10px] text-muted-foreground mt-1">PDF format up to 10MB</p>
                 </>
               )}
             </div>
 
             {/* JD Context Selector */}
-            <div className="space-y-3 pt-6 mt-6 border-t border-white/5 font-sans">
-              <Label className="text-xs font-semibold text-slate-200">
+            <div className="mt-6 space-y-3 border-t border-[#BFDFFF] pt-6 font-sans">
+              <Label className="text-xs font-semibold text-slate-600">
                 Target Role Context
               </Label>
               <div className="grid grid-cols-2 gap-3">
                 <button
                   type="button"
                   onClick={() => setJdMode("target")}
-                  className={`py-3 rounded-xl border text-[10px] uppercase font-semibold tracking-wide cursor-pointer transition-all ${
+                    className={`rounded-[18px] border py-3 text-[10px] uppercase font-semibold tracking-wide cursor-pointer transition-all duration-200 ${
                     jdMode === "target"
-                      ? "bg-blue-500/10 border-blue-500 text-white"
-                      : "bg-slate-950/40 border-white/10 text-slate-400 hover:border-white/20"
+                      ? "border-primary bg-primary/10 text-foreground"
+                      : "border-[#BFDFFF] bg-white text-muted-foreground hover:border-primary/40"
                   }`}
                 >
                   Onboarding Role
@@ -288,10 +288,10 @@ ${analysis.found_keywords.join(", ")}
                 <button
                   type="button"
                   onClick={() => setJdMode("custom")}
-                  className={`py-3 rounded-xl border text-[10px] uppercase font-semibold tracking-wide cursor-pointer transition-all ${
+                    className={`rounded-[18px] border py-3 text-[10px] uppercase font-semibold tracking-wide cursor-pointer transition-all duration-200 ${
                     jdMode === "custom"
-                      ? "bg-blue-500/10 border-blue-500 text-white"
-                      : "bg-slate-950/40 border-white/10 text-slate-400 hover:border-white/20"
+                      ? "border-primary bg-primary/10 text-foreground"
+                      : "border-[#BFDFFF] bg-white text-muted-foreground hover:border-primary/40"
                   }`}
                 >
                   Custom JD
@@ -300,7 +300,7 @@ ${analysis.found_keywords.join(", ")}
 
               {jdMode === "custom" && (
                 <div className="space-y-1.5 pt-2">
-                  <Label htmlFor="jdInput" className="text-[10px] text-slate-400">
+                  <Label htmlFor="jdInput" className="text-[10px] text-slate-500">
                     Paste target Job Description text
                   </Label>
                   <textarea
@@ -309,7 +309,7 @@ ${analysis.found_keywords.join(", ")}
                     placeholder="Paste job posting content here..."
                     value={customJd}
                     onChange={(e) => setCustomJd(e.target.value)}
-                    className="w-full bg-slate-950 border border-white/10 text-xs text-white rounded-xl p-3 placeholder:text-slate-600 focus:outline-none focus:border-blue-500 resize-none font-sans"
+                    className="w-full rounded-[18px] border border-[#BFDFFF] bg-white/80 p-3 text-xs text-foreground placeholder:text-slate-400 focus:outline-none focus:border-primary resize-none font-sans"
                   />
                 </div>
               )}
@@ -319,7 +319,7 @@ ${analysis.found_keywords.join(", ")}
             <Button
               onClick={handleRunScan}
               disabled={isScanning || !selectedFile}
-              className="w-full py-6 mt-6 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-medium hover:shadow-indigo-500/10 transition-all flex items-center justify-center gap-2 cursor-pointer"
+              className="mt-6 w-full rounded-[18px] bg-gradient-to-r from-primary via-sky-500 to-indigo-600 py-6 font-medium text-white transition-all flex items-center justify-center gap-2 cursor-pointer hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(59,130,246,0.20)]"
             >
               {isScanning ? (
                 <>
@@ -346,10 +346,10 @@ ${analysis.found_keywords.join(", ")}
           
           {!analysis ? (
             /* Empty State */
-            <div className="bg-slate-900/30 border border-white/10 border-dashed rounded-2xl p-16 flex flex-col items-center justify-center text-center text-muted-foreground min-h-[480px]">
-              <FileText className="w-12 h-12 text-slate-700 mb-4 animate-pulse" />
-              <h3 className="text-sm font-bold text-slate-400 font-heading">No Scan Conducted</h3>
-              <p className="text-xs text-slate-500 font-sans max-w-sm mt-1.5 leading-relaxed">
+            <div className="flex min-h-[480px] flex-col items-center justify-center rounded-[28px] border border-[#BFDFFF] border-dashed bg-white/80 p-16 text-center text-muted-foreground">
+              <FileText className="mb-4 h-12 w-12 animate-pulse text-slate-500" />
+              <h3 className="text-sm font-bold text-slate-600 font-heading">No Scan Conducted</h3>
+              <p className="mt-1.5 max-w-sm text-xs leading-relaxed text-slate-500 font-sans">
                 Upload your resume in PDF format and choose your target context to calculate your baseline ATS matching diagnostics.
               </p>
             </div>
@@ -358,14 +358,14 @@ ${analysis.found_keywords.join(", ")}
             <div className="space-y-6">
               
               {/* ATS SCORE CARD */}
-              <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 rounded-2xl p-6 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-48 h-48 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
+              <div className="glass-card relative overflow-hidden rounded-[28px] border-[#BFDFFF] p-6 backdrop-blur-xl">
+                <div className="pointer-events-none absolute top-0 right-0 h-48 w-48 rounded-full bg-emerald-500/10 blur-3xl" />
                 
                 <div className="flex flex-col sm:flex-row items-center gap-6">
                   {/* Gauge */}
-                  <div className="relative h-28 w-28 rounded-full border-[6px] border-slate-950 bg-slate-900 border-t-emerald-500 border-r-emerald-500 border-b-emerald-500 flex flex-col items-center justify-center shadow-2xl shrink-0">
-                    <span className="text-3xl font-mono font-bold text-white">{analysis.score}</span>
-                    <span className="text-[8px] uppercase tracking-wider text-slate-400 font-semibold">ATS Score</span>
+                  <div className="relative flex h-28 w-28 shrink-0 flex-col items-center justify-center rounded-full border-[6px] border-[#BFDFFF] border-t-emerald-500 border-r-emerald-500 border-b-emerald-500 bg-white shadow-[0_12px_40px_rgba(59,130,246,0.10)]">
+                    <span className="text-3xl font-mono font-bold text-foreground">{analysis.score}</span>
+                    <span className="text-[8px] font-semibold uppercase tracking-wider text-slate-500">ATS Score</span>
                   </div>
 
                   {/* Summary */}
@@ -373,7 +373,7 @@ ${analysis.found_keywords.join(", ")}
                     <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-[10px] font-semibold font-mono ${getScoreColor(analysis.score)}`}>
                       {getScoreLabel(analysis.score)}
                     </div>
-                    <h3 className="text-base font-bold text-white font-heading">
+                    <h3 className="text-base font-bold text-foreground font-heading">
                       Calculated Matching Diagnostic
                     </h3>
                     <p className="text-xs text-muted-foreground font-sans leading-relaxed">
@@ -383,33 +383,33 @@ ${analysis.found_keywords.join(", ")}
                 </div>
 
                 {/* Sub metrics grid */}
-                <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-white/5 font-sans">
+                <div className="mt-6 grid grid-cols-3 gap-4 border-t border-[#BFDFFF] pt-6 font-sans">
                   {[
                     { name: "Keyword Match", val: analysis.keyword_match },
                     { name: "Impact Metrics", val: analysis.impact_score },
                     { name: "ATS Structure", val: analysis.formatting_score },
                   ].map((sub) => (
-                    <div key={sub.name} className="text-center p-3 rounded-xl bg-slate-950/40 border border-white/5">
-                      <p className="text-[10px] font-semibold text-slate-400">{sub.name}</p>
-                      <p className="text-lg font-mono font-bold text-white mt-1">{sub.val}%</p>
+                    <div key={sub.name} className="rounded-[18px] border border-[#BFDFFF] bg-white/80 p-3 text-center">
+                      <p className="text-[10px] font-semibold text-slate-500">{sub.name}</p>
+                      <p className="mt-1 text-lg font-mono font-bold text-foreground">{sub.val}%</p>
                     </div>
                   ))}
                 </div>
               </div>
 
               {/* KEYWORDS DICTIONARY TAGS */}
-              <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 rounded-2xl p-6">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-200 font-sans mb-4">
+              <div className="glass-card rounded-[28px] border-[#BFDFFF] p-6 backdrop-blur-xl">
+                <h3 className="mb-4 text-xs font-bold uppercase tracking-wider text-slate-600 font-sans">
                   Keyword Comparison Engine
                 </h3>
 
                 <div className="space-y-4 font-sans">
                   {/* Found Keywords */}
                   <div className="space-y-2">
-                    <span className="text-[10px] text-muted-foreground font-semibold">Found Keywords ({analysis.found_keywords.length})</span>
+                      <span className="text-[10px] font-semibold text-muted-foreground">Found Keywords ({analysis.found_keywords.length})</span>
                     <div className="flex flex-wrap gap-1.5">
                       {analysis.found_keywords.map((k) => (
-                        <span key={k} className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-semibold">
+                          <span key={k} className="inline-flex items-center gap-1 rounded border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-[10px] font-semibold text-emerald-600">
                           <CheckCircle2 className="w-3 h-3" />
                           {k}
                         </span>
@@ -419,10 +419,10 @@ ${analysis.found_keywords.join(", ")}
 
                   {/* Missing Keywords */}
                   <div className="space-y-2">
-                    <span className="text-[10px] text-muted-foreground font-semibold">Missing Keywords ({analysis.missing_keywords.length})</span>
+                      <span className="text-[10px] font-semibold text-muted-foreground">Missing Keywords ({analysis.missing_keywords.length})</span>
                     <div className="flex flex-wrap gap-1.5">
                       {analysis.missing_keywords.map((k) => (
-                        <span key={k} className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-semibold">
+                          <span key={k} className="inline-flex items-center gap-1 rounded border border-red-500/20 bg-red-500/10 px-2.5 py-1 text-[10px] font-semibold text-red-500">
                           <AlertCircle className="w-3 h-3" />
                           {k}
                         </span>
@@ -433,8 +433,8 @@ ${analysis.found_keywords.join(", ")}
               </div>
 
               {/* ACCORDION SUGGESTIONS */}
-              <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 rounded-2xl p-6">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-200 font-sans mb-4">
+              <div className="glass-card rounded-[28px] border-[#BFDFFF] p-6 backdrop-blur-xl">
+                <h3 className="mb-4 text-xs font-bold uppercase tracking-wider text-slate-600 font-sans">
                   AI Sentence & Impact Optimizations
                 </h3>
 
@@ -444,31 +444,31 @@ ${analysis.found_keywords.join(", ")}
                     return (
                       <div
                         key={i}
-                        className="border border-white/5 rounded-xl overflow-hidden bg-slate-950/40"
+                        className="overflow-hidden rounded-[18px] border border-[#BFDFFF] bg-white/80"
                       >
                         <button
                           onClick={() => toggleAccordion(i)}
                           className="w-full px-4 py-3 flex items-center justify-between text-left focus:outline-none"
                         >
-                          <span className="text-xs font-bold text-white truncate max-w-[280px] sm:max-w-md">
+                          <span className="max-w-[280px] truncate text-xs font-bold text-foreground sm:max-w-md">
                             Rewrite recommendation #{i + 1}
                           </span>
-                          <span className="text-slate-400">
+                          <span className="text-slate-500">
                             {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                           </span>
                         </button>
 
                         {isOpen && (
-                          <div className="p-4 border-t border-white/5 space-y-3">
+                          <div className="space-y-3 border-t border-[#BFDFFF] p-4">
                             <div className="space-y-1">
                               <span className="text-[9px] uppercase font-semibold text-red-400">Original Resume Sentence:</span>
-                              <p className="text-xs text-slate-400 bg-red-500/5 border border-red-500/10 p-2.5 rounded-lg">
+                              <p className="rounded-lg border border-red-500/10 bg-red-500/5 p-2.5 text-xs text-slate-600">
                                 {rec.original}
                               </p>
                             </div>
                             <div className="space-y-1">
-                              <span className="text-[9px] uppercase font-semibold text-emerald-400">AI Suggested Rewrite:</span>
-                              <p className="text-xs text-white bg-emerald-500/5 border border-emerald-500/10 p-2.5 rounded-lg">
+                              <span className="text-[9px] uppercase font-semibold text-emerald-500">AI Suggested Rewrite:</span>
+                              <p className="rounded-lg border border-emerald-500/10 bg-emerald-500/5 p-2.5 text-xs text-foreground">
                                 {rec.suggestion}
                               </p>
                             </div>
@@ -487,14 +487,14 @@ ${analysis.found_keywords.join(", ")}
               </div>
 
               {/* FORMATTING CHECKS */}
-              <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 rounded-2xl p-6">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-200 font-sans mb-4">
+              <div className="glass-card rounded-[28px] border-[#BFDFFF] p-6 backdrop-blur-xl">
+                <h3 className="mb-4 text-xs font-bold uppercase tracking-wider text-slate-600 font-sans">
                   ATS Layout & Structure Check
                 </h3>
                 <ul className="space-y-2.5 font-sans">
                   {analysis.formatting_feedback.map((feedback, i) => (
-                    <li key={i} className="flex items-start gap-2.5 text-xs text-slate-300">
-                      <span className="p-0.5 rounded bg-blue-500/10 border border-blue-500/20 text-blue-400 mt-0.5 flex-shrink-0">
+                    <li key={i} className="flex items-start gap-2.5 text-xs text-slate-600">
+                      <span className="mt-0.5 flex-shrink-0 rounded bg-primary/10 p-0.5 text-primary">
                         <HelpCircle className="w-3.5 h-3.5" />
                       </span>
                       {feedback}
@@ -507,14 +507,14 @@ ${analysis.found_keywords.join(", ")}
               <div className="flex gap-4">
                 <Button
                   onClick={handleReset}
-                  className="flex-1 py-4 bg-slate-950 border border-white/10 hover:border-white/20 text-xs font-semibold text-slate-300 hover:text-white transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                  className="flex-1 cursor-pointer rounded-[18px] border border-[#BFDFFF] bg-white py-4 text-xs font-semibold text-muted-foreground transition-all flex items-center justify-center gap-1.5 hover:-translate-y-0.5 hover:border-primary/40 hover:text-foreground hover:shadow-[0_12px_24px_rgba(59,130,246,0.10)]"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
                   Re-scan Resume
                 </Button>
                 <Button
                   onClick={handleDownloadReport}
-                  className="flex-1 py-4 bg-blue-500 hover:bg-blue-600 text-xs font-semibold text-white transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                  className="flex-1 cursor-pointer rounded-[18px] bg-gradient-to-r from-primary via-sky-500 to-indigo-600 py-4 text-xs font-semibold text-white transition-all flex items-center justify-center gap-1.5 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(59,130,246,0.20)]"
                 >
                   <Download className="w-3.5 h-3.5" />
                   Download Report

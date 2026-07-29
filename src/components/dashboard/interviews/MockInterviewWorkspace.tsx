@@ -265,18 +265,18 @@ export default function MockInterviewWorkspace({
   const wordCount = currentAnswerText.trim().split(/\s+/).filter(Boolean).length;
 
   return (
-    <div className="space-y-8 max-w-6xl mx-auto text-white font-sans">
+    <div className="space-y-8 max-w-6xl mx-auto text-foreground font-sans">
       {/* Navigation Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-6">
+      <div className="flex flex-col justify-between gap-4 border-b border-[#BFDFFF] pb-6 sm:flex-row sm:items-center">
         <div className="space-y-1">
-          <div className="flex items-center gap-2 text-blue-400 text-xs font-mono uppercase tracking-widest">
+          <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-primary">
             <BrainCircuit className="w-4 h-4" />
             AI Interview Intelligence Platform
           </div>
-          <h1 className="text-3xl font-bold font-heading tracking-tight">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground font-heading">
             AI Mock Interview Studio
           </h1>
-          <p className="text-sm text-slate-400 max-w-2xl font-sans">
+          <p className="max-w-2xl text-sm text-muted-foreground font-sans">
             Simulate realistic tech recruiter interviews with adaptive cross-questioning, multidimensional scoring, and 7-day action plans.
           </p>
         </div>
@@ -286,7 +286,7 @@ export default function MockInterviewWorkspace({
             <Button
               variant="outline"
               onClick={() => setView("setup")}
-              className="bg-slate-900 border-white/10 text-slate-300 hover:text-white text-xs py-5 rounded-xl cursor-pointer"
+              className="border-border/70 bg-background/70 text-xs py-5 rounded-xl text-muted-foreground cursor-pointer hover:text-foreground"
             >
               <RotateCcw className="w-3.5 h-3.5 mr-1" /> Setup Session
             </Button>
@@ -294,7 +294,7 @@ export default function MockInterviewWorkspace({
           <Button
             onClick={handleLoadHistory}
             variant="outline"
-            className="bg-slate-900 border-white/10 text-blue-400 hover:text-white text-xs py-5 rounded-xl flex items-center gap-1.5 cursor-pointer"
+            className="border-border/70 bg-background/70 text-xs py-5 rounded-xl flex items-center gap-1.5 text-primary cursor-pointer hover:text-foreground"
           >
             <HistoryIcon className="w-4 h-4" /> View Session History
           </Button>
@@ -305,19 +305,19 @@ export default function MockInterviewWorkspace({
       {view === "setup" && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Controls Panel */}
-          <div className="lg:col-span-7 space-y-6 bg-slate-900/80 border border-white/10 rounded-3xl p-6">
-            <div className="space-y-1 border-b border-white/5 pb-4">
-              <h2 className="text-base font-bold text-white flex items-center gap-2">
-                <Target className="w-5 h-5 text-blue-400" /> Configure Interview Session
+          <div className="glass-card lg:col-span-7 space-y-6 rounded-[28px] p-6">
+            <div className="space-y-1 border-b border-border/70 pb-4">
+              <h2 className="flex items-center gap-2 text-base font-bold text-foreground">
+                <Target className="w-5 h-5 text-primary" /> Configure Interview Session
               </h2>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-muted-foreground">
                 Select your target engineering role, difficulty, round type, and session duration.
               </p>
             </div>
 
             {/* Target Role */}
             <div className="space-y-2">
-              <Label className="text-xs text-slate-300 font-semibold">Target Engineering Role</Label>
+              <Label className="text-xs font-semibold text-muted-foreground">Target Engineering Role</Label>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {TARGET_ROLES.map((r) => (
                   <button
@@ -325,8 +325,8 @@ export default function MockInterviewWorkspace({
                     onClick={() => setSelectedRole(r)}
                     className={`p-3 rounded-xl border text-xs font-medium text-left transition-all cursor-pointer ${
                       selectedRole === r
-                        ? "bg-blue-500/20 border-blue-500/50 text-blue-300 font-bold"
-                        : "bg-slate-950 border-white/5 text-slate-400 hover:border-white/10"
+                        ? "bg-primary/10 border-primary/40 text-primary font-bold"
+                          : "bg-background/80 border-border/70 text-muted-foreground hover:border-primary/20"
                     }`}
                   >
                     {r}
@@ -337,7 +337,7 @@ export default function MockInterviewWorkspace({
 
             {/* Round Type */}
             <div className="space-y-2">
-              <Label className="text-xs text-slate-300 font-semibold">Interview Round Type</Label>
+              <Label className="text-xs font-semibold text-muted-foreground">Interview Round Type</Label>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {INTERVIEW_TYPES.map((t) => (
                   <button
@@ -345,8 +345,8 @@ export default function MockInterviewWorkspace({
                     onClick={() => setInterviewType(t)}
                     className={`p-3 rounded-xl border text-xs font-medium text-left transition-all cursor-pointer ${
                       interviewType === t
-                        ? "bg-purple-500/20 border-purple-500/50 text-purple-300 font-bold"
-                        : "bg-slate-950 border-white/5 text-slate-400 hover:border-white/10"
+                        ? "bg-primary/10 border-primary/40 text-primary font-bold"
+                        : "bg-background/80 border-border/70 text-muted-foreground hover:border-primary/20"
                     }`}
                   >
                     {t}
@@ -358,7 +358,7 @@ export default function MockInterviewWorkspace({
             {/* Difficulty & Duration */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-xs text-slate-300 font-semibold">Difficulty Level</Label>
+                <Label className="text-xs font-semibold text-muted-foreground">Difficulty Level</Label>
                 <div className="flex gap-2">
                   {DIFFICULTIES.map((d) => (
                     <button
@@ -366,8 +366,8 @@ export default function MockInterviewWorkspace({
                       onClick={() => setDifficulty(d)}
                       className={`flex-1 py-2.5 rounded-xl border text-xs font-mono font-bold uppercase transition-all cursor-pointer ${
                         difficulty === d
-                          ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-300"
-                          : "bg-slate-950 border-white/5 text-slate-400"
+                          ? "bg-primary/10 border-primary/40 text-primary"
+                          : "bg-background/80 border-border/70 text-muted-foreground"
                       }`}
                     >
                       {d}
@@ -377,7 +377,7 @@ export default function MockInterviewWorkspace({
               </div>
 
               <div className="space-y-2">
-                <Label className="text-xs text-slate-300 font-semibold">Session Duration</Label>
+                <Label className="text-xs font-semibold text-muted-foreground">Session Duration</Label>
                 <div className="flex gap-2">
                   {DURATIONS.map((dur) => (
                     <button
@@ -385,8 +385,8 @@ export default function MockInterviewWorkspace({
                       onClick={() => setDurationMinutes(dur)}
                       className={`flex-1 py-2.5 rounded-xl border text-xs font-mono font-bold transition-all cursor-pointer ${
                         durationMinutes === dur
-                          ? "bg-amber-500/20 border-amber-500/50 text-amber-300"
-                          : "bg-slate-950 border-white/5 text-slate-400"
+                          ? "bg-primary/10 border-primary/40 text-primary"
+                          : "bg-background/80 border-border/70 text-muted-foreground"
                       }`}
                     >
                       {dur}m
@@ -400,7 +400,7 @@ export default function MockInterviewWorkspace({
             <Button
               onClick={handleStartSession}
               disabled={isInitializing}
-              className="w-full py-6 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm shadow-xl shadow-blue-500/20 cursor-pointer"
+              className="w-full py-6 rounded-2xl bg-gradient-to-r from-primary via-sky-500 to-indigo-600 text-sm font-bold text-white shadow-xl shadow-primary/20 cursor-pointer hover:shadow-[0_18px_40px_rgba(59,130,246,0.20)]"
             >
               {isInitializing ? (
                 <>
@@ -418,46 +418,46 @@ export default function MockInterviewWorkspace({
 
           {/* AI Coach Briefing Sidebar */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="bg-slate-900/80 border border-white/10 rounded-3xl p-6 space-y-4 relative overflow-hidden">
-              <div className="flex items-center gap-2 text-xs font-bold text-blue-400 font-mono uppercase tracking-wider">
+            <div className="glass-card space-y-4 rounded-[28px] p-6 relative overflow-hidden">
+              <div className="flex items-center gap-2 text-xs font-bold text-primary font-mono uppercase tracking-wider">
                 <Sparkles className="w-4 h-4" /> AI Interview Coach Briefing
               </div>
 
-              <div className="space-y-3 text-xs text-slate-300 leading-relaxed font-sans">
-                <div className="p-3.5 bg-slate-950 rounded-2xl border border-white/5 space-y-1">
-                  <span className="text-[10px] uppercase font-mono text-blue-400 font-bold">What to Expect</span>
-                  <p className="text-slate-300">
+              <div className="space-y-3 text-xs leading-relaxed text-foreground font-sans">
+                <div className="space-y-1 rounded-2xl border border-[#BFDFFF] bg-white/80 p-3.5">
+                  <span className="text-[10px] font-mono font-bold uppercase text-primary">What to Expect</span>
+                  <p className="text-muted-foreground">
                     {briefing?.whatToExpect || `Adaptive evaluation for ${selectedRole} at ${difficulty} level (${interviewType}).`}
                   </p>
                 </div>
 
                 <div className="space-y-1.5">
-                  <span className="text-[10px] uppercase font-mono text-amber-400 font-bold block">
+                  <span className="block text-[10px] font-mono font-bold uppercase text-amber-500">
                     Common Mistakes to Avoid
                   </span>
-                  <ul className="space-y-1 text-slate-400">
+                  <ul className="space-y-1 text-muted-foreground">
                     <li className="flex items-start gap-2">
-                      <span className="text-amber-400 mt-0.5">•</span>
+                      <span className="mt-0.5 text-amber-500">•</span>
                       <span>Jumping to answers without framing system assumptions.</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-amber-400 mt-0.5">•</span>
+                      <span className="mt-0.5 text-amber-500">•</span>
                       <span>Omitting quantitative metrics or performance impact details.</span>
                     </li>
                   </ul>
                 </div>
 
                 <div className="space-y-1.5">
-                  <span className="text-[10px] uppercase font-mono text-emerald-400 font-bold block">
+                  <span className="block text-[10px] font-mono font-bold uppercase text-emerald-600">
                     Preparation Tips
                   </span>
-                  <ul className="space-y-1 text-slate-400">
+                  <ul className="space-y-1 text-muted-foreground">
                     <li className="flex items-start gap-2">
-                      <span className="text-emerald-400 mt-0.5">✓</span>
+                      <span className="mt-0.5 text-emerald-600">✓</span>
                       <span>Use STAR method (Situation, Task, Action, Result).</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-emerald-400 mt-0.5">✓</span>
+                      <span className="mt-0.5 text-emerald-600">✓</span>
                       <span>Discuss trade-offs (e.g. latency vs consistency).</span>
                     </li>
                   </ul>

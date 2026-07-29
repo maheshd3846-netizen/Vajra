@@ -10,7 +10,8 @@ import Footer from "@/components/landing/Footer";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-slate-950 text-foreground overflow-x-hidden">
+    <div className="relative min-h-screen overflow-x-hidden bg-background text-foreground">
+      <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(79,140,255,0.14),transparent_28%),radial-gradient(circle_at_top_right,rgba(139,92,246,0.14),transparent_26%),linear-gradient(to_bottom,transparent,rgba(255,255,255,0.015))]" />
       <Navbar />
       <HeroSection />
       <TrustBanner />

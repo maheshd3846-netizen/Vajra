@@ -27,10 +27,11 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="relative min-h-screen pt-32 pb-20 flex items-center overflow-hidden">
+    <section className="relative min-h-screen overflow-hidden pt-32 pb-20 flex items-center">
       {/* Dynamic Background Mesh Gradients */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-r from-blue-500/10 to-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute top-1/3 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-full blur-3xl pointer-events-none animate-pulse" />
+      <div className="pointer-events-none absolute top-1/4 left-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-3xl" />
+      <div className="pointer-events-none absolute top-1/3 left-1/3 h-[350px] w-[350px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-500/10 blur-3xl animate-pulse" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
 
       <div className="max-w-7xl mx-auto px-6 w-full relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
@@ -45,7 +46,7 @@ export default function HeroSection() {
             {/* Launch Badge */}
             <motion.div
               variants={itemVariants}
-              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 border border-white/10 shadow-lg text-xs text-muted-foreground hover:border-white/20 transition-colors"
+              className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/70 px-3 py-1 text-xs text-muted-foreground shadow-lg backdrop-blur-md transition-colors hover:border-border"
             >
               <Sparkles className="w-3.5 h-3.5 text-blue-400" />
               <span>Introducing VAJRA AI 2.0 — Career Intelligence OS</span>
@@ -54,7 +55,7 @@ export default function HeroSection() {
             {/* Main Headline */}
             <motion.h1
               variants={itemVariants}
-              className="text-4xl sm:text-6xl font-bold tracking-tight font-heading leading-tight text-white"
+              className="text-4xl sm:text-6xl font-bold tracking-tight font-heading leading-tight text-foreground"
             >
               Build Your Career. <br />
               <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-500 bg-clip-text text-transparent">
@@ -77,17 +78,30 @@ export default function HeroSection() {
             >
               <Link
                 href="/register"
-                className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-medium shadow-lg hover:shadow-indigo-500/20 transition-all gap-2 group"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-violet-500 px-6 py-3.5 font-medium text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5 hover:shadow-primary/30 group"
               >
                 Start Your Career DNA
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
               <a
                 href="#features"
-                className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-white/10 text-muted-foreground hover:text-white font-medium transition-all gap-2"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-border/70 bg-background/70 px-6 py-3.5 font-medium text-muted-foreground transition-all hover:-translate-y-0.5 hover:text-foreground hover:border-border backdrop-blur-md"
               >
                 Explore Opportunities
               </a>
+            </motion.div>
+
+            <motion.div variants={itemVariants} className="grid w-full max-w-xl grid-cols-3 gap-3 pt-4 sm:gap-4">
+              {[
+                { value: "18k+", label: "Profiles analyzed" },
+                { value: "96%", label: "Match accuracy" },
+                { value: "24/7", label: "Realtime signals" },
+              ].map((stat) => (
+                <div key={stat.label} className="glass-card rounded-2xl border-border/70 p-4 text-left">
+                  <div className="text-lg font-bold text-foreground sm:text-2xl">{stat.value}</div>
+                  <div className="mt-1 text-[11px] uppercase tracking-widest text-muted-foreground">{stat.label}</div>
+                </div>
+              ))}
             </motion.div>
           </motion.div>
 

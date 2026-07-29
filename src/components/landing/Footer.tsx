@@ -26,9 +26,9 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-slate-950 border-t border-white/10 py-16 relative overflow-hidden">
+    <footer className="relative overflow-hidden border-t border-border/70 bg-background py-16">
       {/* Footer background radial glow */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[500px] h-[200px] bg-blue-500/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="pointer-events-none absolute bottom-0 left-1/2 h-[200px] w-[500px] -translate-x-1/2 rounded-full bg-primary/5 blur-3xl" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-12">
@@ -36,7 +36,7 @@ export default function Footer() {
           {/* Logo & Pitch */}
           <div className="md:col-span-5 space-y-4">
             <Link href="/" className="inline-block">
-              <span className="text-xl font-bold font-heading tracking-wider bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
+              <span className="text-xl font-bold font-heading tracking-wider bg-gradient-to-r from-primary to-violet-500 bg-clip-text text-transparent">
                 VAJRA
               </span>
             </Link>
@@ -46,13 +46,13 @@ export default function Footer() {
             
             {/* Social Icons */}
             <div className="flex items-center gap-4 pt-2">
-              <a href="#" className="p-2 rounded-lg bg-slate-900 border border-white/5 text-slate-400 hover:text-white transition-colors" aria-label="GitHub">
+              <a href="#" className="rounded-lg border border-border/70 bg-background/70 p-2 text-muted-foreground transition-colors hover:text-foreground" aria-label="GitHub">
                 <Github className="w-4 h-4" />
               </a>
-              <a href="#" className="p-2 rounded-lg bg-slate-900 border border-white/5 text-slate-400 hover:text-white transition-colors" aria-label="Twitter">
+              <a href="#" className="rounded-lg border border-border/70 bg-background/70 p-2 text-muted-foreground transition-colors hover:text-foreground" aria-label="Twitter">
                 <Twitter className="w-4 h-4" />
               </a>
-              <a href="#" className="p-2 rounded-lg bg-slate-900 border border-white/5 text-slate-400 hover:text-white transition-colors" aria-label="LinkedIn">
+              <a href="#" className="rounded-lg border border-border/70 bg-background/70 p-2 text-muted-foreground transition-colors hover:text-foreground" aria-label="LinkedIn">
                 <Linkedin className="w-4 h-4" />
               </a>
             </div>
@@ -62,7 +62,7 @@ export default function Footer() {
           <div className="md:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-8">
             {Object.entries(footerLinks).map(([title, links]) => (
               <div key={title} className="space-y-4">
-                <h4 className="text-xs font-bold uppercase tracking-widest text-slate-200 font-sans">
+                <h4 className="text-xs font-bold uppercase tracking-widest text-foreground/80 font-sans">
                   {title}
                 </h4>
                 <ul className="space-y-2.5">
@@ -70,7 +70,7 @@ export default function Footer() {
                     <li key={link.name}>
                       <a
                         href={link.href}
-                        className="text-xs text-muted-foreground hover:text-white transition-colors font-sans"
+                        className="text-xs text-muted-foreground transition-colors hover:text-foreground font-sans"
                       >
                         {link.name}
                       </a>
@@ -84,7 +84,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom Line */}
-        <div className="pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex flex-col items-center justify-between gap-4 border-t border-border/70 pt-8 sm:flex-row">
           <p className="text-[10px] text-muted-foreground font-mono">
             &copy; {currentYear} VAJRA Labs Inc. All rights reserved.
           </p>

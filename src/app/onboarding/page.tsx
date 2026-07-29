@@ -170,27 +170,27 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-foreground flex flex-col items-center justify-center p-6 relative overflow-hidden">
+    <div className="theme-transition min-h-screen flex flex-col items-center justify-center overflow-hidden bg-[linear-gradient(135deg,#F8FAFF,#EAF8FF)] p-6 text-foreground">
       {/* Background ambient glows */}
-      <div className="absolute top-1/4 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/3 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-purple-500/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="pointer-events-none absolute top-1/4 left-1/3 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-sky-400/10 blur-3xl" />
+      <div className="pointer-events-none absolute bottom-1/4 right-1/3 h-[400px] w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-400/10 blur-3xl" />
 
       {/* Main wizard card container */}
-      <div className="w-full max-w-xl bg-slate-900/60 backdrop-blur-xl border border-white/10 p-8 rounded-2xl shadow-2xl relative z-10">
+      <div className="glass-card relative z-10 w-full max-w-xl rounded-[28px] border-[#BFDFFF] bg-white/88 p-8 shadow-[0_12px_40px_rgba(59,130,246,0.10)] backdrop-blur-xl">
         
         {/* Progress Bar (Hidden on step 5) */}
         {currentStep < 5 && (
           <div className="mb-8">
-            <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
-              <span className="font-semibold text-blue-400 font-sans">Setup Progress</span>
+            <div className="mb-2 flex items-center justify-between text-xs text-muted-foreground">
+              <span className="font-semibold text-primary font-sans">Setup Progress</span>
               <span className="font-mono">Step {currentStep} of 4</span>
             </div>
-            <div className="h-1.5 w-full bg-slate-950 border border-white/5 rounded-full overflow-hidden">
+            <div className="h-1.5 w-full overflow-hidden rounded-full border border-border/70 bg-muted/50">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${(currentStep / 4) * 100}%` }}
                 transition={{ duration: 0.3 }}
-                className="h-full bg-gradient-to-r from-blue-500 to-indigo-500"
+                className="h-full bg-gradient-to-r from-sky-400 via-primary to-indigo-600"
               />
             </div>
           </div>
@@ -207,7 +207,7 @@ export default function OnboardingPage() {
               className="space-y-6"
             >
               <div className="space-y-1 text-center sm:text-left">
-                <h2 className="text-xl font-bold tracking-tight text-white font-heading">
+                <h2 className="text-xl font-bold tracking-tight text-foreground font-heading">
                   What role do you dream of?
                 </h2>
                 <p className="text-xs text-muted-foreground font-sans">
@@ -221,10 +221,10 @@ export default function OnboardingPage() {
                     key={role}
                     type="button"
                     onClick={() => setTargetRole(role)}
-                    className={`p-3.5 rounded-xl border text-center text-xs font-medium font-sans cursor-pointer transition-all ${
+                      className={`p-3.5 rounded-[20px] border text-center text-xs font-medium font-sans cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_28px_rgba(59,130,246,0.10)] ${
                       targetRole === role
-                        ? "bg-blue-500/10 border-blue-500 text-white"
-                        : "bg-slate-950/40 border-white/10 text-slate-300 hover:border-white/20"
+                        ? "border-primary bg-primary/10 text-foreground"
+                        : "border-[#BFDFFF] bg-white text-muted-foreground hover:border-primary/40"
                     }`}
                   >
                     {role}
@@ -236,10 +236,10 @@ export default function OnboardingPage() {
               <button
                 type="button"
                 onClick={() => setTargetRole("Custom")}
-                className={`w-full p-4 rounded-xl border text-center text-xs font-semibold font-sans cursor-pointer transition-all ${
+                className={`w-full rounded-[20px] border p-4 text-center text-xs font-semibold font-sans cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_28px_rgba(59,130,246,0.10)] ${
                   targetRole === "Custom"
-                    ? "bg-blue-500/10 border-blue-500 text-white"
-                    : "bg-slate-950/40 border-white/10 text-slate-300 hover:border-white/20"
+                    ? "border-primary bg-primary/10 text-foreground"
+                    : "border-[#BFDFFF] bg-white text-muted-foreground hover:border-primary/40"
                 }`}
               >
                 Custom Role
@@ -247,7 +247,7 @@ export default function OnboardingPage() {
 
               {targetRole === "Custom" && (
                 <div className="space-y-2">
-                  <Label htmlFor="customRoleInput" className="text-xs text-slate-200">
+                  <Label htmlFor="customRoleInput" className="text-xs text-slate-600">
                     Specify Target Engineering Role
                   </Label>
                   <Input
@@ -256,14 +256,14 @@ export default function OnboardingPage() {
                     type="text"
                     value={customRole}
                     onChange={(e) => setCustomRole(e.target.value)}
-                    className="bg-slate-950/50 border-white/10 text-white rounded-xl placeholder:text-slate-600 focus-visible:ring-blue-500"
+                    className="rounded-[20px] border-[#BFDFFF] bg-white/80 text-foreground placeholder:text-slate-400 focus-visible:ring-primary/40"
                   />
                 </div>
               )}
 
               <Button
                 onClick={handleNext}
-                className="w-full py-6 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-medium hover:shadow-indigo-500/10 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full rounded-[20px] bg-gradient-to-r from-primary via-sky-500 to-indigo-600 py-6 font-medium text-white transition-all flex items-center justify-center gap-2 cursor-pointer hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(59,130,246,0.20)]"
               >
                 Next Step
                 <ArrowRight className="w-4 h-4" />
@@ -281,7 +281,7 @@ export default function OnboardingPage() {
               className="space-y-6"
             >
               <div className="space-y-1">
-                <h2 className="text-xl font-bold tracking-tight text-white font-heading">
+                <h2 className="text-xl font-bold tracking-tight text-foreground font-heading">
                   Select Skills & Experience
                 </h2>
                 <p className="text-xs text-muted-foreground font-sans">
@@ -297,10 +297,10 @@ export default function OnboardingPage() {
                       key={skill}
                       type="button"
                       onClick={() => handleToggleSkill(skill)}
-                      className={`px-4 py-2 rounded-xl text-xs border font-sans cursor-pointer transition-all ${
+                      className={`px-4 py-2 rounded-[18px] text-xs border font-sans cursor-pointer transition-all duration-200 hover:-translate-y-0.5 ${
                         isSelected
-                          ? "bg-blue-500/10 border-blue-500 text-white"
-                          : "bg-slate-950/40 border-white/10 text-slate-400 hover:border-white/20"
+                          ? "border-primary bg-primary/10 text-foreground"
+                          : "border-[#BFDFFF] bg-white text-muted-foreground hover:border-primary/40"
                       }`}
                     >
                       {skill}
@@ -311,7 +311,7 @@ export default function OnboardingPage() {
 
               {/* Experience Proficiencies */}
               <div className="space-y-3 pt-2">
-                <Label className="text-xs font-semibold text-slate-200">
+                <Label className="text-xs font-semibold text-slate-600">
                   Estimated Average Proficiency Level
                 </Label>
                 <div className="grid grid-cols-3 gap-3">
@@ -320,10 +320,10 @@ export default function OnboardingPage() {
                       key={level}
                       type="button"
                       onClick={() => setProficiency(level)}
-                      className={`py-3 rounded-xl border text-xs font-medium uppercase font-sans cursor-pointer transition-all ${
+                      className={`py-3 rounded-[18px] border text-xs font-medium uppercase font-sans cursor-pointer transition-all duration-200 hover:-translate-y-0.5 ${
                         proficiency === level
-                          ? "bg-blue-500/10 border-blue-500 text-white"
-                          : "bg-slate-950/40 border-white/10 text-slate-400 hover:border-white/20"
+                          ? "border-primary bg-primary/10 text-foreground"
+                          : "border-[#BFDFFF] bg-white text-muted-foreground hover:border-primary/40"
                       }`}
                     >
                       {level}
@@ -335,14 +335,14 @@ export default function OnboardingPage() {
               <div className="flex items-center gap-4 pt-2">
                 <button
                   onClick={handleBack}
-                  className="flex-1 py-3 text-xs font-semibold text-muted-foreground hover:text-white border border-white/5 bg-slate-950 hover:bg-slate-800 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1"
+                  className="flex-1 cursor-pointer rounded-[18px] border border-[#BFDFFF] bg-white py-3 text-xs font-semibold text-muted-foreground transition-all flex items-center justify-center gap-1 hover:-translate-y-0.5 hover:border-primary/40 hover:text-foreground hover:shadow-[0_12px_24px_rgba(59,130,246,0.10)]"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                   Back
                 </button>
                 <Button
                   onClick={handleNext}
-                  className="flex-1 py-6 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-medium hover:shadow-indigo-500/10 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  className="flex-1 cursor-pointer rounded-[18px] bg-gradient-to-r from-primary via-sky-500 to-indigo-600 py-6 font-medium text-white transition-all flex items-center justify-center gap-2 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(59,130,246,0.20)]"
                 >
                   Next Step
                   <ArrowRight className="w-4 h-4" />
@@ -361,7 +361,7 @@ export default function OnboardingPage() {
               className="space-y-6"
             >
               <div className="space-y-1">
-                <h2 className="text-xl font-bold tracking-tight text-white font-heading">
+                <h2 className="text-xl font-bold tracking-tight text-foreground font-heading">
                   Academic Credentials
                 </h2>
                 <p className="text-xs text-muted-foreground font-sans">
@@ -372,7 +372,7 @@ export default function OnboardingPage() {
               <div className="space-y-4">
                 {/* University Name */}
                 <div className="space-y-1.5">
-                  <Label htmlFor="univ" className="text-xs font-semibold text-slate-200">
+                  <Label htmlFor="univ" className="text-xs font-semibold text-muted-foreground">
                     College / University Name
                   </Label>
                   <Input
@@ -381,14 +381,14 @@ export default function OnboardingPage() {
                     type="text"
                     value={academic.university}
                     onChange={(e) => setAcademic((prev) => ({ ...prev, university: e.target.value }))}
-                    className="bg-slate-950/50 border-white/10 text-white rounded-xl placeholder:text-slate-600 focus-visible:ring-blue-500"
+                    className="rounded-[20px] border-[#BFDFFF] bg-white/80 text-foreground placeholder:text-muted-foreground focus-visible:ring-primary/40 dark:bg-muted/40 dark:border-border"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   {/* Grad Year */}
                   <div className="space-y-1.5">
-                    <Label htmlFor="gradYear" className="text-xs font-semibold text-slate-200">
+                    <Label htmlFor="gradYear" className="text-xs font-semibold text-muted-foreground">
                       Graduation Year
                     </Label>
                     <Input
@@ -397,13 +397,13 @@ export default function OnboardingPage() {
                       type="number"
                       value={academic.gradYear}
                       onChange={(e) => setAcademic((prev) => ({ ...prev, gradYear: e.target.value }))}
-                      className="bg-slate-950/50 border-white/10 text-white rounded-xl placeholder:text-slate-600 focus-visible:ring-blue-500"
+                      className="rounded-[20px] border-[#BFDFFF] bg-white/80 text-foreground placeholder:text-muted-foreground focus-visible:ring-primary/40 dark:bg-muted/40 dark:border-border"
                     />
                   </div>
 
                   {/* GPA */}
                   <div className="space-y-1.5">
-                    <Label htmlFor="gpa" className="text-xs font-semibold text-slate-200">
+                    <Label htmlFor="gpa" className="text-xs font-semibold text-muted-foreground">
                       GPA / Score
                     </Label>
                     <Input
@@ -413,14 +413,14 @@ export default function OnboardingPage() {
                       step="0.01"
                       value={academic.gpa}
                       onChange={(e) => setAcademic((prev) => ({ ...prev, gpa: e.target.value }))}
-                      className="bg-slate-950/50 border-white/10 text-white rounded-xl placeholder:text-slate-600 focus-visible:ring-blue-500"
+                      className="rounded-[20px] border-[#BFDFFF] bg-white/80 text-foreground placeholder:text-muted-foreground focus-visible:ring-primary/40 dark:bg-muted/40 dark:border-border"
                     />
                   </div>
                 </div>
 
                 {/* Prior Internship */}
                 <div className="space-y-2 pt-2">
-                  <Label className="text-xs font-semibold text-slate-200">
+                  <Label className="text-xs font-semibold text-muted-foreground">
                     Prior Internship Experience?
                   </Label>
                   <div className="grid grid-cols-2 gap-3">
@@ -429,10 +429,10 @@ export default function OnboardingPage() {
                         key={choice}
                         type="button"
                         onClick={() => setAcademic((prev) => ({ ...prev, priorInternship: choice }))}
-                        className={`py-3 rounded-xl border text-xs font-semibold font-sans cursor-pointer transition-all ${
+                        className={`py-3 rounded-[18px] border text-xs font-semibold font-sans cursor-pointer transition-all duration-200 hover:-translate-y-0.5 ${
                           academic.priorInternship === choice
-                            ? "bg-blue-500/10 border-blue-500 text-white"
-                            : "bg-slate-950/40 border-white/10 text-slate-400 hover:border-white/20"
+                            ? "border-primary bg-primary/10 text-foreground"
+                            : "border-[#BFDFFF] bg-white text-muted-foreground hover:border-primary/40 dark:bg-secondary dark:border-border"
                         }`}
                       >
                         {choice}
@@ -445,14 +445,14 @@ export default function OnboardingPage() {
               <div className="flex items-center gap-4 pt-2">
                 <button
                   onClick={handleBack}
-                  className="flex-1 py-3 text-xs font-semibold text-muted-foreground hover:text-white border border-white/5 bg-slate-950 hover:bg-slate-800 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1"
+                  className="flex-1 cursor-pointer rounded-[18px] border border-[#BFDFFF] bg-white py-3 text-xs font-semibold text-muted-foreground transition-all flex items-center justify-center gap-1 hover:-translate-y-0.5 hover:border-primary/40 hover:text-foreground hover:shadow-[0_12px_24px_rgba(59,130,246,0.10)] dark:bg-secondary dark:border-border"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                   Back
                 </button>
                 <Button
                   onClick={handleNext}
-                  className="flex-1 py-6 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-medium hover:shadow-indigo-500/10 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  className="flex-1 cursor-pointer rounded-[18px] bg-gradient-to-r from-primary via-sky-500 to-indigo-600 py-6 font-medium text-primary-foreground transition-all flex items-center justify-center gap-2 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(59,130,246,0.20)]"
                 >
                   Next Step
                   <ArrowRight className="w-4 h-4" />
@@ -471,7 +471,7 @@ export default function OnboardingPage() {
               className="space-y-6"
             >
               <div className="space-y-1">
-                <h2 className="text-xl font-bold tracking-tight text-white font-heading">
+                <h2 className="text-xl font-bold tracking-tight text-foreground font-heading">
                   Digital Footprints
                 </h2>
                 <p className="text-xs text-muted-foreground font-sans">
@@ -482,7 +482,7 @@ export default function OnboardingPage() {
               <div className="space-y-4">
                 {/* GitHub Username */}
                 <div className="space-y-1.5">
-                  <Label htmlFor="github" className="text-xs font-semibold text-slate-200">
+                  <Label htmlFor="github" className="text-xs font-semibold text-muted-foreground">
                     GitHub Username
                   </Label>
                   <Input
@@ -491,13 +491,13 @@ export default function OnboardingPage() {
                     type="text"
                     value={socials.github}
                     onChange={(e) => setSocials((prev) => ({ ...prev, github: e.target.value }))}
-                    className="bg-slate-950/50 border-white/10 text-white rounded-xl placeholder:text-slate-600 focus-visible:ring-blue-500"
+                    className="rounded-[20px] border-[#BFDFFF] bg-white/80 text-foreground placeholder:text-muted-foreground focus-visible:ring-primary/40 dark:bg-muted/40 dark:border-border"
                   />
                 </div>
 
                 {/* LinkedIn URL */}
                 <div className="space-y-1.5">
-                  <Label htmlFor="linkedin" className="text-xs font-semibold text-slate-200">
+                  <Label htmlFor="linkedin" className="text-xs font-semibold text-muted-foreground">
                     LinkedIn Profile URL
                   </Label>
                   <Input
@@ -506,13 +506,13 @@ export default function OnboardingPage() {
                     type="url"
                     value={socials.linkedin}
                     onChange={(e) => setSocials((prev) => ({ ...prev, linkedin: e.target.value }))}
-                    className="bg-slate-950/50 border-white/10 text-white rounded-xl placeholder:text-slate-600 focus-visible:ring-blue-500"
+                    className="rounded-[20px] border-[#BFDFFF] bg-white/80 text-foreground placeholder:text-muted-foreground focus-visible:ring-primary/40 dark:bg-muted/40 dark:border-border"
                   />
                 </div>
 
                 {/* Custom Portfolio (Optional) */}
                 <div className="space-y-1.5">
-                  <Label htmlFor="portfolio" className="text-xs font-semibold text-slate-200">
+                  <Label htmlFor="portfolio" className="text-xs font-semibold text-muted-foreground">
                     Personal Portfolio URL (Optional)
                   </Label>
                   <Input
@@ -521,7 +521,7 @@ export default function OnboardingPage() {
                     type="url"
                     value={socials.portfolio}
                     onChange={(e) => setSocials((prev) => ({ ...prev, portfolio: e.target.value }))}
-                    className="bg-slate-950/50 border-white/10 text-white rounded-xl placeholder:text-slate-600 focus-visible:ring-blue-500"
+                    className="rounded-[20px] border-[#BFDFFF] bg-white/80 text-foreground placeholder:text-muted-foreground focus-visible:ring-primary/40 dark:bg-muted/40 dark:border-border"
                   />
                 </div>
               </div>
@@ -529,14 +529,14 @@ export default function OnboardingPage() {
               <div className="flex items-center gap-4 pt-2">
                 <button
                   onClick={handleBack}
-                  className="flex-1 py-3 text-xs font-semibold text-muted-foreground hover:text-white border border-white/5 bg-slate-950 hover:bg-slate-800 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1"
+                  className="flex-1 cursor-pointer rounded-[18px] border border-[#BFDFFF] bg-white py-3 text-xs font-semibold text-muted-foreground transition-all flex items-center justify-center gap-1 hover:-translate-y-0.5 hover:border-primary/40 hover:text-foreground hover:shadow-[0_12px_24px_rgba(59,130,246,0.10)] dark:bg-secondary dark:border-border"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                   Back
                 </button>
                 <Button
                   onClick={handleNext}
-                  className="flex-1 py-6 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-medium hover:shadow-indigo-500/10 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  className="flex-1 cursor-pointer rounded-[18px] bg-gradient-to-r from-primary via-sky-500 to-indigo-600 py-6 font-medium text-primary-foreground transition-all flex items-center justify-center gap-2 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(59,130,246,0.20)]"
                 >
                   Generate DNA
                   <Sparkles className="w-4 h-4 animate-pulse" />
@@ -560,15 +560,15 @@ export default function OnboardingPage() {
                     <motion.div
                       animate={{ scale: [1, 1.2, 1] }}
                       transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                      className="absolute inset-0 bg-blue-500/20 rounded-full blur-xl"
+                      className="absolute inset-0 bg-primary/20 rounded-full blur-xl"
                     />
-                    <div className="h-12 w-12 rounded-2xl bg-blue-500 flex items-center justify-center text-white shadow-lg">
+                    <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center text-primary-foreground shadow-lg shadow-primary/30">
                       <Cpu className="w-6 h-6 animate-pulse" />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <h3 className="text-lg font-bold text-white font-heading">
+                    <h3 className="text-lg font-bold text-foreground font-heading">
                       AI Career Engine Active
                     </h3>
                     <p className="text-xs text-muted-foreground font-mono transition-colors">
@@ -587,7 +587,7 @@ export default function OnboardingPage() {
                   </div>
 
                   <div className="space-y-1">
-                    <h3 className="text-xl font-bold text-white font-heading">
+                    <h3 className="text-xl font-bold text-foreground font-heading">
                       Career DNA Generated!
                     </h3>
                     <p className="text-xs text-muted-foreground font-sans">
@@ -595,21 +595,21 @@ export default function OnboardingPage() {
                     </p>
                   </div>
 
-                  {/* DNA Reveal Card */}
-                  <div className="bg-slate-950/60 border border-white/5 rounded-2xl p-5 text-left space-y-4">
-                    <div className="flex items-center justify-between border-b border-white/5 pb-3">
-                      <span className="text-xs font-semibold text-slate-300">Level Level</span>
-                      <span className="text-xs font-bold text-blue-400">Explorer 🚀</span>
+                  {/* DNA Reveal Card — uses section-card utility for themed styling */}
+                  <div className="section-card p-5 text-left space-y-4">
+                    <div className="flex items-center justify-between border-b border-[#BFDFFF] dark:border-border/50 pb-3">
+                      <span className="text-xs font-semibold text-muted-foreground">Career Level</span>
+                      <span className="text-xs font-bold text-primary">Explorer 🚀</span>
                     </div>
 
-                    <div className="flex items-center justify-between border-b border-white/5 pb-3">
-                      <span className="text-xs font-semibold text-slate-300">Initial Readiness Index</span>
-                      <span className="text-xs font-bold text-indigo-400">68%</span>
+                    <div className="flex items-center justify-between border-b border-[#BFDFFF] dark:border-border/50 pb-3">
+                      <span className="text-xs font-semibold text-muted-foreground">Initial Readiness Index</span>
+                      <span className="text-xs font-bold text-primary">68%</span>
                     </div>
 
                     <div className="flex items-start justify-between">
                       <div>
-                        <span className="text-xs font-semibold text-slate-300 block mb-1">Recommended Next Action</span>
+                        <span className="text-xs font-semibold text-foreground block mb-1">Recommended Next Action</span>
                         <span className="text-[10px] text-muted-foreground block leading-relaxed font-sans">
                           Complete a Skill Verification Quiz or link a Github repository to increase your readiness score.
                         </span>
@@ -619,7 +619,7 @@ export default function OnboardingPage() {
 
                   <Button
                     onClick={() => router.push("/dashboard")}
-                    className="w-full py-6 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-medium hover:shadow-indigo-500/10 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full cursor-pointer rounded-[18px] bg-gradient-to-r from-primary via-sky-500 to-indigo-600 py-6 font-medium text-primary-foreground transition-all flex items-center justify-center gap-2 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(59,130,246,0.20)]"
                   >
                     Enter My Dashboard
                     <ArrowRight className="w-4 h-4" />

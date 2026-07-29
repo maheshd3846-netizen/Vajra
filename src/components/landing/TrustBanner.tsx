@@ -18,9 +18,9 @@ export default function TrustBanner() {
   const loopList = [...networks, ...networks];
 
   return (
-    <section className="relative py-12 bg-slate-950/40 border-y border-white/5 overflow-hidden">
+    <section className="relative overflow-hidden border-y border-border/70 bg-background/60 py-12">
       <div className="max-w-7xl mx-auto px-6 mb-6 text-center">
-        <p className="text-xs font-semibold uppercase tracking-widest text-blue-400 font-sans">
+          <p className="text-xs font-semibold uppercase tracking-widest text-primary font-sans">
           Engineered for Colleges, Faculty & Enterprise Partners
         </p>
       </div>
@@ -41,10 +41,10 @@ export default function TrustBanner() {
             return (
               <div
                 key={`${network.name}-${index}`}
-                className="flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-900/50 border border-white/5 shadow-inner"
+                className="flex items-center gap-2 rounded-xl border border-border/70 bg-background/70 px-6 py-3 shadow-sm backdrop-blur-md"
               >
                 <Icon className="w-4 h-4 text-muted-foreground" />
-                <span className="text-sm font-medium text-slate-300 font-sans">{network.name}</span>
+                <span className="text-sm font-medium text-foreground/80 font-sans">{network.name}</span>
               </div>
             );
           })}

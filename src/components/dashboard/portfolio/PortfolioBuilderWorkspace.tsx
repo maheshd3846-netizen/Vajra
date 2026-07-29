@@ -292,14 +292,14 @@ ${generatedContent.content.careerObjective}
         </AnimatePresence>
 
         {/* Main Studio Card */}
-        <div className="bg-slate-900/60 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden">
+        <div className="glass-card overflow-hidden rounded-[28px] border-[#BFDFFF] bg-white/90 backdrop-blur-xl">
           {/* Tabs */}
-          <div className="flex border-b border-white/5">
+          <div className="flex border-b border-[#BFDFFF] bg-white/70">
             {(["generate", "export", "history"] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`flex-1 py-3.5 text-[11px] font-semibold uppercase tracking-wider transition-colors ${activeTab === tab ? "text-white border-b-2 border-blue-500 -mb-px" : "text-slate-500 hover:text-slate-300"}`}
+                className={`flex-1 py-3.5 text-[11px] font-semibold uppercase tracking-wider transition-all duration-200 ${activeTab === tab ? "-mb-px border-b-2 border-primary text-primary" : "text-muted-foreground hover:text-foreground"}`}
               >
                 {tab === "generate" && "✨ Generate"}
                 {tab === "export" && "📤 Export"}
@@ -314,11 +314,11 @@ ${generatedContent.content.careerObjective}
               <>
                 {/* Slug input */}
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-slate-300 font-semibold flex items-center gap-1.5">
-                    <Globe className="w-3.5 h-3.5 text-blue-400" /> Portfolio URL
+                  <Label className="flex items-center gap-1.5 text-xs font-semibold text-slate-600">
+                    <Globe className="w-3.5 h-3.5 text-primary" /> Portfolio URL
                   </Label>
                   <div className="flex items-center">
-                    <span className="bg-slate-950 border border-r-0 border-white/10 text-[10px] text-slate-500 px-3 py-3 rounded-l-xl select-none font-mono">
+                    <span className="select-none rounded-l-[18px] border border-r-0 border-[#BFDFFF] bg-white px-3 py-3 font-mono text-[10px] text-slate-500">
                       /p/
                     </span>
                     <Input
@@ -329,11 +329,11 @@ ${generatedContent.content.careerObjective}
                           e.target.value.toLowerCase().replace(/[^a-z0-9-_]/g, "")
                         )
                       }
-                      className="rounded-l-none bg-slate-950/50 border-white/10 text-white rounded-r-xl text-xs py-5"
+                      className="rounded-r-[18px] rounded-l-none border-[#BFDFFF] bg-white/80 py-5 text-xs text-foreground"
                     />
                   </div>
                   {slug && (
-                    <p className="text-[9px] text-slate-500 font-mono pl-1">
+                    <p className="pl-1 font-mono text-[9px] text-slate-500">
                       {typeof window !== "undefined" ? window.location.origin : ""}/p/{slug}
                     </p>
                   )}
@@ -341,8 +341,8 @@ ${generatedContent.content.careerObjective}
 
                 {/* Theme selection */}
                 <div className="space-y-2">
-                  <Label className="text-xs text-slate-300 font-semibold flex items-center gap-1.5">
-                    <Palette className="w-3.5 h-3.5 text-blue-400" /> Portfolio Theme
+                  <Label className="flex items-center gap-1.5 text-xs font-semibold text-slate-600">
+                    <Palette className="w-3.5 h-3.5 text-primary" /> Portfolio Theme
                   </Label>
                   <div className="grid grid-cols-1 gap-2">
                     {PORTFOLIO_THEMES.map((theme) => (
@@ -353,15 +353,15 @@ ${generatedContent.content.careerObjective}
                             ? handleThemeSwitch(theme.id)
                             : setSelectedTheme(theme.id)
                         }
-                        className={`flex items-center gap-3 p-3 rounded-xl border transition-all text-left ${selectedTheme === theme.id ? "border-blue-500/60 bg-blue-500/10" : "border-white/5 bg-slate-950/40 hover:border-white/10"}`}
+                        className={`flex items-center gap-3 rounded-[18px] border p-3 text-left transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_28px_rgba(59,130,246,0.10)] ${selectedTheme === theme.id ? "border-primary bg-primary/10" : "border-[#BFDFFF] bg-white/80 hover:border-primary/40"}`}
                       >
                         <span className="text-xl">{theme.icon}</span>
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-bold text-white">{theme.name}</p>
-                          <p className="text-[10px] text-slate-500 truncate">{theme.description}</p>
+                          <p className="text-xs font-bold text-foreground">{theme.name}</p>
+                          <p className="text-[10px] truncate text-slate-500">{theme.description}</p>
                         </div>
                         {selectedTheme === theme.id && (
-                          <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
+                          <CheckCircle2 className="w-4 h-4 shrink-0 text-primary" />
                         )}
                       </button>
                     ))}
@@ -377,17 +377,17 @@ ${generatedContent.content.careerObjective}
                       exit={{ opacity: 0, height: 0 }}
                       className="overflow-hidden"
                     >
-                      <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl space-y-2">
+                      <div className="space-y-2 rounded-[18px] border border-primary/20 bg-primary/10 p-3">
                         <div className="flex items-center gap-2">
-                          <Loader2 className="w-4 h-4 text-blue-400 animate-spin" />
-                          <span className="text-xs text-blue-300">
+                          <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                          <span className="text-xs text-primary">
                             {GENERATION_STEPS[generationStep]}
                           </span>
                         </div>
                         {/* Progress bar */}
-                        <div className="h-1 bg-white/10 rounded-full overflow-hidden">
+                        <div className="h-1 overflow-hidden rounded-full bg-muted/60">
                           <motion.div
-                            className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full"
+                            className="h-full rounded-full bg-gradient-to-r from-primary via-sky-400 to-indigo-600"
                             initial={{ width: "0%" }}
                             animate={{
                               width:
@@ -412,10 +412,10 @@ ${generatedContent.content.careerObjective}
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0 }}
-                      className="flex items-center gap-2 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl"
+                      className="flex items-center gap-2 rounded-[18px] border border-emerald-500/20 bg-emerald-500/10 p-3"
                     >
                       <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                      <span className="text-xs text-emerald-300">Portfolio live at /p/{slug}</span>
+                        <span className="text-xs text-emerald-600">Portfolio live at /p/{slug}</span>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -424,7 +424,7 @@ ${generatedContent.content.careerObjective}
                 <Button
                   onClick={handleGenerate}
                   disabled={isGenerating}
-                  className="w-full py-6 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold text-sm shadow-lg shadow-blue-500/20 transition-all"
+                  className="w-full rounded-[18px] bg-gradient-to-r from-primary via-sky-500 to-indigo-600 py-6 text-sm font-semibold text-white shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(59,130,246,0.20)]"
                 >
                   {isGenerating ? (
                     <>
@@ -447,7 +447,7 @@ ${generatedContent.content.careerObjective}
                 {generatedContent && (
                   <button
                     onClick={handlePreview}
-                    className="w-full py-3 text-xs font-semibold text-slate-400 hover:text-white border border-white/10 hover:border-white/20 rounded-xl transition-all flex items-center justify-center gap-1.5"
+                    className="flex w-full items-center justify-center gap-1.5 rounded-[18px] border border-[#BFDFFF] bg-white py-3 text-xs font-semibold text-muted-foreground transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:text-foreground hover:shadow-[0_12px_24px_rgba(59,130,246,0.10)]"
                   >
                     <Eye className="w-3.5 h-3.5" /> Preview Live Portfolio
                     <ExternalLink className="w-3 h-3" />
@@ -461,12 +461,12 @@ ${generatedContent.content.careerObjective}
               <div className="space-y-3">
                 {!generatedContent ? (
                   <div className="text-center py-8 space-y-2">
-                    <Sparkles className="w-8 h-8 text-slate-600 mx-auto" />
+                    <Sparkles className="mx-auto h-8 w-8 text-slate-500" />
                     <p className="text-xs text-slate-500">Generate a portfolio first to access export options.</p>
                   </div>
                 ) : (
                   <>
-                    <p className="text-xs text-slate-400 pb-1">
+                    <p className="pb-1 text-xs text-slate-500">
                       Share or export your AI-generated portfolio content.
                     </p>
                     {[
@@ -505,14 +505,14 @@ ${generatedContent.content.careerObjective}
                       <button
                         key={i}
                         onClick={item.action}
-                        className={`w-full flex items-center gap-3 p-3.5 rounded-xl border transition-all text-left ${item.highlight ? "border-emerald-500/40 bg-emerald-500/10" : "border-white/5 bg-slate-950/40 hover:border-white/10"}`}
+                        className={`flex w-full items-center gap-3 rounded-[18px] border p-3.5 text-left transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_28px_rgba(59,130,246,0.10)] ${item.highlight ? "border-emerald-500/40 bg-emerald-500/10" : "border-[#BFDFFF] bg-white/80 hover:border-primary/40"}`}
                       >
                         <div className="shrink-0">{item.icon}</div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-semibold text-white">{item.label}</p>
-                          <p className="text-[10px] text-slate-500 truncate">{item.desc}</p>
+                          <p className="text-xs font-semibold text-foreground">{item.label}</p>
+                          <p className="truncate text-[10px] text-slate-500">{item.desc}</p>
                         </div>
-                        <ChevronRight className="w-3.5 h-3.5 text-slate-600 shrink-0" />
+                        <ChevronRight className="w-3.5 h-3.5 shrink-0 text-slate-500" />
                       </button>
                     ))}
                   </>
@@ -530,19 +530,19 @@ ${generatedContent.content.careerObjective}
                   </div>
                 ) : (
                   <>
-                    <p className="text-[10px] text-slate-500 pb-1">Last {versionHistory.length} versions stored locally.</p>
+                    <p className="pb-1 text-[10px] text-slate-500">Last {versionHistory.length} versions stored locally.</p>
                     {versionHistory.map((v, i) => (
-                      <div key={i} className="p-3 border border-white/5 bg-slate-950/40 rounded-xl space-y-1">
+                      <div key={i} className="space-y-1 rounded-[18px] border border-[#BFDFFF] bg-white/80 p-3">
                         <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-mono text-slate-400">
+                          <span className="font-mono text-[10px] text-slate-500">
                             {new Date(v.timestamp).toLocaleString()}
                           </span>
-                          <span className="text-[9px] px-2 py-0.5 bg-blue-500/10 border border-blue-500/20 rounded text-blue-400 font-medium capitalize">
+                          <span className="rounded border border-primary/20 bg-primary/10 px-2 py-0.5 text-[9px] font-medium capitalize text-primary">
                             {v.theme}
                           </span>
                         </div>
-                        <p className="text-xs text-white/60 leading-tight truncate">{v.headline}</p>
-                        <p className="text-[9px] text-slate-600 font-mono">/p/{v.slug}</p>
+                        <p className="truncate text-xs leading-tight text-slate-700">{v.headline}</p>
+                        <p className="font-mono text-[9px] text-slate-500">/p/{v.slug}</p>
                       </div>
                     ))}
                   </>
@@ -555,9 +555,9 @@ ${generatedContent.content.careerObjective}
 
       {/* ─── RIGHT PANEL: LIVE PREVIEW ─── */}
       <div className="lg:col-span-7">
-        <div className="bg-slate-900/40 border border-white/10 rounded-2xl overflow-hidden">
+        <div className="glass-card overflow-hidden rounded-[28px] border-[#BFDFFF] bg-white/90">
           {/* Browser chrome */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-white/5 bg-slate-950/60">
+          <div className="flex items-center justify-between border-b border-[#BFDFFF] bg-white/80 px-4 py-3">
             <div className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-red-500/70" />
               <span className="w-2.5 h-2.5 rounded-full bg-amber-500/70" />
@@ -567,7 +567,7 @@ ${generatedContent.content.careerObjective}
               {generatedContent ? `/p/${slug}` : "Not yet generated"}
             </span>
             {generatedContent && (
-              <button onClick={handlePreview} className="text-[10px] text-blue-400 hover:text-blue-300 font-medium flex items-center gap-1">
+              <button onClick={handlePreview} className="flex items-center gap-1 text-[10px] font-medium text-primary hover:text-primary/80">
                 Open <ExternalLink className="w-3 h-3" />
               </button>
             )}
@@ -578,27 +578,27 @@ ${generatedContent.content.careerObjective}
             {!generatedContent ? (
               <div className="flex flex-col items-center justify-center h-[520px] space-y-4 px-8 text-center">
                 <div className="relative">
-                  <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-xl animate-pulse" />
-                  <Wand2 className="w-12 h-12 text-blue-400 relative z-10" />
+                  <div className="absolute inset-0 animate-pulse rounded-full bg-sky-400/20 blur-xl" />
+                  <Wand2 className="relative z-10 h-12 w-12 text-primary" />
                 </div>
-                <h3 className="text-base font-bold text-white">Your AI Portfolio Awaits</h3>
-                <p className="text-xs text-slate-500 max-w-xs leading-relaxed">
-                  Click <strong className="text-white">Generate AI Portfolio</strong> and Gemini will craft a premium, personalized portfolio website from your VAJRA profile in seconds.
+                <h3 className="text-base font-bold text-foreground">Your AI Portfolio Awaits</h3>
+                <p className="max-w-xs text-xs leading-relaxed text-slate-500">
+                  Click <strong className="text-foreground">Generate AI Portfolio</strong> and Gemini will craft a premium, personalized portfolio website from your VAJRA profile in seconds.
                 </p>
                 <div className="flex flex-wrap justify-center gap-2 text-[10px] text-slate-500">
                   {["Hero", "About", "Career DNA", "Projects", "Skills", "Certs", "Timeline", "Contact"].map(s => (
-                    <span key={s} className="px-2 py-1 border border-white/5 rounded">{s}</span>
+                    <span key={s} className="rounded border border-[#BFDFFF] bg-white px-2 py-1">{s}</span>
                   ))}
                 </div>
               </div>
             ) : isGenerating ? (
               <div className="flex flex-col items-center justify-center h-[520px] space-y-6">
                 <div className="relative">
-                  <div className="absolute inset-0 bg-indigo-500/20 rounded-full blur-xl animate-pulse" />
-                  <Sparkles className="w-10 h-10 text-indigo-400 animate-spin relative z-10" style={{ animationDuration: "3s" }} />
+                  <div className="absolute inset-0 animate-pulse rounded-full bg-indigo-500/20 blur-xl" />
+                  <Sparkles className="relative z-10 h-10 w-10 animate-spin text-primary" style={{ animationDuration: "3s" }} />
                 </div>
                 <div className="text-center space-y-2">
-                  <p className="text-sm font-bold text-white">{GENERATION_STEPS[generationStep]}</p>
+                  <p className="text-sm font-bold text-foreground">{GENERATION_STEPS[generationStep]}</p>
                   <p className="text-[11px] text-slate-500">
                     {generationStep === "generating" ? "This usually takes 10-20 seconds..." : "Almost there..."}
                   </p>
@@ -606,21 +606,21 @@ ${generatedContent.content.careerObjective}
               </div>
             ) : (
               /* Generated content preview */
-              <div className="p-6 space-y-6 overflow-y-auto max-h-[600px] scrollbar-thin scrollbar-thumb-white/10">
+              <div className="max-h-[600px] space-y-6 overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-white/10">
                 {/* Theme badge */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="text-lg">
                       {PORTFOLIO_THEMES.find((t) => t.id === generatedContent.theme)?.icon}
                     </span>
-                    <span className="text-xs font-bold text-white capitalize">
+                    <span className="text-xs font-bold text-foreground capitalize">
                       {generatedContent.theme} Theme
                     </span>
                     <span className="text-[9px] px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded font-medium">
                       LIVE
                     </span>
                   </div>
-                  <span className="text-[9px] text-slate-500 font-mono">
+                  <span className="font-mono text-[9px] text-slate-500">
                     v{generatedContent.version} · {new Date(generatedContent.generatedAt).toLocaleDateString()}
                   </span>
                 </div>
@@ -628,45 +628,45 @@ ${generatedContent.content.careerObjective}
                 {/* Content preview cards */}
                 <div className="space-y-4">
                   {/* Headline */}
-                  <div className="p-4 bg-gradient-to-r from-blue-500/10 to-indigo-500/5 border border-blue-500/20 rounded-xl">
-                    <p className="text-[9px] text-blue-400 uppercase font-bold tracking-wider mb-1">Headline</p>
-                    <p className="text-sm font-bold text-white leading-tight">{generatedContent.content.headline}</p>
+                  <div className="rounded-[18px] border border-primary/20 bg-gradient-to-r from-primary/10 to-sky-500/5 p-4">
+                    <p className="mb-1 text-[9px] font-bold uppercase tracking-wider text-primary">Headline</p>
+                    <p className="text-sm font-bold leading-tight text-foreground">{generatedContent.content.headline}</p>
                   </div>
                   {/* Tagline */}
-                  <div className="p-3 bg-white/[0.02] border border-white/5 rounded-xl">
+                  <div className="rounded-[18px] border border-[#BFDFFF] bg-white/80 p-3">
                     <p className="text-[9px] text-slate-500 uppercase font-bold tracking-wider mb-1">Tagline</p>
-                    <p className="text-xs text-white/60 italic">{generatedContent.content.tagline}</p>
+                    <p className="text-xs italic text-slate-700">{generatedContent.content.tagline}</p>
                   </div>
                   {/* Bio */}
-                  <div className="p-3 bg-white/[0.02] border border-white/5 rounded-xl">
+                  <div className="rounded-[18px] border border-[#BFDFFF] bg-white/80 p-3">
                     <p className="text-[9px] text-slate-500 uppercase font-bold tracking-wider mb-1">Short Bio</p>
-                    <p className="text-xs text-white/60 leading-relaxed">{generatedContent.content.shortBio}</p>
+                    <p className="text-xs leading-relaxed text-slate-700">{generatedContent.content.shortBio}</p>
                   </div>
                   {/* Strengths */}
                   {generatedContent.content.strengths?.length > 0 && (
-                    <div className="p-3 bg-white/[0.02] border border-white/5 rounded-xl">
+                    <div className="rounded-[18px] border border-[#BFDFFF] bg-white/80 p-3">
                       <p className="text-[9px] text-slate-500 uppercase font-bold tracking-wider mb-2">Key Strengths</p>
                       <div className="space-y-1">
                         {generatedContent.content.strengths.slice(0, 3).map((s, i) => (
-                          <div key={i} className="flex items-start gap-2 text-[11px] text-white/50">
-                            <span className="text-emerald-400 shrink-0">✓</span> {s}
+                          <div key={i} className="flex items-start gap-2 text-[11px] text-slate-700">
+                            <span className="shrink-0 text-emerald-500">✓</span> {s}
                           </div>
                         ))}
                       </div>
                     </div>
                   )}
                   {/* SEO */}
-                  <div className="p-3 bg-white/[0.02] border border-white/5 rounded-xl">
+                  <div className="rounded-[18px] border border-[#BFDFFF] bg-white/80 p-3">
                     <p className="text-[9px] text-slate-500 uppercase font-bold tracking-wider mb-1">SEO Title</p>
-                    <p className="text-[11px] text-blue-400 font-medium">{generatedContent.content.seoTitle}</p>
+                    <p className="text-[11px] font-medium text-primary">{generatedContent.content.seoTitle}</p>
                     <p className="text-[10px] text-slate-500 mt-1 leading-relaxed">{generatedContent.content.seoDescription}</p>
                   </div>
                   {/* Project impacts */}
                   {generatedContent.content.projectImpacts?.length > 0 && (
-                    <div className="p-3 bg-white/[0.02] border border-white/5 rounded-xl">
+                    <div className="rounded-[18px] border border-[#BFDFFF] bg-white/80 p-3">
                       <p className="text-[9px] text-slate-500 uppercase font-bold tracking-wider mb-2">Project Impact Summaries</p>
                       {generatedContent.content.projectImpacts.slice(0, 2).map((p, i) => (
-                        <div key={i} className="text-[11px] text-white/40 leading-relaxed mb-2 pb-2 border-b border-white/5 last:border-0 last:mb-0 last:pb-0">
+                        <div key={i} className="mb-2 border-b border-[#BFDFFF] pb-2 text-[11px] leading-relaxed text-slate-700 last:mb-0 last:border-0 last:pb-0">
                           {p.impactSummary}
                         </div>
                       ))}
@@ -676,13 +676,13 @@ ${generatedContent.content.careerObjective}
 
                 {/* Quick Actions */}
                 <div className="flex gap-2 pt-2">
-                  <button onClick={handlePreview} className="flex-1 py-2.5 text-[11px] font-semibold text-white bg-gradient-to-r from-blue-600/80 to-indigo-600/80 rounded-xl flex items-center justify-center gap-1.5 hover:from-blue-600 hover:to-indigo-600 transition-all">
+                  <button onClick={handlePreview} className="flex-1 rounded-[18px] bg-gradient-to-r from-primary via-sky-500 to-indigo-600 py-2.5 text-[11px] font-semibold text-white transition-all hover:-translate-y-0.5">
                     <Eye className="w-3.5 h-3.5" /> View Live
                   </button>
-                  <button onClick={handleCopyLink} className="flex-1 py-2.5 text-[11px] font-semibold text-slate-300 border border-white/10 rounded-xl flex items-center justify-center gap-1.5 hover:border-white/20 transition-all">
+                  <button onClick={handleCopyLink} className="flex-1 rounded-[18px] border border-[#BFDFFF] bg-white py-2.5 text-[11px] font-semibold text-muted-foreground transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:text-foreground">
                     <Share2 className="w-3.5 h-3.5" /> Share
                   </button>
-                  <button onClick={handleExportJSON} className="flex-1 py-2.5 text-[11px] font-semibold text-slate-300 border border-white/10 rounded-xl flex items-center justify-center gap-1.5 hover:border-white/20 transition-all">
+                  <button onClick={handleExportJSON} className="flex-1 rounded-[18px] border border-[#BFDFFF] bg-white py-2.5 text-[11px] font-semibold text-muted-foreground transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:text-foreground">
                     <Download className="w-3.5 h-3.5" /> Export
                   </button>
                 </div>

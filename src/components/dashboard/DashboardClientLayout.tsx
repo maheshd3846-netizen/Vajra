@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import {
   LayoutDashboard,
   FileText,
@@ -22,8 +23,6 @@ import {
   GraduationCap,
   BarChart3,
   Briefcase,
-  Sun,
-  Moon,
   BrainCircuit,
 } from "lucide-react";
 
@@ -47,25 +46,6 @@ export default function DashboardClientLayout({
   const router = useRouter();
   const supabase = createClient();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [isDark, setIsDark] = useState(true);
-
-  React.useEffect(() => {
-    const isDarkClass = document.documentElement.classList.contains("dark");
-    setIsDark(isDarkClass);
-  }, []);
-
-  const toggleTheme = () => {
-    if (document.documentElement.classList.contains("dark")) {
-      document.documentElement.classList.remove("dark");
-      document.documentElement.style.colorScheme = "light";
-      setIsDark(false);
-    } else {
-      document.documentElement.classList.add("dark");
-      document.documentElement.style.colorScheme = "dark";
-      setIsDark(true);
-    }
-  };
-
   const role = profile?.role || "student";
 
   const MENU_ITEMS = {
@@ -147,11 +127,14 @@ export default function DashboardClientLayout({
   return (
     <div className="min-h-screen bg-background flex font-sans overflow-x-hidden text-foreground">
       {/* 1. Desktop Sidebar */}
-      <aside className="hidden lg:flex flex-col w-64 bg-card border-r border-border shrink-0 sticky top-0 h-screen z-20">
+      <aside className="hidden lg:flex flex-col w-72 bg-card/80 backdrop-blur-xl border-r border-border/70 shrink-0 sticky top-0 h-screen z-20 shadow-[0_16px_48px_rgba(0,0,0,0.12)]">
         {/* Brand Logo */}
-        <div className="h-20 border-b border-border flex items-center px-6">
-          <Link href={dashboardLink} className="text-xl font-bold font-heading tracking-widest bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
-            VAJRA
+        <div className="h-20 border-b border-border/70 flex items-center px-6">
+          <Link href={dashboardLink} className="flex items-center gap-3 text-xl font-bold font-heading tracking-widest">
+            <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/15 text-sm text-primary shadow-inner shadow-primary/10">V</span>
+            <span className="bg-gradient-to-r from-primary to-violet-500 bg-clip-text text-transparent">
+              VAJRA
+            </span>
           </Link>
         </div>
 
@@ -166,8 +149,8 @@ export default function DashboardClientLayout({
                 href={item.href}
                 className={`flex items-center gap-3 px-4 py-3.5 rounded-xl text-xs font-semibold tracking-wide transition-all ${
                   isActive
-                    ? "bg-primary/10 border border-primary/20 text-foreground font-bold"
-                    : "text-muted-foreground hover:text-foreground border border-transparent hover:bg-muted/40"
+                    ? "bg-primary/10 border border-primary/20 text-foreground font-bold shadow-sm shadow-primary/10"
+                    : "text-muted-foreground hover:text-foreground border border-transparent hover:bg-muted/60"
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -178,9 +161,9 @@ export default function DashboardClientLayout({
         </nav>
 
         {/* Footer Profile card */}
-        <div className="p-4 border-t border-border flex flex-col gap-3">
+        <div className="p-4 border-t border-border/70 flex flex-col gap-3">
           <div className="flex items-center gap-3 px-2">
-            <div className="h-10 w-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center font-bold text-sm text-primary">
+            <div className="h-11 w-11 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center font-bold text-sm text-primary">
               {userInitials}
             </div>
             <div className="min-w-0 flex-1">
@@ -204,51 +187,45 @@ export default function DashboardClientLayout({
       <div className="flex-1 flex flex-col min-w-0">
         
         {/* Top Navbar */}
-        <header className="h-20 border-b border-border bg-card/60 backdrop-blur-md sticky top-0 z-10 flex items-center justify-between px-6">
+        <header className="h-20 border-b border-border/70 bg-background/75 backdrop-blur-xl sticky top-0 z-10 flex items-center justify-between px-6 shadow-sm">
           <div className="flex items-center gap-4">
             {/* Mobile menu toggle */}
             <button
               onClick={() => setIsMobileOpen(!isMobileOpen)}
-              className="lg:hidden p-2 text-slate-400 hover:text-white focus:outline-none"
+              className="lg:hidden rounded-xl border border-border/70 bg-background/80 p-2 text-muted-foreground shadow-sm backdrop-blur-md hover:text-foreground focus:outline-none"
               aria-label="Toggle Menu"
             >
               <Menu className="w-5 h-5" />
             </button>
-            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-200 font-sans hidden sm:block">
+            <h2 className="hidden text-sm font-bold uppercase tracking-wider text-foreground/80 font-sans sm:block">
               {menuItems.find((item) => item.href === pathname)?.name || "Dashboard"}
             </h2>
           </div>
 
           <div className="flex items-center gap-4">
             {/* Role Status Pill */}
-            <span className="text-[10px] uppercase font-mono tracking-widest text-blue-400 bg-blue-500/10 border border-blue-500/20 px-3 py-1 rounded-full">
+            <span className="text-[10px] uppercase font-mono tracking-widest text-primary bg-primary/10 border border-primary/20 px-3 py-1 rounded-full">
               {role} 🚀
             </span>
 
             {/* Theme Toggle */}
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-xl bg-slate-950 dark:bg-slate-950 border border-white/5 dark:border-white/5 text-slate-400 hover:text-white hover:border-white/10 dark:hover:border-white/10 transition-all cursor-pointer"
-              aria-label="Toggle Theme"
-            >
-              {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-blue-500" />}
-            </button>
+            <ThemeToggle className="hidden sm:block" />
 
             {/* Notification Bell */}
-            <button className="p-2 rounded-xl bg-slate-950 border border-white/5 text-slate-400 hover:text-white hover:border-white/10 transition-all relative">
+            <button className="relative rounded-xl border border-border/70 bg-background/80 p-2 text-muted-foreground transition-all hover:-translate-y-0.5 hover:text-foreground shadow-sm backdrop-blur-md">
               <Bell className="w-4 h-4" />
-              <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-blue-400 animate-ping" />
+              <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-primary animate-ping" />
             </button>
 
             {/* Profile Avatar */}
-            <div className="h-10 w-10 rounded-xl bg-slate-950 border border-white/5 flex items-center justify-center font-bold text-xs text-slate-300 sm:hidden">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-border/70 bg-background/80 text-xs font-bold text-foreground shadow-sm backdrop-blur-md sm:hidden">
               {userInitials}
             </div>
           </div>
         </header>
 
         {/* Children Page content */}
-        <main className="flex-1 p-6 relative">
+        <main className="flex-1 p-4 sm:p-6 relative">
           {children}
         </main>
       </div>
@@ -263,7 +240,7 @@ export default function DashboardClientLayout({
               animate={{ opacity: 0.5 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsMobileOpen(false)}
-              className="fixed inset-0 bg-black z-30 lg:hidden"
+              className="fixed inset-0 z-30 bg-foreground/60 lg:hidden backdrop-blur-[2px]"
             />
             {/* Drawer */}
             <motion.aside
@@ -271,15 +248,15 @@ export default function DashboardClientLayout({
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", bounce: 0, duration: 0.4 }}
-              className="fixed top-0 bottom-0 left-0 w-64 bg-slate-900 border-r border-white/10 z-40 lg:hidden flex flex-col"
+              className="fixed top-0 bottom-0 left-0 w-72 bg-background/95 border-r border-border/70 z-40 lg:hidden flex flex-col backdrop-blur-xl"
             >
-              <div className="h-20 border-b border-white/10 flex items-center justify-between px-6">
-                <span className="text-xl font-bold font-heading tracking-widest bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
+              <div className="h-20 border-b border-border/70 flex items-center justify-between px-6">
+                <span className="text-xl font-bold font-heading tracking-widest bg-gradient-to-r from-primary to-violet-500 bg-clip-text text-transparent">
                   VAJRA
                 </span>
                 <button
                   onClick={() => setIsMobileOpen(false)}
-                  className="p-1 text-slate-400 hover:text-white"
+                  className="rounded-lg border border-border/70 p-1 text-muted-foreground hover:text-foreground"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -296,8 +273,8 @@ export default function DashboardClientLayout({
                       onClick={() => setIsMobileOpen(false)}
                       className={`flex items-center gap-3 px-4 py-3.5 rounded-xl text-xs font-semibold tracking-wide transition-all ${
                         isActive
-                          ? "bg-blue-500/10 border border-blue-500/20 text-white"
-                          : "text-slate-400 hover:text-white border border-transparent hover:bg-slate-950/40"
+                          ? "bg-primary/10 border border-primary/20 text-foreground"
+                          : "text-muted-foreground hover:text-foreground border border-transparent hover:bg-muted/60"
                       }`}
                     >
                       <Icon className="w-4 h-4" />
@@ -307,13 +284,13 @@ export default function DashboardClientLayout({
                 })}
               </nav>
 
-              <div className="p-4 border-t border-white/10 flex flex-col gap-3">
+              <div className="p-4 border-t border-border/70 flex flex-col gap-3">
                 <div className="flex items-center gap-3 px-2">
-                  <div className="h-10 w-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center font-bold text-sm text-blue-400">
+                  <div className="h-11 w-11 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center font-bold text-sm text-primary">
                     {userInitials}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h4 className="text-xs font-semibold text-white truncate">
+                    <h4 className="text-xs font-semibold text-foreground truncate">
                       {profile?.full_name || "Vajra User"}
                     </h4>
                     <p className="text-[10px] text-muted-foreground truncate">{email}</p>

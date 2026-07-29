@@ -147,7 +147,7 @@ function LoginFormContent() {
   return (
     <div className="space-y-6">
       <div className="space-y-2 text-center">
-        <h2 className="text-2xl font-bold tracking-tight font-heading text-white">
+        <h2 className="text-2xl font-bold tracking-tight font-heading text-foreground">
           Welcome Back
         </h2>
         <p className="text-xs text-muted-foreground font-sans">
@@ -158,16 +158,16 @@ function LoginFormContent() {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {/* Email */}
         <div className="space-y-2">
-          <Label htmlFor="email" className="text-xs font-semibold text-slate-200">
+          <Label htmlFor="email" className="text-xs font-semibold text-foreground/80">
             Email Address
           </Label>
           <div className="relative">
-            <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-500" />
+            <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input
               id="email"
               placeholder="name@university.edu"
               type="email"
-              className="pl-10 bg-slate-950/50 border-white/10 text-white rounded-xl placeholder:text-slate-600 focus-visible:ring-blue-500"
+              className="pl-10 rounded-xl border-border/70 bg-background/70 text-foreground placeholder:text-muted-foreground/70"
               {...register("email")}
             />
           </div>
@@ -179,29 +179,29 @@ function LoginFormContent() {
         {/* Password */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label htmlFor="password" className="text-xs font-semibold text-slate-200">
+            <Label htmlFor="password" className="text-xs font-semibold text-foreground/80">
               Password
             </Label>
             <Link
               href="/forgot-password"
-              className="text-[11px] font-medium text-blue-400 hover:text-blue-300 transition-colors"
+              className="text-[11px] font-medium text-primary hover:text-primary/80 transition-colors"
             >
               Forgot password?
             </Link>
           </div>
           <div className="relative">
-            <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-500" />
+            <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input
               id="password"
               placeholder="••••••••"
               type={showPassword ? "text" : "password"}
-              className="pl-10 pr-10 bg-slate-950/50 border-white/10 text-white rounded-xl placeholder:text-slate-600 focus-visible:ring-blue-500"
+              className="pl-10 pr-10 rounded-xl border-border/70 bg-background/70 text-foreground placeholder:text-muted-foreground/70"
               {...register("password")}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-3 text-slate-500 hover:text-slate-300 focus:outline-none"
+              className="absolute right-3 top-3 text-muted-foreground hover:text-foreground focus:outline-none"
             >
               {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
@@ -215,7 +215,7 @@ function LoginFormContent() {
         <Button
           type="submit"
           disabled={isLoading || isGoogleLoading}
-          className="w-full py-6 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-medium hover:shadow-indigo-500/10 transition-all cursor-pointer flex items-center justify-center gap-2"
+          className="w-full rounded-xl bg-gradient-to-r from-primary to-violet-500 py-6 font-medium text-white transition-all cursor-pointer flex items-center justify-center gap-2 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/20"
         >
           {isLoading ? (
             <>
@@ -231,9 +231,9 @@ function LoginFormContent() {
       {/* Divider */}
       <div className="relative flex items-center justify-center">
         <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t border-white/5" />
+          <span className="w-full border-t border-border/70" />
         </div>
-        <span className="relative bg-[#0b0f19] px-3 text-[10px] uppercase font-mono tracking-wider text-slate-500">
+        <span className="relative bg-background px-3 text-[10px] uppercase font-mono tracking-wider text-muted-foreground">
           Or continue with
         </span>
       </div>
@@ -244,7 +244,7 @@ function LoginFormContent() {
         variant="outline"
         disabled={isLoading || isGoogleLoading}
         onClick={handleGoogleLogin}
-        className="w-full py-6 rounded-xl bg-slate-950/40 hover:bg-slate-900 border-white/10 text-slate-300 hover:text-white transition-all cursor-pointer flex items-center justify-center gap-2"
+        className="w-full rounded-xl border-border/70 bg-background/70 py-6 text-foreground transition-all cursor-pointer flex items-center justify-center gap-2 hover:-translate-y-0.5 hover:bg-muted/70"
       >
         {isGoogleLoading ? (
           <>

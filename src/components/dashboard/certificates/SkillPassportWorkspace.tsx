@@ -108,37 +108,37 @@ export default function SkillPassportWorkspace({
   };
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto">
+    <div className="space-y-8 max-w-7xl mx-auto text-foreground">
       
       {/* Overview stats panel */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 font-sans">
         
         {/* Passport Summary */}
-        <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between min-h-[140px]">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl pointer-events-none" />
+        <div className="glass-card relative flex min-h-[140px] flex-col justify-between overflow-hidden rounded-[28px] border-[#BFDFFF] p-5 backdrop-blur-xl">
+          <div className="pointer-events-none absolute top-0 right-0 h-24 w-24 rounded-full bg-sky-400/10 blur-2xl" />
           <div>
-            <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Skill Tracks Verified</h3>
-            <p className="text-3xl font-bold text-white font-mono mt-2">{verifiedSkillsCount}</p>
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500">Skill Tracks Verified</h3>
+            <p className="mt-2 font-mono text-3xl font-bold text-foreground">{verifiedSkillsCount}</p>
           </div>
           <span className="text-[10px] text-muted-foreground block">Verified skills are indexed to your DNA.</span>
         </div>
 
         {/* Credentials Count */}
-        <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between min-h-[140px]">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/5 rounded-full blur-2xl pointer-events-none" />
+        <div className="glass-card relative flex min-h-[140px] flex-col justify-between overflow-hidden rounded-[28px] border-[#BFDFFF] p-5 backdrop-blur-xl">
+          <div className="pointer-events-none absolute top-0 right-0 h-24 w-24 rounded-full bg-primary/10 blur-2xl" />
           <div>
-            <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Active Credentials</h3>
-            <p className="text-3xl font-bold text-white font-mono mt-2">{activeCertificates.length}</p>
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500">Active Credentials</h3>
+            <p className="mt-2 font-mono text-3xl font-bold text-foreground">{activeCertificates.length}</p>
           </div>
           <span className="text-[10px] text-muted-foreground block">Badges issued by verified entities.</span>
         </div>
 
         {/* Security verification state */}
-        <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between min-h-[140px]">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
+        <div className="glass-card relative flex min-h-[140px] flex-col justify-between overflow-hidden rounded-[28px] border-[#BFDFFF] p-5 backdrop-blur-xl">
+          <div className="pointer-events-none absolute top-0 right-0 h-24 w-24 rounded-full bg-emerald-500/10 blur-2xl" />
           <div>
-            <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Tamper-Proof Integrity</h3>
-            <div className="flex items-center gap-1.5 mt-3 text-emerald-400 font-semibold text-sm">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500">Tamper-Proof Integrity</h3>
+            <div className="mt-3 flex items-center gap-1.5 text-sm font-semibold text-emerald-600">
               <ShieldCheck className="w-5 h-5" />
               STATUS: SECURED
             </div>
@@ -150,44 +150,44 @@ export default function SkillPassportWorkspace({
 
       {/* Main Credentials grid section */}
       <div className="space-y-4">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-200 font-sans flex items-center gap-1.5">
-          <Award className="w-4.5 h-4.5 text-blue-400" />
+        <h3 className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-600 font-sans">
+          <Award className="w-4.5 h-4.5 text-primary" />
           Active Certificate Ledger
         </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {activeCertificates.map((cert) => (
             <div
               key={cert.id}
-              className="bg-slate-900/50 backdrop-blur-md border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all flex flex-col justify-between min-h-[220px]"
+              className="glass-card flex min-h-[220px] flex-col justify-between rounded-[28px] border-[#BFDFFF] p-6 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_12px_40px_rgba(59,130,246,0.10)]"
             >
               <div>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-[9px] uppercase font-mono tracking-wider font-semibold text-blue-400 px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/20">
+                <div className="mb-3 flex items-center justify-between">
+                  <span className="rounded border border-primary/20 bg-primary/10 px-2 py-0.5 text-[9px] font-mono font-semibold tracking-wider text-primary uppercase">
                     {cert.issuer}
                   </span>
-                  <span className="flex items-center gap-1 text-[10px] text-muted-foreground font-mono">
+                  <span className="flex items-center gap-1 font-mono text-[10px] text-muted-foreground">
                     <Calendar className="w-3.5 h-3.5" />
                     {cert.issue_date}
                   </span>
                 </div>
-                <h4 className="text-sm font-bold text-white font-heading leading-snug">{cert.name}</h4>
-                <p className="text-[10px] text-slate-500 font-mono mt-2 truncate">
+                <h4 className="text-sm font-bold leading-snug text-foreground font-heading">{cert.name}</h4>
+                <p className="mt-2 truncate font-mono text-[10px] text-slate-500">
                   SHA-256: {cert.credential_id || "vj-hash-pending"}
                 </p>
               </div>
 
-              <div className="flex gap-2 mt-6 pt-4 border-t border-white/5 font-sans">
+              <div className="mt-6 flex gap-2 border-t border-[#BFDFFF] pt-4 font-sans">
                 <button
                   onClick={() => handleCopyLink(cert)}
-                  className="p-3 bg-slate-950 border border-white/10 hover:border-white/20 text-slate-400 hover:text-white rounded-xl transition-all cursor-pointer flex items-center justify-center"
+                  className="flex cursor-pointer items-center justify-center rounded-[18px] border border-[#BFDFFF] bg-white p-3 text-slate-500 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:text-foreground"
                   aria-label="Copy Verification Link"
                 >
                   <Copy className="w-4 h-4" />
                 </button>
                 <Button
                   onClick={() => setActiveModalCert(cert)}
-                  className="flex-1 py-4 bg-blue-500 hover:bg-blue-600 text-xs font-semibold text-white transition-colors cursor-pointer flex items-center justify-center gap-1"
+                  className="flex-1 cursor-pointer items-center justify-center gap-1 rounded-[18px] bg-gradient-to-r from-primary via-sky-500 to-indigo-600 py-4 text-xs font-semibold text-white transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(59,130,246,0.20)]"
                 >
                   View Certificate
                   <ExternalLink className="w-3.5 h-3.5" />
@@ -204,71 +204,71 @@ export default function SkillPassportWorkspace({
           {/* Backdrop */}
           <div
             onClick={() => setActiveModalCert(null)}
-            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+            className="absolute inset-0 bg-foreground/40 backdrop-blur-sm"
           />
 
           {/* Credential Frame Card */}
-          <div className="w-full max-w-2xl bg-slate-950 border-[12px] border-slate-900 p-8 rounded-2xl shadow-2xl relative z-10 space-y-8 flex flex-col justify-between relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl pointer-events-none" />
+          <div className="glass-card relative z-10 flex w-full max-w-2xl flex-col justify-between space-y-8 overflow-hidden rounded-[28px] border-[#BFDFFF] bg-white/92 p-8 shadow-[0_12px_40px_rgba(59,130,246,0.10)]">
+            <div className="pointer-events-none absolute top-0 right-0 h-64 w-64 rounded-full bg-sky-400/10 blur-3xl" />
             
             {/* Top Close button */}
             <button
               onClick={() => setActiveModalCert(null)}
-              className="absolute top-4 right-4 p-1.5 rounded-lg bg-slate-900 border border-white/5 text-slate-400 hover:text-white cursor-pointer"
+              className="absolute top-4 right-4 cursor-pointer rounded-lg border border-[#BFDFFF] bg-white p-1.5 text-slate-500 hover:text-foreground"
             >
               <X className="w-4 h-4" />
             </button>
 
             {/* Credential Title & Signatures Layout */}
             <div className="text-center space-y-4 pt-4">
-              <span className="text-[10px] uppercase font-mono tracking-widest text-blue-400">
+              <span className="text-[10px] uppercase font-mono tracking-widest text-primary">
                 Official Skill Endorsement Certificate
               </span>
-              <h2 className="text-xl md:text-2xl font-bold text-white font-heading max-w-md mx-auto leading-tight">
+              <h2 className="mx-auto max-w-md text-xl font-bold leading-tight text-foreground font-heading md:text-2xl">
                 {activeModalCert.name}
               </h2>
-              <div className="h-[1px] w-24 bg-gradient-to-r from-transparent via-blue-500 to-transparent mx-auto my-4" />
-              <p className="text-xs text-slate-400 font-sans max-w-sm mx-auto leading-relaxed">
-                This document certifies that <span className="text-white font-semibold">{profileName}</span> has completed the technical benchmarks required for this track.
+              <div className="mx-auto my-4 h-[1px] w-24 bg-gradient-to-r from-transparent via-primary to-transparent" />
+              <p className="mx-auto max-w-sm text-xs leading-relaxed text-muted-foreground font-sans">
+                This document certifies that <span className="font-semibold text-foreground">{profileName}</span> has completed the technical benchmarks required for this track.
               </p>
             </div>
 
             {/* Middle QR & Hash metadata */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-6 p-5 rounded-xl bg-slate-900/40 border border-white/5">
+            <div className="flex flex-col items-center justify-between gap-6 rounded-[24px] border border-[#BFDFFF] bg-white/80 p-5 sm:flex-row">
               <div className="space-y-2 text-center sm:text-left">
                 <div>
-                  <span className="text-[9px] uppercase font-mono text-slate-500 block">Certificate Ledger ID</span>
-                  <span className="text-xs font-mono text-slate-300 font-semibold">{activeModalCert.id}</span>
+                  <span className="block text-[9px] uppercase font-mono text-slate-500">Certificate Ledger ID</span>
+                  <span className="font-mono text-xs font-semibold text-slate-700">{activeModalCert.id}</span>
                 </div>
                 <div>
-                  <span className="text-[9px] uppercase font-mono text-slate-500 block">Cryptographic Hash</span>
-                  <span className="text-[10px] font-mono text-slate-400">{activeModalCert.credential_id}</span>
+                  <span className="block text-[9px] uppercase font-mono text-slate-500">Cryptographic Hash</span>
+                  <span className="font-mono text-[10px] text-slate-500">{activeModalCert.credential_id}</span>
                 </div>
                 <div>
-                  <span className="text-[9px] uppercase font-mono text-slate-500 block">Issuing Authority</span>
-                  <span className="text-xs text-blue-400 font-semibold">{activeModalCert.issuer}</span>
+                  <span className="block text-[9px] uppercase font-mono text-slate-500">Issuing Authority</span>
+                  <span className="text-xs font-semibold text-primary">{activeModalCert.issuer}</span>
                 </div>
               </div>
 
               {/* QR Render wrapper */}
               <div className="flex flex-col items-center gap-1.5">
                 {renderSvgQrCode(activeModalCert.credential_url || `/verify/${activeModalCert.id}`)}
-                <span className="text-[8px] uppercase font-mono text-muted-foreground font-semibold">Scan to verify</span>
+                <span className="text-[8px] font-mono font-semibold uppercase text-muted-foreground">Scan to verify</span>
               </div>
             </div>
 
             {/* Bottom Download & Copy actions */}
-            <div className="flex items-center gap-3 pt-4 border-t border-white/5 font-sans">
+            <div className="flex items-center gap-3 border-t border-[#BFDFFF] pt-4 font-sans">
               <button
                 onClick={() => handleCopyLink(activeModalCert)}
-                className="flex-1 py-4 bg-slate-900 border border-white/10 hover:border-white/20 text-xs font-semibold text-slate-300 hover:text-white transition-all cursor-pointer flex items-center justify-center gap-1.5 rounded-xl"
+                className="flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-[18px] border border-[#BFDFFF] bg-white py-4 text-xs font-semibold text-muted-foreground transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:text-foreground hover:shadow-[0_12px_24px_rgba(59,130,246,0.10)]"
               >
                 <Copy className="w-4 h-4" />
                 Copy Link
               </button>
               <Button
                 onClick={() => toast.success("PDF Download simulation initiated.")}
-                className="flex-1 py-6 rounded-xl bg-blue-500 hover:bg-blue-600 text-xs font-semibold text-white transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                className="flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-[18px] bg-gradient-to-r from-primary via-sky-500 to-indigo-600 py-6 text-xs font-semibold text-white transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(59,130,246,0.20)]"
               >
                 <Download className="w-4 h-4" />
                 Download PDF

@@ -30,38 +30,38 @@ export default function CareerDnaCard() {
     <motion.div
       whileHover={{ y: -5, scale: 1.02 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
-      className="relative w-full max-w-sm mx-auto bg-slate-900/70 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl overflow-hidden group"
+      className="glass-card relative mx-auto w-full max-w-sm overflow-hidden rounded-2xl border-border/70 p-6 shadow-2xl group"
     >
       {/* AI Computing Hover Shimmer Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] pointer-events-none" />
+      <div className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-foreground/5 to-transparent group-hover:animate-[shimmer_1.5s_infinite]" />
 
       {/* Decorative background glow */}
-      <div className="absolute -top-12 -right-12 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl group-hover:bg-blue-500/20 transition-colors" />
-      <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl group-hover:bg-purple-500/20 transition-colors" />
+      <div className="absolute -top-12 -right-12 h-32 w-32 rounded-full bg-primary/10 blur-3xl transition-colors group-hover:bg-primary/20" />
+      <div className="absolute -bottom-12 -left-12 h-32 w-32 rounded-full bg-violet-500/10 blur-3xl transition-colors group-hover:bg-violet-500/20" />
 
       {/* Header */}
       <div className="flex items-center justify-between mb-6 relative z-10">
         <div className="flex items-center gap-2">
-          <div className="p-2 rounded-lg bg-blue-500/10 border border-blue-500/20">
-            <Sparkles className="w-5 h-5 text-blue-400" />
+          <div className="rounded-lg border border-primary/20 bg-primary/10 p-2">
+            <Sparkles className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-white">Career DNA Card</h3>
+            <h3 className="text-sm font-semibold text-foreground">Career DNA Card</h3>
             <p className="text-[11px] text-muted-foreground font-mono">ID: VAJRA-9481</p>
           </div>
         </div>
-        <div className="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs font-medium text-blue-400">
+        <div className="rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
           Ready to Match
         </div>
       </div>
 
       {/* Profile Section */}
-      <div className="flex items-center gap-4 mb-6 pb-6 border-b border-white/5 relative z-10">
-        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center font-bold text-white shadow-inner">
+      <div className="relative z-10 mb-6 flex items-center gap-4 border-b border-border/70 pb-6">
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-violet-500 font-bold text-primary-foreground shadow-inner">
           AS
         </div>
         <div>
-          <h4 className="text-sm font-semibold text-white">Alex Sterling</h4>
+          <h4 className="text-sm font-semibold text-foreground">Alex Sterling</h4>
           <p className="text-xs text-muted-foreground">Computer Science Student</p>
         </div>
       </div>
@@ -74,12 +74,12 @@ export default function CareerDnaCard() {
             <div key={stat.name} className="space-y-1.5">
               <div className="flex items-center justify-between text-xs text-muted-foreground">
                 <span className="flex items-center gap-1.5 font-sans">
-                  <Icon className="w-3.5 h-3.5 text-slate-400" />
+                  <Icon className="w-3.5 h-3.5 text-muted-foreground" />
                   {stat.name}
                 </span>
-                <span className="font-semibold text-white">{stat.value}%</span>
+                <span className="font-semibold text-foreground">{stat.value}%</span>
               </div>
-              <div className="h-2 w-full bg-slate-950 rounded-full overflow-hidden border border-white/5">
+              <div className="h-2 w-full overflow-hidden rounded-full border border-border/70 bg-background/70">
                 <motion.div
                   initial={{ width: 0 }}
                   whileInView={{ width: `${stat.value}%` }}
@@ -94,9 +94,9 @@ export default function CareerDnaCard() {
       </div>
 
       {/* Footer Level Info */}
-      <div className="flex items-center justify-between bg-slate-950/50 border border-white/5 rounded-xl p-3 relative z-10">
+      <div className="relative z-10 flex items-center justify-between rounded-xl border border-border/70 bg-background/70 p-3">
         <span className="text-xs text-muted-foreground">Overall Rank</span>
-        <span className="text-xs font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 flex items-center gap-1">
+        <span className="flex items-center gap-1 bg-gradient-to-r from-primary to-violet-500 bg-clip-text text-xs font-bold text-transparent">
           Explorer 🚀
         </span>
       </div>

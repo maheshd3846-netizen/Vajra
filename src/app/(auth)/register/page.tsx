@@ -131,7 +131,7 @@ export default function RegisterPage() {
             className="space-y-6"
           >
             <div className="space-y-2 text-center">
-              <h2 className="text-2xl font-bold tracking-tight font-heading text-white">
+              <h2 className="text-2xl font-bold tracking-tight font-heading text-foreground">
                 Choose Your Role
               </h2>
               <p className="text-xs text-muted-foreground font-sans">
@@ -146,20 +146,20 @@ export default function RegisterPage() {
                 onClick={() => setSelectedRole("student")}
                 className={`w-full flex items-center justify-between p-4 rounded-xl border text-left transition-all focus:outline-none cursor-pointer ${
                   selectedRole === "student"
-                    ? "bg-blue-500/10 border-blue-500 text-white"
-                    : "bg-slate-950/40 border-white/10 text-slate-300 hover:border-white/20"
+                    ? "bg-primary/10 border-primary text-foreground"
+                    : "bg-background/70 border-border/70 text-muted-foreground hover:border-border"
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-2.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400">
+                  <div className="rounded-lg border border-primary/20 bg-primary/10 p-2.5 text-primary">
                     <GraduationCap className="w-5 h-5" />
                   </div>
                   <div>
-                    <h4 className="text-sm font-semibold">Student / Job Seeker</h4>
+                    <h4 className="text-sm font-semibold text-foreground">Student / Job Seeker</h4>
                     <p className="text-[11px] text-muted-foreground">Map Career DNA & apply to verified roles.</p>
                   </div>
                 </div>
-                {selectedRole === "student" && <div className="h-2 w-2 rounded-full bg-blue-400" />}
+                {selectedRole === "student" && <div className="h-2 w-2 rounded-full bg-primary" />}
               </button>
 
               {/* Company Role */}
@@ -168,20 +168,20 @@ export default function RegisterPage() {
                 onClick={() => setSelectedRole("company")}
                 className={`w-full flex items-center justify-between p-4 rounded-xl border text-left transition-all focus:outline-none cursor-pointer ${
                   selectedRole === "company"
-                    ? "bg-purple-500/10 border-purple-500 text-white"
-                    : "bg-slate-950/40 border-white/10 text-slate-300 hover:border-white/20"
+                    ? "bg-violet-500/10 border-violet-500 text-foreground"
+                    : "bg-background/70 border-border/70 text-muted-foreground hover:border-border"
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-2.5 rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-400">
+                  <div className="rounded-lg border border-violet-500/20 bg-violet-500/10 p-2.5 text-violet-400">
                     <Briefcase className="w-5 h-5" />
                   </div>
                   <div>
-                    <h4 className="text-sm font-semibold">Company / Recruiter</h4>
+                    <h4 className="text-sm font-semibold text-foreground">Company / Recruiter</h4>
                     <p className="text-[11px] text-muted-foreground">Source vetted engineers matching skills metrics.</p>
                   </div>
                 </div>
-                {selectedRole === "company" && <div className="h-2 w-2 rounded-full bg-purple-400" />}
+                {selectedRole === "company" && <div className="h-2 w-2 rounded-full bg-violet-400" />}
               </button>
 
               {/* Mentor Role */}
@@ -190,16 +190,16 @@ export default function RegisterPage() {
                 onClick={() => setSelectedRole("mentor")}
                 className={`w-full flex items-center justify-between p-4 rounded-xl border text-left transition-all focus:outline-none cursor-pointer ${
                   selectedRole === "mentor"
-                    ? "bg-emerald-500/10 border-emerald-500 text-white"
-                    : "bg-slate-950/40 border-white/10 text-slate-300 hover:border-white/20"
+                    ? "bg-emerald-500/10 border-emerald-500 text-foreground"
+                    : "bg-background/70 border-border/70 text-muted-foreground hover:border-border"
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                  <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-2.5 text-emerald-400">
                     <User className="w-5 h-5" />
                   </div>
                   <div>
-                    <h4 className="text-sm font-semibold">Mentor / Faculty</h4>
+                    <h4 className="text-sm font-semibold text-foreground">Mentor / Faculty</h4>
                     <p className="text-[11px] text-muted-foreground">Track cohort analytics & issue certificates.</p>
                   </div>
                 </div>
@@ -210,7 +210,7 @@ export default function RegisterPage() {
             <Button
               type="button"
               onClick={() => setStep("details")}
-              className="w-full py-6 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-medium hover:shadow-indigo-500/10 transition-all flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full rounded-xl bg-gradient-to-r from-primary to-violet-500 py-6 font-medium text-white transition-all flex items-center justify-center gap-2 cursor-pointer hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/20"
             >
               Continue
               <ArrowRight className="w-4 h-4" />
@@ -228,18 +228,18 @@ export default function RegisterPage() {
             <div className="flex items-center justify-between mb-4">
               <button
                 onClick={() => setStep("role")}
-                className="text-xs text-muted-foreground hover:text-white flex items-center gap-1 transition-colors"
+                className="flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 Change Role
               </button>
-              <span className="text-[10px] uppercase font-mono tracking-wider text-blue-400 bg-blue-500/10 px-2.5 py-0.5 rounded border border-blue-500/20">
+              <span className="text-[10px] uppercase font-mono tracking-wider text-primary bg-primary/10 px-2.5 py-0.5 rounded border border-primary/20">
                 {selectedRole}
               </span>
             </div>
 
             <div className="space-y-2 text-center">
-              <h2 className="text-2xl font-bold tracking-tight font-heading text-white">
+              <h2 className="text-2xl font-bold tracking-tight font-heading text-foreground">
                 Create Account
               </h2>
               <p className="text-xs text-muted-foreground font-sans">
@@ -250,16 +250,16 @@ export default function RegisterPage() {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               {/* Full Name */}
               <div className="space-y-1.5">
-                <Label htmlFor="fullName" className="text-xs font-semibold text-slate-200">
+                <Label htmlFor="fullName" className="text-xs font-semibold text-foreground/80">
                   Full Name
                 </Label>
                 <div className="relative">
-                  <User className="absolute left-3 top-3 h-4 w-4 text-slate-500" />
+                  <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="fullName"
                     placeholder="John Doe"
                     type="text"
-                    className="pl-10 bg-slate-950/50 border-white/10 text-white rounded-xl placeholder:text-slate-600 focus-visible:ring-blue-500"
+                    className="pl-10 rounded-xl border-border/70 bg-background/70 text-foreground placeholder:text-muted-foreground/70"
                     {...register("fullName")}
                   />
                 </div>
@@ -270,16 +270,16 @@ export default function RegisterPage() {
 
               {/* Email */}
               <div className="space-y-1.5">
-                <Label htmlFor="email" className="text-xs font-semibold text-slate-200">
+                <Label htmlFor="email" className="text-xs font-semibold text-foreground/80">
                   Email Address
                 </Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-500" />
+                  <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="email"
                     placeholder="name@university.edu"
                     type="email"
-                    className="pl-10 bg-slate-950/50 border-white/10 text-white rounded-xl placeholder:text-slate-600 focus-visible:ring-blue-500"
+                    className="pl-10 rounded-xl border-border/70 bg-background/70 text-foreground placeholder:text-muted-foreground/70"
                     {...register("email")}
                   />
                 </div>
@@ -290,16 +290,16 @@ export default function RegisterPage() {
 
               {/* Password */}
               <div className="space-y-1.5">
-                <Label htmlFor="password" className="text-xs font-semibold text-slate-200">
+                <Label htmlFor="password" className="text-xs font-semibold text-foreground/80">
                   Password
                 </Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-500" />
+                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="password"
                     placeholder="••••••••"
                     type="password"
-                    className="pl-10 bg-slate-950/50 border-white/10 text-white rounded-xl placeholder:text-slate-600 focus-visible:ring-blue-500"
+                    className="pl-10 rounded-xl border-border/70 bg-background/70 text-foreground placeholder:text-muted-foreground/70"
                     {...register("password")}
                   />
                 </div>
@@ -310,16 +310,16 @@ export default function RegisterPage() {
 
               {/* Confirm Password */}
               <div className="space-y-1.5">
-                <Label htmlFor="confirmPassword" className="text-xs font-semibold text-slate-200">
+                <Label htmlFor="confirmPassword" className="text-xs font-semibold text-foreground/80">
                   Confirm Password
                 </Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-500" />
+                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="confirmPassword"
                     placeholder="••••••••"
                     type="password"
-                    className="pl-10 bg-slate-950/50 border-white/10 text-white rounded-xl placeholder:text-slate-600 focus-visible:ring-blue-500"
+                    className="pl-10 rounded-xl border-border/70 bg-background/70 text-foreground placeholder:text-muted-foreground/70"
                     {...register("confirmPassword")}
                   />
                 </div>
@@ -332,7 +332,7 @@ export default function RegisterPage() {
               <Button
                 type="submit"
                 disabled={isLoading || isGoogleLoading}
-                className="w-full py-6 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-medium hover:shadow-indigo-500/10 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full rounded-xl bg-gradient-to-r from-primary to-violet-500 py-6 font-medium text-white transition-all flex items-center justify-center gap-2 cursor-pointer hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/20"
               >
                 {isLoading ? (
                   <>
@@ -348,9 +348,9 @@ export default function RegisterPage() {
             {/* Divider */}
             <div className="relative flex items-center justify-center pt-2">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-white/5" />
+                <span className="w-full border-t border-border/70" />
               </div>
-              <span className="relative bg-[#0b0f19] px-3 text-[10px] uppercase font-mono tracking-wider text-slate-500">
+              <span className="relative bg-background px-3 text-[10px] uppercase font-mono tracking-wider text-muted-foreground">
                 Or sign up with
               </span>
             </div>
@@ -361,7 +361,7 @@ export default function RegisterPage() {
               variant="outline"
               disabled={isLoading || isGoogleLoading}
               onClick={handleGoogleRegister}
-              className="w-full py-6 rounded-xl bg-slate-950/40 hover:bg-slate-900 border-white/10 text-slate-300 hover:text-white transition-all cursor-pointer flex items-center justify-center gap-2"
+              className="w-full rounded-xl border-border/70 bg-background/70 py-6 text-foreground transition-all cursor-pointer flex items-center justify-center gap-2 hover:-translate-y-0.5 hover:bg-muted/70"
             >
               {isGoogleLoading ? (
                 <>
@@ -399,7 +399,7 @@ export default function RegisterPage() {
       {/* Redirect to Login */}
       <div className="text-center text-xs text-muted-foreground font-sans">
         Already have an account?{" "}
-        <Link href="/login" className="font-semibold text-blue-400 hover:text-blue-300 transition-colors">
+        <Link href="/login" className="font-semibold text-primary hover:text-primary/80 transition-colors">
           Sign In
         </Link>
       </div>

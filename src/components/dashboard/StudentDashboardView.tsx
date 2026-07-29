@@ -821,7 +821,7 @@ export default function StudentDashboardView({
               <div className="space-y-3 max-h-[280px] overflow-y-auto pr-1 py-4 text-xs">
                 {coachMessages.map((msg, i) => (
                   <div key={i} className={`flex flex-col max-w-[85%] ${msg.sender === "user" ? "ml-auto items-end" : "mr-auto items-start"}`}>
-                    <div className={`p-3 rounded-2xl leading-relaxed ${msg.sender === "user" ? "bg-primary text-white rounded-tr-none" : "bg-muted text-foreground rounded-tl-none border border-border/50"}`}>
+                    <div className={`p-3 rounded-2xl leading-relaxed ${msg.sender === "user" ? "bg-primary text-primary-foreground rounded-tr-none" : "bg-muted text-foreground rounded-tl-none border border-border/50"}`}>
                       {msg.text}
                     </div>
                     <span className="text-[9px] text-muted-foreground mt-1 px-1 font-mono">{msg.time}</span>

@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { Inter, Space_Grotesk } from "next/font/google";
 import { Toaster } from "sonner";
 import { AuthProvider } from "@/components/providers/AuthProvider";
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import "./globals.css";
 
 const inter = Inter({
@@ -17,7 +19,10 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#020617",
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#09090b" },
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+  ],
   width: "device-width",
   initialScale: 1,
 };
@@ -51,26 +56,45 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const themeInitScript = `
+    (function () {
+      try {
+        var storageKey = "vajra-theme";
+        var savedTheme = localStorage.getItem(storageKey) || "system";
+        var systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        var resolvedTheme = savedTheme === "system" ? systemTheme : savedTheme;
+        var root = document.documentElement;
+        root.classList.remove("light", "dark");
+        root.classList.add(resolvedTheme === "dark" ? "dark" : "light");
+        root.style.colorScheme = resolvedTheme;
+        root.dataset.theme = savedTheme;
+      } catch (error) {}
+    })();
+  `;
+
   return (
-    <html lang="en" className="dark" style={{ colorScheme: "dark" }}>
-      <body className={`${inter.variable} ${spaceGrotesk.variable} antialiased min-h-screen bg-[#020617] text-foreground`}>
-        <AuthProvider>
-          {children}
-          <Toaster
-            theme="dark"
-            position="bottom-right"
-            toastOptions={{
-              style: {
-                background: "rgba(15, 23, 42, 0.95)",
-                border: "1px solid rgba(255, 255, 255, 0.1)",
-                color: "#ffffff",
-                fontSize: "12px",
-                borderRadius: "14px",
-                backdropFilter: "blur(12px)",
-              },
-            }}
-          />
-        </AuthProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${inter.variable} ${spaceGrotesk.variable} antialiased min-h-screen bg-background text-foreground`}>
+        <Script id="theme-init" strategy="beforeInteractive">
+          {themeInitScript}
+        </Script>
+        <ThemeProvider>
+          <AuthProvider>
+            {children}
+            <Toaster
+              theme="system"
+              position="bottom-right"
+              toastOptions={{
+                className: "glass-card border-border/80 shadow-2xl",
+                style: {
+                  fontSize: "12px",
+                  borderRadius: "16px",
+                  backdropFilter: "blur(16px)",
+                },
+              }}
+            />
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

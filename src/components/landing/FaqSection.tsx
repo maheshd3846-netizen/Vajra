@@ -36,12 +36,12 @@ export default function FaqSection() {
   ];
 
   return (
-    <section id="faq" className="py-24 bg-slate-950/40 relative">
+    <section id="faq" className="relative py-24">
       <div className="max-w-4xl mx-auto px-6">
         
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <h2 className="text-3xl md:text-5xl font-bold tracking-tight font-heading text-white mb-4">
+          <h2 className="mb-4 text-3xl font-bold tracking-tight font-heading text-foreground md:text-5xl">
             Frequently Asked Questions
           </h2>
           <p className="text-muted-foreground font-sans">
@@ -56,18 +56,18 @@ export default function FaqSection() {
             return (
               <div
                 key={index}
-                className="bg-slate-900/40 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden transition-all duration-300 hover:border-white/20"
+                className="glass-card overflow-hidden rounded-2xl border-border/70 transition-all duration-300 hover:border-border"
               >
                 <button
                   onClick={() => setActiveIndex(isOpen ? null : index)}
                   className="w-full px-6 py-5 flex items-center justify-between text-left focus:outline-none"
                   aria-expanded={isOpen}
                 >
-                  <span className="flex items-center gap-3 font-semibold text-white text-sm sm:text-base font-sans">
-                    <HelpCircle className="w-5 h-5 text-blue-400 flex-shrink-0" />
+                  <span className="flex items-center gap-3 text-sm font-semibold text-foreground sm:text-base font-sans">
+                    <HelpCircle className="w-5 h-5 flex-shrink-0 text-primary" />
                     {faq.question}
                   </span>
-                  <span className="p-1 rounded-lg bg-slate-950 border border-white/5 text-slate-400">
+                  <span className="rounded-lg border border-border/70 bg-background/70 p-1 text-muted-foreground">
                     {isOpen ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
                   </span>
                 </button>
@@ -80,7 +80,7 @@ export default function FaqSection() {
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.3, ease: "easeInOut" }}
                     >
-                      <div className="px-6 pb-6 pt-2 border-t border-white/5 text-sm text-muted-foreground leading-relaxed font-sans">
+                      <div className="border-t border-border/70 px-6 pb-6 pt-2 text-sm leading-relaxed text-muted-foreground font-sans">
                         {faq.answer}
                       </div>
                     </motion.div>
