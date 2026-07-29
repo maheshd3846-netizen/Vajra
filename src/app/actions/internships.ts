@@ -1,8 +1,22 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import {
+  calculateInternshipMatch,
+  runAiApplicationReview,
+  type StudentProfileForMatching,
+  type InternshipForMatching,
+  type InternshipMatchResult,
+  type PreApplicationAiReview,
+} from "@/lib/ai-internship-matching-engine";
+import {
+  getCompanyVerificationStatus,
+  calculateCompanyTrustScore,
+  type CompanyVerificationStatus,
+} from "@/lib/ai-company-trust-engine";
+import { calculateCareerDnaScores } from "@/lib/ai-career-dna-service";
 
-interface InternshipRecord {
+export interface EnhancedInternshipRecord {
   id: string;
   company_id: string;
   title: string;
@@ -14,17 +28,53 @@ interface InternshipRecord {
   salary_range: string | null;
   status: string;
   created_at: string;
-  companies: {
+  company: {
     name: string;
     logo_url: string | null;
     is_verified: boolean;
-  } | null;
-  matchScore?: number;
+    verification_status: CompanyVerificationStatus;
+    trustScore: number;
+    trustBadgeLabel: string;
+    trustBadgeClass: {
+      bg: string;
+      border: string;
+      text: string;
+      dot: string;
+    };
+  };
+  matchResult: InternshipMatchResult;
+  isSaved?: boolean;
 }
 
-export async function fetchFilteredInternshipsAction(): Promise<{
+export interface StudentApplicationPipelineItem {
+  id: string;
+  internship_id: string;
+  resume_url: string;
+  status: string; // applied, reviewing, shortlisted, interviewing, accepted, rejected
+  applied_at: string;
+  internshipTitle: string;
+  companyName: string;
+  companyLogo: string | null;
+  location: string | null;
+  type: string;
+  salary_range: string | null;
+}
+
+export interface FetchInternshipsFilterOptions {
+  searchQuery?: string;
+  filterMode?: "all" | "remote" | "high" | "paid" | "verified" | "saved";
+  sortBy?: "match" | "newest" | "stipend";
+}
+
+/**
+ * Fetch Filtered & Personalized AI Matched Internships
+ */
+export async function fetchFilteredInternshipsAction(
+  options?: FetchInternshipsFilterOptions
+): Promise<{
   success: boolean;
-  internships?: InternshipRecord[];
+  internships?: EnhancedInternshipRecord[];
+  savedIds?: string[];
   error?: string;
 }> {
   try {
@@ -37,17 +87,78 @@ export async function fetchFilteredInternshipsAction(): Promise<{
       return { success: false, error: "Unauthorized access." };
     }
 
-    // 1. Fetch student skills to calculate match scores
-    const { data: studentSkills } = await supabase
-      .from("student_skills")
-      .select("skill_name")
-      .eq("student_id", user.id);
+    // 1. Fetch student data for AI matching
+    const [
+      { data: userProfile },
+      { data: studentProfile },
+      { data: studentSkills },
+      { data: projects },
+      { data: certificates },
+      { data: resumes },
+      { data: savedRows },
+    ] = await Promise.all([
+      supabase.from("users").select("full_name").eq("id", user.id).single(),
+      supabase
+        .from("student_profiles")
+        .select("major, university, gpa")
+        .eq("id", user.id)
+        .single(),
+      supabase
+        .from("student_skills")
+        .select("skill_name, proficiency, verified")
+        .eq("student_id", user.id),
+      supabase
+        .from("projects")
+        .select("id, title, technologies")
+        .eq("student_id", user.id),
+      supabase
+        .from("certificates")
+        .select("id, name")
+        .eq("student_id", user.id),
+      supabase
+        .from("resumes")
+        .select("id, is_primary")
+        .eq("student_id", user.id),
+      supabase
+        .from("saved_internships")
+        .select("internship_id")
+        .eq("student_id", user.id),
+    ]);
 
-    const studentSkillNames = studentSkills
-      ? studentSkills.map((s) => s.skill_name.toLowerCase())
-      : [];
+    const activeSkills = studentSkills || [];
+    const activeProjects = projects || [];
+    const activeCertificates = certificates || [];
+    const activeResumes = resumes || [];
 
-    // 2. Fetch internships joined with company verification metrics
+    // Calculate student local Career DNA score
+    const localScores = calculateCareerDnaScores({
+      profile: studentProfile as Record<string, unknown> | null,
+      skills: activeSkills,
+      projects: activeProjects,
+      resumes: activeResumes,
+      certificates: activeCertificates,
+      portfolios: [],
+      feedback: [],
+      timeline: [],
+    });
+
+    const studentForMatching: StudentProfileForMatching = {
+      id: user.id,
+      fullName: userProfile?.full_name || "Student",
+      major: studentProfile?.major || null,
+      university: studentProfile?.university || null,
+      gpa: studentProfile?.gpa || null,
+      careerDnaScore: localScores.careerDnaScore,
+      readinessScore: localScores.internshipReadinessScore,
+      skills: activeSkills,
+      projects: activeProjects,
+      certificates: activeCertificates,
+      resumes: activeResumes,
+    };
+
+    const savedSet = new Set((savedRows || []).map((s) => s.internship_id));
+
+    // 2. Query internships with company data
     const { data: internships, error: internshipsError } = await supabase
       .from("internships")
       .select(`
@@ -65,7 +176,11 @@ export async function fetchFilteredInternshipsAction(): Promise<{
         companies (
           name,
           logo_url,
-          is_verified
+          is_verified,
+          verification_status,
+          website,
+          industry,
+          description
         )
       `)
       .eq("status", "open")
@@ -75,44 +190,294 @@ export async function fetchFilteredInternshipsAction(): Promise<{
       throw internshipsError;
     }
 
-    // 3. Process matches dynamically based on skills alignment
-    const processedInternships = (internships as unknown as InternshipRecord[]).map((internship) => {
-      const skillsNeeded = internship.skills_needed || [];
-      
-      let matchScore = 50; // Baseline potential
-      if (skillsNeeded.length > 0) {
-        const matches = skillsNeeded.filter((s: string) =>
-          studentSkillNames.includes(s.toLowerCase())
-        ).length;
-        const percentage = Math.round((matches / skillsNeeded.length) * 100);
-        // Map within 55 - 98% range for realistic UI visuals
-        matchScore = Math.max(55, Math.min(98, percentage));
-      } else {
-        matchScore = 85; // Default score if no skills list defined
+    // 3. Process & Filter out blacklisted companies
+    const processedInternships: EnhancedInternshipRecord[] = [];
+
+    (internships || []).forEach((item) => {
+      const compRaw = item.companies as unknown as {
+        name: string;
+        logo_url: string | null;
+        is_verified: boolean;
+        verification_status: CompanyVerificationStatus;
+        website?: string;
+        industry?: string;
+        description?: string;
+      } | null;
+
+      const vStatus = compRaw ? getCompanyVerificationStatus(compRaw) : "pending";
+
+      // SECURITY RULE: Blacklisted company listings are hidden from marketplace
+      if (vStatus === "blacklisted") {
+        return;
       }
 
-      return {
-        ...internship,
-        matchScore,
+      const compTrustResult = calculateCompanyTrustScore({
+        id: item.company_id,
+        name: compRaw?.name || "Company",
+        website: compRaw?.website || null,
+        industry: compRaw?.industry || null,
+        logo_url: compRaw?.logo_url || null,
+        description: compRaw?.description || null,
+        is_verified: compRaw?.is_verified,
+        verification_status: vStatus,
+      });
+
+      const jobForMatching: InternshipForMatching = {
+        id: item.id,
+        title: item.title,
+        description: item.description,
+        company_name: compRaw?.name || "Partner Organization",
+        location: item.location,
+        type: item.type,
+        requirements: item.requirements || [],
+        skills_needed: item.skills_needed || [],
+        salary_range: item.salary_range,
+        created_at: item.created_at,
       };
+
+      const matchResult = calculateInternshipMatch(studentForMatching, jobForMatching);
+      const isSaved = savedSet.has(item.id);
+
+      processedInternships.push({
+        id: item.id,
+        company_id: item.company_id,
+        title: item.title,
+        description: item.description,
+        location: item.location,
+        type: item.type,
+        requirements: item.requirements || [],
+        skills_needed: item.skills_needed || [],
+        salary_range: item.salary_range,
+        status: item.status,
+        created_at: item.created_at,
+        company: {
+          name: compRaw?.name || "Partner Organization",
+          logo_url: compRaw?.logo_url || null,
+          is_verified: vStatus === "verified",
+          verification_status: vStatus,
+          trustScore: compTrustResult.trustScore,
+          trustBadgeLabel: compTrustResult.badgeLabel,
+          trustBadgeClass: compTrustResult.badgeColorClass,
+        },
+        matchResult,
+        isSaved,
+      });
     });
+
+    // Apply Client Options (Filter & Sort)
+    let results = processedInternships;
+
+    if (options?.searchQuery) {
+      const q = options.searchQuery.toLowerCase();
+      results = results.filter(
+        (j) =>
+          j.title.toLowerCase().includes(q) ||
+          j.company.name.toLowerCase().includes(q) ||
+          j.skills_needed.some((s) => s.toLowerCase().includes(q))
+      );
+    }
+
+    if (options?.filterMode === "remote") {
+      results = results.filter((j) => j.type.toLowerCase() === "remote");
+    } else if (options?.filterMode === "high") {
+      results = results.filter((j) => j.matchResult.matchScore >= 80);
+    } else if (options?.filterMode === "paid") {
+      results = results.filter(
+        (j) =>
+          j.salary_range &&
+          !j.salary_range.toLowerCase().includes("unpaid") &&
+          !j.salary_range.includes("₹0")
+      );
+    } else if (options?.filterMode === "verified") {
+      results = results.filter((j) => j.company.verification_status === "verified");
+    } else if (options?.filterMode === "saved") {
+      results = results.filter((j) => j.isSaved);
+    }
+
+    if (options?.sortBy === "newest") {
+      results.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    } else if (options?.sortBy === "stipend") {
+      const getVal = (s: string | null) => {
+        if (!s) return 0;
+        const match = s.match(/\d+/g);
+        return match ? parseInt(match.join("")) : 0;
+      };
+      results.sort((a, b) => getVal(b.salary_range) - getVal(a.salary_range));
+    } else {
+      // Default: Sort by AI Match Score
+      results.sort((a, b) => b.matchResult.matchScore - a.matchResult.matchScore);
+    }
 
     return {
       success: true,
-      internships: processedInternships,
+      internships: results,
+      savedIds: Array.from(savedSet),
     };
   } catch (err: unknown) {
-    const errorObj = err as Record<string, unknown> | null;
-    const errorMessage = (errorObj?.message as string) || (err instanceof Error ? err.message : "Could not retrieve internship listings.");
-    console.error("fetchFilteredInternshipsAction failed:", errorObj?.message || err);
-    console.error("fetchFilteredInternshipsAction detailed error:", JSON.stringify(err, null, 2));
-    return {
-      success: false,
-      error: errorMessage,
-    };
+    const errorMessage = err instanceof Error ? err.message : "Could not retrieve internship listings.";
+    console.error("fetchFilteredInternshipsAction failed:", err);
+    return { success: false, error: errorMessage };
   }
 }
 
+/**
+ * Toggle Save / Bookmark Internship
+ */
+export async function toggleSaveInternshipAction(
+  internshipId: string
+): Promise<{ success: boolean; isSaved?: boolean; error?: string }> {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { success: false, error: "Unauthorized access." };
+    }
+
+    // Check existing bookmark
+    const { data: existing } = await supabase
+      .from("saved_internships")
+      .select("internship_id")
+      .eq("student_id", user.id)
+      .eq("internship_id", internshipId)
+      .maybeSingle();
+
+    if (existing) {
+      await supabase
+        .from("saved_internships")
+        .delete()
+        .eq("student_id", user.id)
+        .eq("internship_id", internshipId);
+
+      return { success: true, isSaved: false };
+    } else {
+      await supabase
+        .from("saved_internships")
+        .insert({ student_id: user.id, internship_id: internshipId });
+
+      return { success: true, isSaved: true };
+    }
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : "Failed to update saved status.";
+    return { success: false, error: errorMessage };
+  }
+}
+
+/**
+ * Run AI Pre-Application Validation Review
+ */
+export async function runAiApplicationReviewAction(
+  internshipId: string
+): Promise<{ success: boolean; review?: PreApplicationAiReview; error?: string }> {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { success: false, error: "Unauthorized access." };
+    }
+
+    // Fetch student data & targeted internship
+    const [
+      { data: userProfile },
+      { data: studentProfile },
+      { data: studentSkills },
+      { data: projects },
+      { data: certificates },
+      { data: resumes },
+      { data: jobRaw },
+    ] = await Promise.all([
+      supabase.from("users").select("full_name").eq("id", user.id).single(),
+      supabase
+        .from("student_profiles")
+        .select("major, university, gpa")
+        .eq("id", user.id)
+        .single(),
+      supabase
+        .from("student_skills")
+        .select("skill_name, proficiency, verified")
+        .eq("student_id", user.id),
+      supabase.from("projects").select("id, title, technologies").eq("student_id", user.id),
+      supabase.from("certificates").select("id, name").eq("student_id", user.id),
+      supabase.from("resumes").select("id, is_primary").eq("student_id", user.id),
+      supabase
+        .from("internships")
+        .select(`
+          id,
+          title,
+          description,
+          location,
+          type,
+          requirements,
+          skills_needed,
+          salary_range,
+          created_at,
+          companies ( name )
+        `)
+        .eq("id", internshipId)
+        .single(),
+    ]);
+
+    if (!jobRaw) {
+      return { success: false, error: "Internship listing not found." };
+    }
+
+    const localScores = calculateCareerDnaScores({
+      profile: studentProfile as Record<string, unknown> | null,
+      skills: studentSkills || [],
+      projects: projects || [],
+      resumes: resumes || [],
+      certificates: certificates || [],
+      portfolios: [],
+      feedback: [],
+      timeline: [],
+    });
+
+    const studentForMatching: StudentProfileForMatching = {
+      id: user.id,
+      fullName: userProfile?.full_name || "Student",
+      major: studentProfile?.major || null,
+      university: studentProfile?.university || null,
+      gpa: studentProfile?.gpa || null,
+      careerDnaScore: localScores.careerDnaScore,
+      readinessScore: localScores.internshipReadinessScore,
+      skills: studentSkills || [],
+      projects: projects || [],
+      certificates: certificates || [],
+      resumes: resumes || [],
+    };
+
+    const compName = (jobRaw.companies as unknown as { name: string } | null)?.name || "Partner Organization";
+
+    const jobForMatching: InternshipForMatching = {
+      id: jobRaw.id,
+      title: jobRaw.title,
+      description: jobRaw.description,
+      company_name: compName,
+      location: jobRaw.location,
+      type: jobRaw.type,
+      requirements: jobRaw.requirements || [],
+      skills_needed: jobRaw.skills_needed || [],
+      salary_range: jobRaw.salary_range,
+      created_at: jobRaw.created_at,
+    };
+
+    const review = runAiApplicationReview(studentForMatching, jobForMatching);
+
+    return { success: true, review };
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : "Failed to run AI review.";
+    return { success: false, error: errorMessage };
+  }
+}
+
+/**
+ * Apply to Internship with resume & cover letter
+ */
 export async function applyToInternshipAction(
   internshipId: string,
   resumeUrl: string,
@@ -128,7 +493,35 @@ export async function applyToInternshipAction(
       return { success: false, error: "Unauthorized access. Please sign in." };
     }
 
-    // Insert new application record
+    // Verify company status of this internship
+    const { data: job } = await supabase
+      .from("internships")
+      .select("company_id, companies ( verification_status, is_verified )")
+      .eq("id", internshipId)
+      .single();
+
+    if (job?.companies) {
+      const compRaw = job.companies as unknown as { verification_status?: string; is_verified?: boolean };
+      const vStatus = getCompanyVerificationStatus({
+        id: job.company_id,
+        name: "",
+        website: null,
+        industry: null,
+        logo_url: null,
+        description: null,
+        is_verified: compRaw.is_verified,
+        verification_status: compRaw.verification_status,
+      });
+
+      if (vStatus === "blacklisted") {
+        return { success: false, error: "This company has been blacklisted. Applications are disabled." };
+      }
+      if (vStatus === "pending") {
+        return { success: false, error: "This company is pending verification. Applications are temporarily paused." };
+      }
+    }
+
+    // Insert application
     const { error: applyError } = await supabase.from("applications").insert({
       internship_id: internshipId,
       student_id: user.id,
@@ -144,17 +537,10 @@ export async function applyToInternshipAction(
       throw applyError;
     }
 
-    return {
-      success: true,
-    };
+    return { success: true };
   } catch (err: unknown) {
-    const errorObj = err as Record<string, unknown> | null;
-    const errorMessage = (errorObj?.message as string) || (err instanceof Error ? err.message : "Failed to submit application.");
-    console.error("applyToInternshipAction failed:", errorObj?.message || err);
-    console.error("applyToInternshipAction detailed error:", JSON.stringify(err, null, 2));
-    return {
-      success: false,
-      error: errorMessage,
-    };
+    const errorMessage = err instanceof Error ? err.message : "Failed to submit application.";
+    console.error("applyToInternshipAction failed:", err);
+    return { success: false, error: errorMessage };
   }
 }

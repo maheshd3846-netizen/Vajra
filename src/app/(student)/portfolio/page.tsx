@@ -5,60 +5,41 @@ import PortfolioBuilderWorkspace from "@/components/dashboard/portfolio/Portfoli
 
 export const dynamic = "force-dynamic";
 
+export const metadata = {
+  title: "Portfolio Studio — VAJRA",
+  description: "Generate your AI-powered developer portfolio in seconds.",
+};
+
 export default async function PortfolioBuilderPage() {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
-    redirect("/login");
-  }
+  if (!user) redirect("/login");
 
-  // Fetch user profile info
+  // Fetch user profile
   const { data: userProfile } = await supabase
     .from("users")
     .select("full_name")
     .eq("id", user.id)
     .single();
 
-  // Fetch student profile details
-  const { data: studentProfile } = await supabase
-    .from("student_profiles")
-    .select("major, university, github_url, linkedin_url")
-    .eq("id", user.id)
-    .single();
-
-  // Fetch student skills
-  const { data: skills } = await supabase
-    .from("student_skills")
-    .select("skill_name, proficiency, verified")
-    .eq("student_id", user.id);
-
-  // Fetch student projects
-  const { data: projects } = await supabase
-    .from("projects")
-    .select("title, description")
-    .eq("student_id", user.id);
-
-  // Fetch existing published portfolio configuration
+  // Fetch existing published portfolio (if any)
   const { data: portfolio } = await supabase
     .from("portfolios")
     .select("asset_url, title, description")
     .eq("student_id", user.id)
     .single();
 
-  const profileName = userProfile?.full_name || user.email?.split("@")[0] || "Vajra Engineer";
-  const activeSkills = skills || [];
-  const activeProjects = projects || [];
+  const profileName =
+    userProfile?.full_name || user.email?.split("@")[0] || "Vajra Engineer";
 
   return (
     <PortfolioBuilderWorkspace
       profileName={profileName}
-      studentProfile={studentProfile}
-      skills={activeSkills}
-      projects={activeProjects}
-      existingPortfolio={portfolio}
+      userId={user.id}
+      existingPortfolio={portfolio || null}
     />
   );
 }

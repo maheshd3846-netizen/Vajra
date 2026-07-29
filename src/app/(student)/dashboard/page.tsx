@@ -1,7 +1,8 @@
 import React from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import StudentDashboardView from "@/components/dashboard/StudentDashboardView";
+import StudentCareerIntelligenceDashboard from "@/components/dashboard/StudentCareerIntelligenceDashboard";
+import { generateCareerIntelligenceSuite } from "@/lib/ai-career-intelligence-service";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +19,7 @@ export default async function DashboardPage() {
   // Fetch user profile info
   const { data: userProfile } = await supabase
     .from("users")
-    .select("full_name")
+    .select("full_name, avatar_url")
     .eq("id", user.id)
     .single();
 
@@ -32,35 +33,66 @@ export default async function DashboardPage() {
   // Fetch student skills
   const { data: skills } = await supabase
     .from("student_skills")
-    .select("id, student_id, skill_name, proficiency, verified")
+    .select("skill_name, proficiency, verified")
     .eq("student_id", user.id);
 
-  // Fetch matching internships based on target role
-  const targetRole = studentProfile?.major || "Software Engineer";
-  const { data: internships } = await supabase
-    .from("internships")
-    .select("id, title, location, salary, companies(name)")
-    .ilike("title", `%${targetRole.split(" ")[0]}%`)
-    .limit(3);
+  // Fetch projects
+  const { data: projects } = await supabase
+    .from("projects")
+    .select("id, title, technologies")
+    .eq("student_id", user.id);
 
-  // Fallbacks mapping
-  const profileName = userProfile?.full_name || user.email?.split("@")[0] || "Vajra Engineer";
-  const activeSkills = skills || [];
-  const activeInternships =
-    (internships as unknown as {
-      id: string;
-      title: string;
-      location: string;
-      salary: number;
-      companies: { name: string } | null;
-      }[]) || [];
+  // Fetch resumes
+  const { data: resumes } = await supabase
+    .from("resumes")
+    .select("id, is_primary")
+    .eq("student_id", user.id);
+
+  // Fetch certificates
+  const { data: certificates } = await supabase
+    .from("certificates")
+    .select("id, name, issuer")
+    .eq("student_id", user.id);
+
+  // Fetch portfolios
+  const { data: portfolios } = await supabase
+    .from("portfolios")
+    .select("id, title")
+    .eq("student_id", user.id);
+
+  // Fetch AI reports
+  const { data: aiReports } = await supabase
+    .from("ai_reports")
+    .select("id, report_type, score")
+    .eq("student_id", user.id);
+
+  // Fetch career timeline
+  const { data: careerTimeline } = await supabase
+    .from("career_timeline")
+    .select("id, title, description, start_date")
+    .eq("student_id", user.id)
+    .order("start_date", { ascending: false });
+
+  const profileName = userProfile?.full_name || user.email?.split("@")[0] || "Student Candidate";
+
+  // Generate Career Intelligence suite
+  const intelligenceData = await generateCareerIntelligenceSuite({
+    studentName: profileName,
+    profile: studentProfile as Record<string, unknown> | null,
+    skills: skills || [],
+    projects: projects || [],
+    resumes: resumes || [],
+    certificates: certificates || [],
+    portfolios: portfolios || [],
+    aiReports: aiReports || [],
+    careerTimeline: (careerTimeline || []).map((t) => ({ ...t, description: t.description || "" })),
+  });
 
   return (
-    <StudentDashboardView
+    <StudentCareerIntelligenceDashboard
+      initialData={intelligenceData}
       profileName={profileName}
-      studentProfile={studentProfile}
-      skills={activeSkills}
-      internships={activeInternships}
+      userEmail={user.email || undefined}
     />
   );
 }

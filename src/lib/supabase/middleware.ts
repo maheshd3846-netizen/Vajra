@@ -38,25 +38,40 @@ export async function updateSession(request: NextRequest) {
 
   const path = request.nextUrl.pathname;
 
+  // Session Debugging Log
+  console.log("[Middleware Audit]", {
+    path,
+    authenticated: !!user,
+    userEmail: user?.email || null,
+    cookiesCount: request.cookies.getAll().length,
+  });
+
+  // Allow auth callback routes to execute without middleware interception
+  if (path.startsWith("/auth/")) {
+    return supabaseResponse;
+  }
+
   // Define protected routes
   const protectedRoutes = [
     "/dashboard",
     "/career",
     "/internships",
+    "/interview",
     "/mentorship",
     "/portfolio",
     "/settings",
     "/company",
     "/mentor",
     "/admin",
-    "/onboarding"
+    "/onboarding",
   ];
-  const isProtected = protectedRoutes.some((route) => 
-    path === route || path.startsWith(route + "/")
+  const isProtected = protectedRoutes.some(
+    (route) => path === route || path.startsWith(route + "/")
   );
 
   if (isProtected && !user) {
     // User is not authenticated; redirect to login
+    console.log("[Middleware] Unauthenticated access to protected route. Redirecting to /login", { path });
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("redirectTo", path);
@@ -64,7 +79,8 @@ export async function updateSession(request: NextRequest) {
   }
 
   if (user) {
-    const userRole = user.user_metadata?.role; // expected: 'student', 'company', 'mentor', 'admin', 'super_admin'
+    // Default role for authenticated users if user_metadata is missing role
+    const userRole = user.user_metadata?.role || "student";
 
     // If an authenticated user attempts to access auth pages, redirect to dashboard
     if (
@@ -72,23 +88,28 @@ export async function updateSession(request: NextRequest) {
       path === "/register" || path.startsWith("/register/") ||
       path === "/forgot-password" || path.startsWith("/forgot-password/")
     ) {
+      console.log("[Middleware] Authenticated user on auth route. Redirecting to role dashboard", { userRole });
       return redirectToRoleDashboard(request, userRole);
     }
 
     // Route restriction based on roles
-    const studentRoutes = ["/dashboard", "/career", "/internships", "/mentorship", "/portfolio", "/settings"];
+    const studentRoutes = ["/dashboard", "/career", "/internships", "/interview", "/mentorship", "/portfolio", "/settings"];
     const isStudentRoute = studentRoutes.some((route) => path === route || path.startsWith(route + "/"));
 
-    if (isStudentRoute && userRole !== "student" && userRole !== "admin") {
+    if (isStudentRoute && userRole !== "student" && userRole !== "admin" && userRole !== "super_admin") {
+      console.log("[Middleware] Role mismatch for student route. Redirecting.", { userRole, path });
       return redirectToRoleDashboard(request, userRole);
     }
-    if (path.startsWith("/company") && userRole !== "company" && userRole !== "admin") {
+    if (path.startsWith("/company") && userRole !== "company" && userRole !== "admin" && userRole !== "super_admin") {
+      console.log("[Middleware] Role mismatch for company route. Redirecting.", { userRole, path });
       return redirectToRoleDashboard(request, userRole);
     }
-    if (path.startsWith("/mentor") && userRole !== "mentor" && userRole !== "admin") {
+    if (path.startsWith("/mentor") && userRole !== "mentor" && userRole !== "admin" && userRole !== "super_admin") {
+      console.log("[Middleware] Role mismatch for mentor route. Redirecting.", { userRole, path });
       return redirectToRoleDashboard(request, userRole);
     }
     if (path.startsWith("/admin") && userRole !== "admin" && userRole !== "super_admin") {
+      console.log("[Middleware] Role mismatch for admin route. Redirecting.", { userRole, path });
       return redirectToRoleDashboard(request, userRole);
     }
   }
@@ -98,16 +119,15 @@ export async function updateSession(request: NextRequest) {
 
 function redirectToRoleDashboard(request: NextRequest, role: string | undefined) {
   const url = request.nextUrl.clone();
-  if (role === "student") {
-    url.pathname = "/dashboard";
-  } else if (role === "company") {
+  if (role === "company") {
     url.pathname = "/company/dashboard";
   } else if (role === "mentor") {
     url.pathname = "/mentor/dashboard";
   } else if (role === "admin" || role === "super_admin") {
     url.pathname = "/admin/dashboard";
   } else {
-    url.pathname = "/";
+    // Default for student or unspecified role is /dashboard (NEVER redirect to / home page)
+    url.pathname = "/dashboard";
   }
   return NextResponse.redirect(url);
 }

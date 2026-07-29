@@ -22,6 +22,9 @@ import {
   GraduationCap,
   BarChart3,
   Briefcase,
+  Sun,
+  Moon,
+  BrainCircuit,
 } from "lucide-react";
 
 interface DashboardClientLayoutProps {
@@ -44,6 +47,24 @@ export default function DashboardClientLayout({
   const router = useRouter();
   const supabase = createClient();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [isDark, setIsDark] = useState(true);
+
+  React.useEffect(() => {
+    const isDarkClass = document.documentElement.classList.contains("dark");
+    setIsDark(isDarkClass);
+  }, []);
+
+  const toggleTheme = () => {
+    if (document.documentElement.classList.contains("dark")) {
+      document.documentElement.classList.remove("dark");
+      document.documentElement.style.colorScheme = "light";
+      setIsDark(false);
+    } else {
+      document.documentElement.classList.add("dark");
+      document.documentElement.style.colorScheme = "dark";
+      setIsDark(true);
+    }
+  };
 
   const role = profile?.role || "student";
 
@@ -52,6 +73,7 @@ export default function DashboardClientLayout({
       { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
       { name: "Career DNA", href: "/career", icon: FileText },
       { name: "Internships", href: "/internships", icon: Target },
+      { name: "Mock Interview", href: "/interview", icon: BrainCircuit },
       { name: "Mentorship", href: "/mentorship", icon: Users },
       { name: "Portfolio", href: "/portfolio", icon: Globe },
       { name: "Settings", href: "/settings", icon: Settings },
@@ -123,11 +145,11 @@ export default function DashboardClientLayout({
     : email?.substring(0, 2).toUpperCase() || "US";
 
   return (
-    <div className="min-h-screen bg-slate-950 flex font-sans overflow-x-hidden text-foreground">
+    <div className="min-h-screen bg-background flex font-sans overflow-x-hidden text-foreground">
       {/* 1. Desktop Sidebar */}
-      <aside className="hidden lg:flex flex-col w-64 bg-slate-900 border-r border-white/10 shrink-0 sticky top-0 h-screen z-20">
+      <aside className="hidden lg:flex flex-col w-64 bg-card border-r border-border shrink-0 sticky top-0 h-screen z-20">
         {/* Brand Logo */}
-        <div className="h-20 border-b border-white/10 flex items-center px-6">
+        <div className="h-20 border-b border-border flex items-center px-6">
           <Link href={dashboardLink} className="text-xl font-bold font-heading tracking-widest bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
             VAJRA
           </Link>
@@ -144,8 +166,8 @@ export default function DashboardClientLayout({
                 href={item.href}
                 className={`flex items-center gap-3 px-4 py-3.5 rounded-xl text-xs font-semibold tracking-wide transition-all ${
                   isActive
-                    ? "bg-blue-500/10 border border-blue-500/20 text-white"
-                    : "text-slate-400 hover:text-white border border-transparent hover:bg-slate-950/40"
+                    ? "bg-primary/10 border border-primary/20 text-foreground font-bold"
+                    : "text-muted-foreground hover:text-foreground border border-transparent hover:bg-muted/40"
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -156,13 +178,13 @@ export default function DashboardClientLayout({
         </nav>
 
         {/* Footer Profile card */}
-        <div className="p-4 border-t border-white/10 flex flex-col gap-3">
+        <div className="p-4 border-t border-border flex flex-col gap-3">
           <div className="flex items-center gap-3 px-2">
-            <div className="h-10 w-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center font-bold text-sm text-blue-400">
+            <div className="h-10 w-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center font-bold text-sm text-primary">
               {userInitials}
             </div>
             <div className="min-w-0 flex-1">
-              <h4 className="text-xs font-semibold text-white truncate">
+              <h4 className="text-xs font-semibold text-foreground truncate">
                 {profile?.full_name || "Vajra User"}
               </h4>
               <p className="text-[10px] text-muted-foreground truncate">{email}</p>
@@ -182,7 +204,7 @@ export default function DashboardClientLayout({
       <div className="flex-1 flex flex-col min-w-0">
         
         {/* Top Navbar */}
-        <header className="h-20 border-b border-white/10 bg-slate-900/60 backdrop-blur-md sticky top-0 z-10 flex items-center justify-between px-6">
+        <header className="h-20 border-b border-border bg-card/60 backdrop-blur-md sticky top-0 z-10 flex items-center justify-between px-6">
           <div className="flex items-center gap-4">
             {/* Mobile menu toggle */}
             <button
@@ -202,6 +224,15 @@ export default function DashboardClientLayout({
             <span className="text-[10px] uppercase font-mono tracking-widest text-blue-400 bg-blue-500/10 border border-blue-500/20 px-3 py-1 rounded-full">
               {role} 🚀
             </span>
+
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-xl bg-slate-950 dark:bg-slate-950 border border-white/5 dark:border-white/5 text-slate-400 hover:text-white hover:border-white/10 dark:hover:border-white/10 transition-all cursor-pointer"
+              aria-label="Toggle Theme"
+            >
+              {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-blue-500" />}
+            </button>
 
             {/* Notification Bell */}
             <button className="p-2 rounded-xl bg-slate-950 border border-white/5 text-slate-400 hover:text-white hover:border-white/10 transition-all relative">
