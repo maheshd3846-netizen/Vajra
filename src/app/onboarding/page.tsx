@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
+import { saveStudentOnboardingAction } from "@/app/actions/student";
 import { ArrowRight, ArrowLeft, Sparkles, Cpu, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -95,59 +96,45 @@ export default function OnboardingPage() {
           setEngineStatus("Calculating baseline Career DNA...");
           await new Promise((res) => setTimeout(res, 1200));
 
-          // Submit profile changes to database
+          // Submit profile & skills via Server Action with detailed logging
           const majorField = targetRole === "Custom" ? customRole : targetRole;
-          const { error: profileError } = await supabase
-            .from("student_profiles")
-            .update({
-              university: academic.university,
-              major: majorField,
-              graduation_year: academic.gradYear ? parseInt(academic.gradYear) : null,
-              gpa: academic.gpa ? parseFloat(academic.gpa) : null,
-              github_url: socials.github || null,
-              linkedin_url: socials.linkedin || null,
-            })
-            .eq("id", userId);
+          const res = await saveStudentOnboardingAction({
+            university: academic.university,
+            major: majorField,
+            branch: majorField,
+            target_role: majorField,
+            graduation_year: academic.gradYear ? parseInt(academic.gradYear, 10) : null,
+            gpa: academic.gpa ? parseFloat(academic.gpa) : null,
+            github_url: socials.github || null,
+            linkedin_url: socials.linkedin || null,
+            portfolio_url: socials.portfolio || null,
+            skills: selectedSkills,
+            proficiency: proficiency,
+          });
 
-          if (profileError) {
-            toast.error("Failed to save student profile information.");
+          if (!res.success) {
+            const errorMsg = res.error || "Failed to save student profile information.";
+            console.error("Onboarding Save Error:", errorMsg);
+            toast.error(errorMsg);
             setCurrentStep(3); // Route back to fix details
             return;
-          }
-
-          // Submit student skills if any selected
-          if (selectedSkills.length > 0) {
-            const skillRecords = selectedSkills.map((skill) => ({
-              student_id: userId,
-              skill_name: skill,
-              proficiency: proficiency,
-            }));
-
-            const { error: skillsError } = await supabase
-              .from("student_skills")
-              .insert(skillRecords);
-
-            if (skillsError) {
-              // Ignore unique conflicts and continue
-              if (skillsError.code !== "23505") {
-                toast.warning("Some skills could not be attached.");
-              }
-            }
           }
 
           // Complete simulation
           setEngineStatus("DNA Calculated successfully!");
           setIsOnboardingCompleted(true);
           toast.success("Career DNA baseline generated!");
-        } catch {
-          toast.error("Onboarding submission failed.");
+        } catch (err: unknown) {
+          const errorMessage = err instanceof Error ? err.message : "Onboarding submission failed.";
+          console.error("Onboarding Exception:", err);
+          toast.error(errorMessage);
           setCurrentStep(3);
         }
       };
 
       runOnboardingSubmit();
     }
-  }, [currentStep, userId, academic, socials, targetRole, customRole, selectedSkills, proficiency, supabase]);
+  }, [currentStep, userId, academic, socials, targetRole, customRole, selectedSkills, proficiency]);
 
   const handleNext = () => {
     if (currentStep === 1 && targetRole === "Custom" && !customRole) {

@@ -124,3 +124,16 @@ CREATE INDEX IF NOT EXISTS idx_company_interns_company ON public.company_interns
 CREATE INDEX IF NOT EXISTS idx_company_interns_student ON public.company_interns(student_id);
 CREATE INDEX IF NOT EXISTS idx_company_interns_mentor ON public.company_interns(mentor_id);
 CREATE INDEX IF NOT EXISTS idx_company_interns_status ON public.company_interns(status);
+
+-- 9. Ensure INSERT Policies exist for authenticated users
+DROP POLICY IF EXISTS users_insert_self ON public.users;
+CREATE POLICY users_insert_self ON public.users FOR INSERT TO authenticated WITH CHECK (auth.uid() = id);
+
+DROP POLICY IF EXISTS student_profiles_insert_self ON public.student_profiles;
+CREATE POLICY student_profiles_insert_self ON public.student_profiles FOR INSERT TO authenticated WITH CHECK (auth.uid() = id);
+
+DROP POLICY IF EXISTS companies_insert_self ON public.companies;
+CREATE POLICY companies_insert_self ON public.companies FOR INSERT TO authenticated WITH CHECK (auth.uid() = id);
+
+DROP POLICY IF EXISTS mentors_insert_self ON public.mentors;
+CREATE POLICY mentors_insert_self ON public.mentors FOR INSERT TO authenticated WITH CHECK (auth.uid() = id);

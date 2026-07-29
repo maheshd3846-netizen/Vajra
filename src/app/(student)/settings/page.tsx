@@ -18,7 +18,7 @@ export default async function SettingsPage() {
   }
 
   // Fetch student profile & user details
-  const { data: studentProfile } = await supabase
+  const { data: rawStudentProfile, error: profileError } = await supabase
     .from("student_profiles")
     .select(`
       bio,
@@ -37,13 +37,52 @@ export default async function SettingsPage() {
       linkedin_url
     `)
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
+
+  let studentProfile = rawStudentProfile;
+
+  // Fallback if migration 00006 columns (degree, branch, cgpa, etc.) are not yet in PostgREST schema cache
+  if (profileError) {
+    console.warn("[SettingsPage] Extended columns query notice:", profileError.message);
+    const { data: baseProfile } = await supabase
+      .from("student_profiles")
+      .select(`
+        bio,
+        university,
+        major,
+        graduation_year,
+        gpa,
+        github_url,
+        linkedin_url
+      `)
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (baseProfile) {
+      studentProfile = {
+        bio: baseProfile.bio,
+        university: baseProfile.university,
+        degree: null,
+        branch: baseProfile.major,
+        major: baseProfile.major,
+        graduation_year: baseProfile.graduation_year,
+        gpa: baseProfile.gpa,
+        cgpa: baseProfile.gpa ? Number((baseProfile.gpa * 2.5).toFixed(2)) : null,
+        target_role: null,
+        portfolio_url: null,
+        phone: null,
+        location: null,
+        github_url: baseProfile.github_url,
+        linkedin_url: baseProfile.linkedin_url,
+      };
+    }
+  }
 
   const { data: userProfile } = await supabase
     .from("users")
     .select("full_name, avatar_url")
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
 
   const { data: studentSkills } = await supabase
     .from("student_skills")

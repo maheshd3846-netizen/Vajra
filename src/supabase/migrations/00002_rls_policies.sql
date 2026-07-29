@@ -54,24 +54,28 @@ CREATE POLICY admin_all_audit_logs ON public.audit_logs TO authenticated USING (
 -- 1. USERS POLICIES
 -- ----------------------------------------------------
 CREATE POLICY users_read_authenticated ON public.users FOR SELECT TO authenticated USING (true);
+CREATE POLICY users_insert_self ON public.users FOR INSERT TO authenticated WITH CHECK (auth.uid() = id);
 CREATE POLICY users_update_self ON public.users FOR UPDATE TO authenticated USING (auth.uid() = id) WITH CHECK (auth.uid() = id AND role = (SELECT role FROM public.users WHERE id = auth.uid()));
 
 -- ----------------------------------------------------
 -- 2. STUDENT PROFILES POLICIES
 -- ----------------------------------------------------
 CREATE POLICY student_profiles_read_authenticated ON public.student_profiles FOR SELECT TO authenticated USING (true);
+CREATE POLICY student_profiles_insert_self ON public.student_profiles FOR INSERT TO authenticated WITH CHECK (auth.uid() = id);
 CREATE POLICY student_profiles_update_self ON public.student_profiles FOR UPDATE TO authenticated USING (auth.uid() = id) WITH CHECK (auth.uid() = id);
 
 -- ----------------------------------------------------
 -- 3. COMPANIES POLICIES
 -- ----------------------------------------------------
 CREATE POLICY companies_read_authenticated ON public.companies FOR SELECT TO authenticated USING (true);
+CREATE POLICY companies_insert_self ON public.companies FOR INSERT TO authenticated WITH CHECK (auth.uid() = id);
 CREATE POLICY companies_update_self ON public.companies FOR UPDATE TO authenticated USING (auth.uid() = id) WITH CHECK (auth.uid() = id);
 
 -- ----------------------------------------------------
 -- 4. MENTORS POLICIES
 -- ----------------------------------------------------
 CREATE POLICY mentors_read_authenticated ON public.mentors FOR SELECT TO authenticated USING (true);
+CREATE POLICY mentors_insert_self ON public.mentors FOR INSERT TO authenticated WITH CHECK (auth.uid() = id);
 CREATE POLICY mentors_update_self ON public.mentors FOR UPDATE TO authenticated USING (auth.uid() = id) WITH CHECK (auth.uid() = id);
 
 -- ----------------------------------------------------
