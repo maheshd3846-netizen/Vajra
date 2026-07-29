@@ -1,16 +1,16 @@
 import React from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-<<<<<<< HEAD
+
 import { Settings as SettingsIcon } from "lucide-react";
 import { StudentSettingsForm } from "@/components/student/StudentSettingsForm";
 import { Container } from "@/components/ui/container";
 import { Section } from "@/components/ui/section";
-=======
+
 import StudentSettingsClient, {
   type StudentProfileInitialData,
 } from "@/components/student/StudentSettingsClient";
->>>>>>> 55182242192c3070e7e903a330be5521e50fc2c5
+
 
 export const dynamic = "force-dynamic";
 
@@ -80,7 +80,7 @@ export default async function SettingsPage() {
     .eq("id", user.id)
     .maybeSingle();
 
-<<<<<<< HEAD
+
   return (
     <Container className="py-8 sm:py-10">
       <Section className="space-y-8">
@@ -113,7 +113,7 @@ export default async function SettingsPage() {
       </Section>
     </Container>
   );
-=======
+
   const { data: studentSkills } = await supabase
     .from("student_skills")
     .select("skill_name")
@@ -141,5 +141,5 @@ export default async function SettingsPage() {
   };
 
   return <StudentSettingsClient initialData={initialData} />;
->>>>>>> 55182242192c3070e7e903a330be5521e50fc2c5
+
 }

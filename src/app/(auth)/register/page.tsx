@@ -272,12 +272,9 @@ export default function RegisterPage() {
               {/* Full Name / Company Name */}
               <div className="space-y-1.5">
                 <Label htmlFor="fullName" className="text-xs font-semibold text-foreground/80">
-<<<<<<< HEAD
                   Full Name
                   </Label>
                 <Label htmlFor="fullName" className="text-xs font-semibold text-slate-200">
-=======
->>>>>>> 55182242192c3070e7e903a330be5521e50fc2c5
                   {selectedRole === "company" ? "Company / Recruiter Name" : "Full Name"}
                 </Label>
                 <div className="relative">

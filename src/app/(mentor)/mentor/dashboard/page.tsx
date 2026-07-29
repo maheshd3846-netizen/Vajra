@@ -1,13 +1,12 @@
 import React from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-<<<<<<< HEAD
+
 import { Users, Shield, Award, Sparkles } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Panel } from "@/components/ui/panel";
 import { Section } from "@/components/ui/section";
-=======
->>>>>>> 55182242192c3070e7e903a330be5521e50fc2c5
+
 import MentorDashboardClient, {
   type MentorDashboardData,
   type MentorDashboardStudentItem,
@@ -45,7 +44,7 @@ export default async function MentorDashboardPage() {
     isVerified: Boolean(mentor?.is_verified),
   };
 
-<<<<<<< HEAD
+ 
   return (
     <Container className="py-8 sm:py-10">
       <Section className="space-y-8">
@@ -100,7 +99,7 @@ export default async function MentorDashboardPage() {
       </Section>
     </Container>
   );
-=======
+
   return <MentorDashboardClient initialData={dashboardData} />;
->>>>>>> 55182242192c3070e7e903a330be5521e50fc2c5
+ 
 }
