@@ -43,7 +43,7 @@ export default async function CompanySettingsPage() {
       official_email
     `)
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
 
 <<<<<<< HEAD
   return (

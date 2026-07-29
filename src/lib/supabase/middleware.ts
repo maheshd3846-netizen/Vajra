@@ -2,7 +2,23 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
+  const path = request.nextUrl.pathname;
+
+  // 1. Bypass auth check completely for /auth/* routes BEFORE calling getUser() or instantiating auth client.
+  // This ensures OAuth state/PKCE verifier cookies reach /auth/callback uncorrupted.
+  if (path.startsWith("/auth/")) {
+    return NextResponse.next({ request });
+  }
+
+  // 2. Intercept OAuth code parameter on root path if provider falls back to SITE_URL
+  if (path === "/" && request.nextUrl.searchParams.has("code")) {
+    console.log("[Middleware] Intercepted OAuth code on root path. Forwarding to /auth/callback...");
+    const callbackUrl = request.nextUrl.clone();
+    callbackUrl.pathname = "/auth/callback";
+    return NextResponse.redirect(callbackUrl);
+  }
+
+  const supabaseResponse = NextResponse.next({
     request,
   });
 
@@ -13,16 +29,13 @@ export async function updateSession(request: NextRequest) {
     return supabaseResponse;
   }
 
+  // 3. Official @supabase/ssr middleware client (never mutate request.cookies directly)
   const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
     cookies: {
       getAll() {
         return request.cookies.getAll();
       },
       setAll(cookiesToSet) {
-        cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-        supabaseResponse = NextResponse.next({
-          request,
-        });
         cookiesToSet.forEach(({ name, value, options }) =>
           supabaseResponse.cookies.set(name, value, options)
         );
@@ -30,15 +43,12 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  // IMPORTANT: Avoid writing any logic between createServerClient and
-  // supabase.auth.getUser().
+  // IMPORTANT: Avoid writing any logic between createServerClient and supabase.auth.getUser()
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const path = request.nextUrl.pathname;
-
-  // Session Debugging Log
+  // Session Audit Log
   console.log("[Middleware Audit]", {
     path,
     authenticated: !!user,
@@ -46,12 +56,7 @@ export async function updateSession(request: NextRequest) {
     cookiesCount: request.cookies.getAll().length,
   });
 
-  // Allow auth callback routes to execute without middleware interception
-  if (path.startsWith("/auth/")) {
-    return supabaseResponse;
-  }
-
-  // Define protected routes
+  // 4. Define protected routes
   const protectedRoutes = [
     "/dashboard",
     "/career",
@@ -70,7 +75,6 @@ export async function updateSession(request: NextRequest) {
   );
 
   if (isProtected && !user) {
-    // User is not authenticated; redirect to login
     console.log("[Middleware] Unauthenticated access to protected route. Redirecting to /login", { path });
     const url = request.nextUrl.clone();
     url.pathname = "/login";
@@ -79,10 +83,8 @@ export async function updateSession(request: NextRequest) {
   }
 
   if (user) {
-    // Default role for authenticated users if user_metadata is missing role
     const userRole = user.user_metadata?.role || "student";
 
-    // If an authenticated user attempts to access auth pages, redirect to dashboard
     if (
       path === "/login" || path.startsWith("/login/") ||
       path === "/register" || path.startsWith("/register/") ||
@@ -92,7 +94,6 @@ export async function updateSession(request: NextRequest) {
       return redirectToRoleDashboard(request, userRole);
     }
 
-    // Route restriction based on roles
     const studentRoutes = ["/dashboard", "/career", "/internships", "/interview", "/mentorship", "/portfolio", "/settings"];
     const isStudentRoute = studentRoutes.some((route) => path === route || path.startsWith(route + "/"));
 
@@ -126,7 +127,6 @@ function redirectToRoleDashboard(request: NextRequest, role: string | undefined)
   } else if (role === "admin" || role === "super_admin") {
     url.pathname = "/admin/dashboard";
   } else {
-    // Default for student or unspecified role is /dashboard (NEVER redirect to / home page)
     url.pathname = "/dashboard";
   }
   return NextResponse.redirect(url);
