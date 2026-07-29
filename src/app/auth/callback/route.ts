@@ -47,10 +47,10 @@ export async function GET(request: Request) {
 
     if (exchangeError || !sessionData?.user) {
       console.error("[Auth Callback Error] exchangeCodeForSession failed:", {
+        name: exchangeError?.name,
         code: exchangeError?.code,
+        status: exchangeError?.status,
         message: exchangeError?.message,
-        details: exchangeError?.details,
-        hint: exchangeError?.hint,
       });
       const msg = exchangeError?.message || "Failed to exchange authorization code for session";
       return NextResponse.redirect(
