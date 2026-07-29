@@ -2,10 +2,11 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Menu, X, ArrowRight, LogOut, LayoutDashboard, User as UserIcon } from "lucide-react";
+import { Menu, X, ArrowRight, LogOut, LayoutDashboard } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { Badge } from "@/components/ui/badge";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -35,26 +36,32 @@ export default function Navbar() {
   return (
     <>
       <motion.header
-        initial={{ y: -100, opacity: 0 }}
+        initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="fixed top-0 left-0 w-full z-50 border-b border-border/70 bg-background/75 backdrop-blur-xl"
+        transition={{ duration: 0.3 }}
+        className="fixed top-0 left-0 w-full z-50 border-b border-border bg-background/80 backdrop-blur-md"
       >
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <span className="text-2xl font-bold font-heading tracking-wider bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-500 bg-clip-text text-transparent group-hover:opacity-85 transition-opacity">
+            <div className="h-7 w-7 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-mono text-xs font-black shadow-xs">
+              V
+            </div>
+            <span className="text-sm font-semibold tracking-wider text-foreground font-mono">
               VAJRA
             </span>
+            <Badge variant="outline" className="text-[9px] uppercase font-mono px-1.5 py-0 hidden sm:inline-flex">
+              Enterprise
+            </Badge>
           </Link>
 
           {/* Desktop Nav links */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden md:flex items-center gap-6">
             {navLinks.map((link) => (
               <a
                 key={link.name}
                 href={link.href}
-                className="text-sm text-muted-foreground hover:text-foreground font-sans transition-colors"
+                className="text-xs text-muted-foreground hover:text-foreground font-sans font-medium transition-colors"
               >
                 {link.name}
               </a>
@@ -62,150 +69,129 @@ export default function Navbar() {
           </nav>
 
           {/* Desktop Auth State / CTA actions */}
-          <div className="hidden md:flex items-center gap-4">
-            <ThemeToggle />
+          <div className="hidden md:flex items-center gap-3">
+            <ThemeToggle className="h-8 w-8 rounded-lg" />
             {isLoading ? (
-              <div className="h-10 w-24 rounded-xl border border-border/70 bg-muted/60 animate-pulse" />
+              <div className="h-8 w-20 rounded-lg border border-border bg-muted/60 animate-pulse" />
             ) : user ? (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 <Link
                   href={dashboardHref}
-                  className="flex items-center gap-2 rounded-xl border border-primary/20 bg-primary/10 px-4 py-2 text-xs font-semibold text-primary transition-all hover:-translate-y-0.5 hover:bg-primary/15"
+                  className="flex items-center gap-1.5 rounded-lg border border-primary/20 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary transition-all hover:bg-primary/20"
                 >
-                  <LayoutDashboard className="w-4 h-4" />
+                  <LayoutDashboard className="w-3.5 h-3.5" />
                   Dashboard
                 </Link>
 
-                <div className="flex items-center gap-2 rounded-xl border border-border/70 bg-card/80 px-3 py-1.5 text-xs text-foreground shadow-sm backdrop-blur-md">
+                <div className="flex items-center gap-2 rounded-lg border border-border bg-card px-2.5 py-1 text-xs text-foreground shadow-xs">
                   {avatarUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={avatarUrl} alt={displayName} className="w-5 h-5 rounded-full object-cover" />
+                    <img src={avatarUrl} alt={displayName} className="w-4 h-4 rounded-full object-cover" />
                   ) : (
-                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/15 text-[10px] font-bold text-primary">
+                    <div className="flex h-4 w-4 items-center justify-center rounded-full bg-primary/15 text-[9px] font-bold text-primary font-mono">
                       {displayName.charAt(0).toUpperCase()}
                     </div>
                   )}
-                  <span className="max-w-[120px] truncate font-medium">{displayName}</span>
+                  <span className="max-w-[100px] truncate font-medium">{displayName}</span>
                 </div>
 
                 <button
                   onClick={() => signOut()}
-                  className="rounded-xl border border-border/70 bg-background/80 p-2 text-muted-foreground transition-all hover:-translate-y-0.5 hover:text-destructive cursor-pointer shadow-sm backdrop-blur-md"
+                  className="rounded-lg border border-border p-1.5 text-muted-foreground transition-all hover:text-destructive hover:bg-destructive/10 cursor-pointer"
                   title="Sign Out"
                 >
-                  <LogOut className="w-4 h-4" />
+                  <LogOut className="w-3.5 h-3.5" />
                 </button>
               </div>
             ) : (
               <>
                 <Link
                   href="/login"
-                  className="text-sm font-medium text-muted-foreground hover:text-foreground font-sans transition-colors"
+                  className="text-xs font-medium text-muted-foreground hover:text-foreground px-3 py-1.5 rounded-lg transition-colors"
                 >
-                  Log In
+                  Sign In
                 </Link>
+
                 <Link
                   href="/register"
-                  className="group relative inline-flex items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-primary via-indigo-500 to-violet-500 p-0.5 text-sm font-medium text-primary-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+                  className="flex items-center gap-1.5 rounded-lg bg-primary text-primary-foreground px-3.5 py-1.5 text-xs font-semibold shadow-xs hover:bg-primary/90 transition-all"
                 >
-                  <span className="relative flex items-center gap-1 rounded-[10px] bg-background/90 px-5 py-2.5 transition-all duration-150 ease-out group-hover:bg-transparent">
-                    Get Started
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </span>
+                  Get Started <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </>
             )}
           </div>
 
-          {/* Mobile menu toggle */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden rounded-xl border border-border/70 bg-background/80 p-2 text-muted-foreground shadow-sm backdrop-blur-md hover:text-foreground focus:outline-none"
-            aria-label="Toggle Menu"
-          >
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          {/* Mobile Menu Button */}
+          <div className="flex items-center gap-2 md:hidden">
+            <ThemeToggle className="h-8 w-8 rounded-lg" />
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="p-1.5 text-muted-foreground hover:text-foreground rounded-lg border border-border"
+            >
+              {isOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+            </button>
+          </div>
         </div>
       </motion.header>
 
-      {/* Mobile nav overlay */}
+      {/* Mobile Drawer */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed top-20 left-0 w-full z-40 border-b border-border/70 bg-background/95 md:hidden overflow-hidden backdrop-blur-xl"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="fixed top-14 left-0 w-full bg-card border-b border-border z-40 p-4 md:hidden flex flex-col gap-3 shadow-lg"
           >
-            <div className="px-6 py-8 flex flex-col gap-6">
-              {navLinks.map((link) => (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  onClick={() => setIsOpen(false)}
-                  className="text-lg font-medium text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {link.name}
-                </a>
-              ))}
-              <div className="my-2 h-px bg-border/70" />
-              
-              <div className="flex flex-col gap-4">
-                {user ? (
-                  <>
-                    <div className="flex items-center gap-3 rounded-xl border border-border/70 bg-card/80 p-3">
-                      {avatarUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={avatarUrl} alt={displayName} className="w-8 h-8 rounded-full object-cover" />
-                      ) : (
-                        <UserIcon className="w-5 h-5 text-primary" />
-                      )}
-                      <div>
-                        <div className="text-sm font-semibold text-foreground">{displayName}</div>
-                        <div className="text-xs text-muted-foreground">{user.email}</div>
-                      </div>
-                    </div>
-
-                    <Link
-                      href={dashboardHref}
-                      onClick={() => setIsOpen(false)}
-                      className="w-full rounded-xl bg-primary px-4 py-3 text-center font-medium text-primary-foreground transition-all hover:-translate-y-0.5 hover:bg-primary/90 flex items-center justify-center gap-2 shadow-lg shadow-primary/20"
-                    >
-                      <LayoutDashboard className="w-4 h-4" />
-                      Go to Dashboard
-                    </Link>
-
-                    <button
-                      onClick={() => {
-                        setIsOpen(false);
-                        signOut();
-                      }}
-                      className="w-full rounded-xl border border-border/70 bg-background/80 px-4 py-3 text-center font-medium text-destructive transition-all hover:-translate-y-0.5 hover:bg-destructive/10 flex items-center justify-center gap-2 cursor-pointer"
-                    >
-                      <LogOut className="w-4 h-4" />
-                      Sign Out
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <Link
-                      href="/login"
-                      onClick={() => setIsOpen(false)}
-                      className="w-full rounded-xl border border-border/70 px-4 py-3 text-center font-medium text-muted-foreground transition-all hover:-translate-y-0.5 hover:text-foreground"
-                    >
-                      Log In
-                    </Link>
-                    <Link
-                      href="/register"
-                      onClick={() => setIsOpen(false)}
-                      className="w-full rounded-xl bg-gradient-to-r from-primary via-indigo-500 to-violet-500 px-4 py-3 text-center font-medium text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5 hover:opacity-95"
-                    >
-                      Get Started
-                    </Link>
-                  </>
-                )}
-              </div>
+            {navLinks.map((link) => (
+              <a
+                key={link.name}
+                href={link.href}
+                onClick={() => setIsOpen(false)}
+                className="text-xs text-muted-foreground hover:text-foreground font-medium py-1.5"
+              >
+                {link.name}
+              </a>
+            ))}
+            <div className="pt-2 border-t border-border flex flex-col gap-2">
+              {user ? (
+                <>
+                  <Link
+                    href={dashboardHref}
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center justify-center gap-2 rounded-lg bg-primary text-primary-foreground py-2 text-xs font-semibold"
+                  >
+                    <LayoutDashboard className="w-3.5 h-3.5" /> Dashboard
+                  </Link>
+                  <button
+                    onClick={() => {
+                      setIsOpen(false);
+                      signOut();
+                    }}
+                    className="flex items-center justify-center gap-2 rounded-lg border border-destructive/20 text-destructive py-2 text-xs font-semibold"
+                  >
+                    <LogOut className="w-3.5 h-3.5" /> Sign Out
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    onClick={() => setIsOpen(false)}
+                    className="text-center rounded-lg border border-border py-2 text-xs font-semibold text-foreground"
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    href="/register"
+                    onClick={() => setIsOpen(false)}
+                    className="text-center rounded-lg bg-primary text-primary-foreground py-2 text-xs font-semibold"
+                  >
+                    Get Started
+                  </Link>
+                </>
+              )}
             </div>
           </motion.div>
         )}

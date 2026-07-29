@@ -86,6 +86,7 @@ export async function updateSession(request: NextRequest) {
     (route) => path === route || path.startsWith(route + "/")
   );
 
+  // Unauthenticated user trying to access protected route -> Redirect to /login
   if (isProtected && !user) {
     console.log("[Middleware] Unauthenticated access to protected route. Redirecting to /login", { path });
     const url = request.nextUrl.clone();
@@ -94,68 +95,27 @@ export async function updateSession(request: NextRequest) {
     return redirectWithCookies(url);
   }
 
+  // Authenticated user trying to access auth routes -> Redirect to appropriate dashboard
   if (user) {
-    // Align role with database source of truth if user_metadata role is absent
-    let userRole = user.user_metadata?.role;
-    if (!userRole) {
-      const { data: dbUser } = await supabase
-        .from("users")
-        .select("role")
-        .eq("id", user.id)
-        .maybeSingle();
-      userRole = dbUser?.role || "student";
-    }
-
     if (
       path === "/login" || path.startsWith("/login/") ||
       path === "/register" || path.startsWith("/register/") ||
       path === "/forgot-password" || path.startsWith("/forgot-password/")
     ) {
+      const userRole = user.user_metadata?.role || "student";
       console.log("[Middleware] Authenticated user on auth route. Redirecting to role dashboard", { userRole });
       const targetUrl = request.nextUrl.clone();
-      targetUrl.pathname = getRoleDashboardPath(userRole);
-      return redirectWithCookies(targetUrl);
-    }
-
-    const studentRoutes = ["/dashboard", "/career", "/internships", "/interview", "/mentorship", "/portfolio", "/settings"];
-    const isStudentRoute = studentRoutes.some((route) => path === route || path.startsWith(route + "/"));
-
-    if (isStudentRoute && userRole !== "student" && userRole !== "admin" && userRole !== "super_admin") {
-      console.log("[Middleware] Role mismatch for student route. Redirecting.", { userRole, path });
-      const targetUrl = request.nextUrl.clone();
-      targetUrl.pathname = getRoleDashboardPath(userRole);
-      return redirectWithCookies(targetUrl);
-    }
-    if (path.startsWith("/company") && userRole !== "company" && userRole !== "admin" && userRole !== "super_admin") {
-      console.log("[Middleware] Role mismatch for company route. Redirecting.", { userRole, path });
-      const targetUrl = request.nextUrl.clone();
-      targetUrl.pathname = getRoleDashboardPath(userRole);
-      return redirectWithCookies(targetUrl);
-    }
-    if (path.startsWith("/mentor") && userRole !== "mentor" && userRole !== "admin" && userRole !== "super_admin") {
-      console.log("[Middleware] Role mismatch for mentor route. Redirecting.", { userRole, path });
-      const targetUrl = request.nextUrl.clone();
-      targetUrl.pathname = getRoleDashboardPath(userRole);
-      return redirectWithCookies(targetUrl);
-    }
-    if (path.startsWith("/admin") && userRole !== "admin" && userRole !== "super_admin") {
-      console.log("[Middleware] Role mismatch for admin route. Redirecting.", { userRole, path });
-      const targetUrl = request.nextUrl.clone();
-      targetUrl.pathname = getRoleDashboardPath(userRole);
+      targetUrl.pathname =
+        userRole === "company"
+          ? "/company/dashboard"
+          : userRole === "mentor"
+          ? "/mentor/dashboard"
+          : userRole === "admin" || userRole === "super_admin"
+          ? "/admin/dashboard"
+          : "/dashboard";
       return redirectWithCookies(targetUrl);
     }
   }
 
   return supabaseResponse;
-}
-
-function getRoleDashboardPath(role: string | undefined): string {
-  if (role === "company") {
-    return "/company/dashboard";
-  } else if (role === "mentor") {
-    return "/mentor/dashboard";
-  } else if (role === "admin" || role === "super_admin") {
-    return "/admin/dashboard";
-  }
-  return "/dashboard";
 }

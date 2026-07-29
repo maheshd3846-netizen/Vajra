@@ -18,7 +18,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import {
   applyToInternshipAction,
   toggleSaveInternshipAction,
@@ -61,11 +62,11 @@ export default function InternshipMatcherWorkspace({
 }: WorkspaceProps) {
   const [internships, setInternships] = useState<EnhancedInternshipRecord[]>(initialInternships);
   const [applications, setApplications] = useState<ApplicationItem[]>(initialApplications);
-  
-  // Active Tab: Explore vs Applications Tracker
-  const [activeMainTab, setActiveMainTab] = useState<"explore" | "applications">("explore");
 
-  // Filters State
+  // Active Tab
+  const [activeTab, setActiveTab] = useState<"explore" | "applications">("explore");
+
+  // Filter & Search State
   const [searchQuery, setSearchQuery] = useState("");
   const [filterMode, setFilterMode] = useState<"all" | "remote" | "high" | "paid" | "verified" | "saved">("all");
   const [sortBy, setSortBy] = useState<"match" | "newest" | "stipend">("match");
@@ -122,7 +123,6 @@ export default function InternshipMatcherWorkspace({
     e.preventDefault();
     if (!activeModalJob) return;
 
-    // Check if already applied
     if (applications.some((app) => app.internship_id === activeModalJob.id)) {
       toast.info("You have already applied to this position.");
       return;
@@ -233,110 +233,107 @@ export default function InternshipMatcherWorkspace({
   };
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto text-foreground font-sans">
-      {/* Header & Mode Switcher */}
-      <div className="flex flex-col justify-between gap-4 border-b border-[#BFDFFF] pb-6 md:flex-row md:items-center">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-primary">
-            <Sparkles className="w-4 h-4" />
-            AI Career Intelligence Marketplace
+    <div className="space-y-6">
+      {/* Top Title & Tab Switcher Bar */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-5">
+        <div>
+          <div className="flex items-center gap-2 text-xs font-mono font-semibold uppercase tracking-wider text-primary mb-1">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>AI Match Engine</span>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground font-heading">
-            Internship Matching Platform
+          <h1 className="text-xl font-bold tracking-tight text-foreground font-sans">
+            Internship Marketplace
           </h1>
-          <p className="max-w-2xl text-sm text-muted-foreground font-sans">
-            AI-calibrated internship recommendations matched against your Career DNA, verified technical skills, and portfolio projects.
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Verified opportunities matched against your Career DNA and technical skill vector.
           </p>
         </div>
 
-        {/* Main Tabs */}
-        <div className="flex shrink-0 items-center gap-2 rounded-2xl border border-[#BFDFFF] bg-white p-1.5">
+        {/* Workspace Tab Switcher */}
+        <div className="flex items-center p-1 rounded-lg border border-border bg-muted/40 self-start sm:self-auto">
           <button
-            onClick={() => setActiveMainTab("explore")}
-            className={`px-5 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer ${
-              activeMainTab === "explore"
-                ? "bg-gradient-to-r from-primary via-sky-500 to-indigo-600 text-white shadow-md"
+            onClick={() => setActiveTab("explore")}
+            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all cursor-pointer ${
+              activeTab === "explore"
+                ? "bg-card text-foreground font-semibold shadow-xs border border-border"
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            <Sparkles className="w-4 h-4" />
-            Explore Internships ({internships.length})
+            Explore ({internships.length})
           </button>
           <button
-            onClick={() => setActiveMainTab("applications")}
-            className={`px-5 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer ${
-              activeMainTab === "applications"
-                ? "bg-gradient-to-r from-primary via-sky-500 to-indigo-600 text-white shadow-md"
+            onClick={() => setActiveTab("applications")}
+            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all cursor-pointer ${
+              activeTab === "applications"
+                ? "bg-card text-foreground font-semibold shadow-xs border border-border"
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            <Clock className="w-4 h-4" />
-            My Applications ({applications.length})
+            Applications ({applications.length})
           </button>
         </div>
       </div>
 
       {/* ─── TAB 1: EXPLORE INTERNSHIPS ─── */}
-      {activeMainTab === "explore" && (
-        <div className="space-y-6">
-          {/* Filter Bar */}
-          <div className="glass-card flex flex-col items-stretch justify-between gap-4 rounded-[28px] p-4 lg:flex-row lg:items-center">
-            {/* Search */}
+      {activeTab === "explore" && (
+        <div className="space-y-5">
+          {/* Command Filter Bar */}
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between bg-card p-3 rounded-xl border border-border shadow-xs">
+            {/* Search Input */}
             <div className="relative flex-1">
-              <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search roles, technologies, or partner companies..."
+                placeholder="Filter by role title, technology, or company name..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="theme-input pl-10 text-xs py-5"
+                className="pl-9 h-9 text-xs bg-muted/30"
               />
             </div>
 
-            {/* Quick Filters */}
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="mr-1 font-mono text-[10px] uppercase text-muted-foreground">Filter:</span>
+            {/* Quick Filter Badges */}
+            <div className="flex flex-wrap items-center gap-1.5">
               {(["all", "remote", "high", "paid", "verified", "saved"] as const).map((m) => (
                 <button
                   key={m}
                   onClick={() => setFilterMode(m)}
-                  className={`px-3 py-1.5 rounded-xl text-[11px] font-medium uppercase font-mono tracking-wider transition-all cursor-pointer ${
+                  className={`px-2.5 py-1 rounded-md text-[11px] font-mono font-medium transition-colors cursor-pointer ${
                     filterMode === m
-                      ? "bg-primary/10 text-primary border border-primary/30"
-                      : "bg-background/80 text-muted-foreground border border-border/70 hover:border-primary/20"
+                      ? "bg-primary text-primary-foreground font-semibold"
+                      : "bg-secondary/60 text-muted-foreground hover:bg-secondary hover:text-foreground"
                   }`}
                 >
-                  {m === "all" && "All Roles"}
+                  {m === "all" && "All"}
                   {m === "remote" && "Remote"}
                   {m === "high" && "Match > 80%"}
                   {m === "paid" && "Paid Stipend"}
                   {m === "verified" && "Verified"}
-                  {m === "saved" && "Bookmarked"}
+                  {m === "saved" && "Saved"}
                 </button>
               ))}
 
-              <div className="mx-1 hidden h-4 w-px bg-border/70 sm:block" />
+              <div className="h-4 w-px bg-border mx-1 hidden sm:block" />
 
-              {/* Sort By */}
+              {/* Sort By Dropdown */}
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as "match" | "newest" | "stipend")}
-                className="theme-input cursor-pointer rounded-xl px-3 py-2 text-xs"
+                className="h-8 rounded-md border border-border bg-background px-2 text-[11px] font-medium text-foreground cursor-pointer focus:outline-none"
               >
-                <option value="match">Sort: Highest Match</option>
+                <option value="match">Sort: AI Match</option>
                 <option value="newest">Sort: Newest</option>
-                <option value="stipend">Sort: Highest Stipend</option>
+                <option value="stipend">Sort: Stipend</option>
               </select>
             </div>
           </div>
 
           {/* Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {filteredJobs.length === 0 ? (
-              <div className="md:col-span-2 space-y-3 rounded-[28px] border border-[#BFDFFF] bg-white/80 p-12 text-center">
-                <Briefcase className="mx-auto h-10 w-10 text-slate-500" />
-                <p className="text-sm font-bold text-foreground">No internships found</p>
-                <p className="mx-auto max-w-sm text-xs text-muted-foreground font-sans">
-                  No open job listings match your current search query or active filter selections.
+              <div className="md:col-span-2 py-12 px-4 rounded-xl border border-dashed border-border bg-card text-center space-y-2">
+                <Briefcase className="mx-auto h-8 w-8 text-muted-foreground" />
+                <p className="text-sm font-semibold text-foreground">No internships found</p>
+                <p className="text-xs text-muted-foreground max-w-sm mx-auto">
+                  Try adjusting your search keywords or switching off active filter tags.
                 </p>
               </div>
             ) : (
@@ -346,132 +343,123 @@ export default function InternshipMatcherWorkspace({
                 return (
                   <motion.div
                     key={job.id}
-                    initial={{ opacity: 0, y: 16 }}
+                    initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="glass-card relative flex flex-col justify-between space-y-5 overflow-hidden rounded-[28px] p-6 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_12px_40px_rgba(59,130,246,0.10)]"
+                    transition={{ duration: 0.2 }}
                   >
-                    <div className="space-y-4">
-                      {/* Top Header Row */}
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[#BFDFFF] bg-white text-lg font-bold text-foreground">
-                            {job.company.name.charAt(0)}
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <h3 className="text-base font-bold leading-tight text-foreground">{job.title}</h3>
+                    <Card className="hover:border-foreground/20 transition-all flex flex-col justify-between h-full">
+                      <CardHeader className="space-y-3 pb-3">
+                        {/* Top Header: Company logo & Match Score */}
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 rounded-lg border border-border bg-muted/40 flex items-center justify-center font-bold text-sm text-foreground shrink-0 font-mono">
+                              {job.company.name.charAt(0)}
                             </div>
-                            <div className="flex items-center gap-2 pt-0.5">
-                              <span className="text-xs text-muted-foreground font-sans">{job.company.name}</span>
-                              <span
-                                className={`text-[9px] uppercase font-mono tracking-wider px-2 py-0.5 rounded-full border ${job.company.trustBadgeClass.bg} ${job.company.trustBadgeClass.border} ${job.company.trustBadgeClass.text}`}
-                              >
-                                {job.company.trustBadgeLabel}
-                              </span>
+                            <div>
+                              <h3 className="text-sm font-semibold leading-tight text-foreground">
+                                {job.title}
+                              </h3>
+                              <div className="flex items-center gap-2 mt-0.5">
+                                <span className="text-xs text-muted-foreground">
+                                  {job.company.name}
+                                </span>
+                                <Badge
+                                  variant={job.company.verification_status === "verified" ? "success" : "secondary"}
+                                  className="text-[9px] px-1.5 py-0"
+                                >
+                                  {job.company.verification_status === "verified" ? "Verified" : "Pending"}
+                                </Badge>
+                              </div>
                             </div>
                           </div>
+
+                          {/* Match Score Badge */}
+                          <Badge variant="ai" className="px-2 py-1 text-xs shrink-0 font-mono">
+                            {job.matchResult.matchScore}% Match
+                          </Badge>
                         </div>
 
-                        {/* Match Score Badge */}
-                        <div className="shrink-0 rounded-2xl border border-primary/20 bg-primary/10 p-2.5 text-center">
-                          <span className="block text-[8px] uppercase font-mono text-muted-foreground">AI Match</span>
-                          <span className="font-mono text-base font-black text-primary">
-                            {job.matchResult.matchScore}%
+                        {/* Metadata Specs */}
+                        <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground pt-1">
+                          <span className="flex items-center gap-1">
+                            <MapPin className="w-3.5 h-3.5" />
+                            {job.location || "Remote"}
                           </span>
+                          <span className="flex items-center gap-1">
+                            <DollarSign className="w-3.5 h-3.5" />
+                            {job.salary_range || "Negotiable"}
+                          </span>
+                          <Badge variant="outline" className="text-[10px] uppercase font-mono">
+                            {job.type}
+                          </Badge>
                         </div>
-                      </div>
+                      </CardHeader>
 
-                      {/* Specs Row */}
-                      <div className="flex flex-wrap items-center gap-3 pt-1 text-xs text-muted-foreground font-sans">
-                        <span className="flex items-center gap-1">
-                          <MapPin className="w-3.5 h-3.5 text-slate-500" />
-                          {job.location || "Remote"}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <DollarSign className="w-3.5 h-3.5 text-slate-500" />
-                          {job.salary_range || "Stipend Negotiable"}
-                        </span>
-                        <span className="rounded-full border border-primary/20 bg-white px-2.5 py-0.5 text-[10px] capitalize text-primary font-mono">
-                          {job.type}
-                        </span>
-                        <span className="font-mono text-[10px] text-muted-foreground">
-                          Readiness: {job.matchResult.expectedReadiness}%
-                        </span>
-                      </div>
+                      <CardContent className="space-y-3 py-2">
+                        {/* AI Summary */}
+                        <p className="text-xs text-muted-foreground bg-muted/30 p-2.5 rounded-lg border border-border/50 leading-relaxed line-clamp-2">
+                          ⚡ {job.matchResult.aiFitSummary}
+                        </p>
 
-                      {/* AI Fit Summary */}
-                      <p className="line-clamp-2 rounded-xl border border-[#BFDFFF] bg-white/80 p-3 text-xs leading-relaxed text-muted-foreground font-sans">
-                        💡 {job.matchResult.aiFitSummary}
-                      </p>
-
-                      {/* Skills Badges */}
-                      <div className="flex flex-wrap gap-1.5">
-                        {job.skills_needed.map((sk, i) => {
-                          const isMatch = job.matchResult.reasons.some((r) =>
-                            r.toLowerCase().includes(sk.toLowerCase())
-                          );
-                          return (
-                            <span
+                        {/* Skills Badges */}
+                        <div className="flex flex-wrap gap-1">
+                          {job.skills_needed.map((sk, i) => (
+                            <Badge
                               key={i}
-                              className={`text-[9px] font-semibold font-mono px-2 py-0.5 rounded border ${
-                                isMatch
-                                  ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-500"
-                                  : "bg-white border-border/70 text-muted-foreground"
-                              }`}
+                              variant="outline"
+                              className="text-[10px] font-mono px-2 py-0.5 bg-background"
                             >
                               {sk}
-                            </span>
-                          );
-                        })}
-                      </div>
-                    </div>
+                            </Badge>
+                          ))}
+                        </div>
+                      </CardContent>
 
-                    {/* Actions Footer */}
-                    <div className="flex items-center justify-between gap-3 border-t border-border/70 pt-4">
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={(e) => handleToggleSave(job.id, e)}
-                          className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
-                            job.isSaved
-                              ? "bg-amber-500/20 border-amber-500/40 text-amber-500"
-                              : "bg-white border-border/70 text-muted-foreground hover:text-foreground"
-                          }`}
-                          title="Bookmark Internship"
-                        >
-                          <Bookmark className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={(e) => handleShareLink(job, e)}
-                          className="cursor-pointer rounded-xl border border-border/70 bg-white p-2.5 text-muted-foreground transition-all hover:-translate-y-0.5 hover:text-foreground"
-                          title="Share Link"
-                        >
-                          <Share2 className="w-4 h-4" />
-                        </button>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant="outline"
-                          onClick={() => handleOpenAiReview(job)}
-                          className="border border-primary/20 bg-white text-xs py-2 px-3 rounded-xl text-primary cursor-pointer hover:bg-primary/10"
-                        >
-                          <FileCheck className="w-3.5 h-3.5 mr-1" /> AI Review
-                        </Button>
-
-                        {isAlreadyApplied ? (
-                          <span className="px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold rounded-xl flex items-center gap-1 font-mono">
-                            <CheckCircle2 className="w-3.5 h-3.5" /> Applied
-                          </span>
-                        ) : (
+                      <CardFooter className="pt-3 border-t border-border/60 flex items-center justify-between gap-2 mt-auto">
+                        <div className="flex items-center gap-1">
                           <Button
-                            onClick={() => setActiveModalJob(job)}
-                            className="bg-gradient-to-r from-primary via-sky-500 to-indigo-600 text-xs font-semibold py-2 px-4 rounded-xl text-white shadow-md cursor-pointer hover:shadow-[0_18px_40px_rgba(59,130,246,0.20)]"
+                            variant="ghost"
+                            size="icon-sm"
+                            onClick={(e) => handleToggleSave(job.id, e)}
+                            className={job.isSaved ? "text-amber-500 hover:text-amber-600" : ""}
+                            title="Save job"
                           >
-                            Quick Apply
+                            <Bookmark className="w-3.5 h-3.5" />
                           </Button>
-                        )}
-                      </div>
-                    </div>
+                          <Button
+                            variant="ghost"
+                            size="icon-sm"
+                            onClick={(e) => handleShareLink(job, e)}
+                            title="Share link"
+                          >
+                            <Share2 className="w-3.5 h-3.5" />
+                          </Button>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleOpenAiReview(job)}
+                          >
+                            <FileCheck className="w-3.5 h-3.5 mr-1" /> AI Diagnostic
+                          </Button>
+
+                          {isAlreadyApplied ? (
+                            <Badge variant="success" className="h-8 px-3 text-xs">
+                              <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> Applied
+                            </Badge>
+                          ) : (
+                            <Button
+                              size="sm"
+                              onClick={() => setActiveModalJob(job)}
+                            >
+                              Quick Apply
+                            </Button>
+                          )}
+                        </div>
+                      </CardFooter>
+                    </Card>
                   </motion.div>
                 );
               })
@@ -480,77 +468,72 @@ export default function InternshipMatcherWorkspace({
         </div>
       )}
 
-      {/* ─── TAB 2: MY APPLICATIONS TRACKER ─── */}
-      {activeMainTab === "applications" && (
-        <div className="space-y-6">
-          <div className="space-y-1 border-b border-white/10 pb-4">
-            <h2 className="text-sm font-bold text-white uppercase font-mono tracking-wider">
-              Recruitment Pipeline & Stage Tracker
+      {/* ─── TAB 2: APPLICATIONS TRACKER ─── */}
+      {activeTab === "applications" && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between border-b border-border pb-3">
+            <h2 className="text-xs font-semibold text-foreground uppercase font-mono tracking-wider">
+              Submitted Applications & Timeline Status
             </h2>
-            <p className="text-xs text-slate-400">
-              Track real-time progress for your submitted internship applications across employer review stages.
-            </p>
+            <span className="text-xs font-mono text-muted-foreground">
+              Total: {applications.length}
+            </span>
           </div>
 
           {applications.length === 0 ? (
-            <div className="p-12 rounded-3xl bg-slate-900/60 border border-white/10 text-center space-y-3">
-              <Clock className="w-10 h-10 text-slate-500 mx-auto" />
-              <p className="text-sm font-bold text-white">No active applications submitted yet</p>
-              <p className="text-xs text-slate-400 max-w-sm mx-auto font-sans">
-                Browse available roles in the Explore tab and click Quick Apply to start tracking application stages.
+            <div className="py-12 px-4 rounded-xl border border-dashed border-border bg-card text-center space-y-2">
+              <Clock className="mx-auto h-8 w-8 text-muted-foreground" />
+              <p className="text-sm font-semibold text-foreground">No applications submitted yet</p>
+              <p className="text-xs text-muted-foreground max-w-sm mx-auto">
+                Explore available roles in the marketplace and click Quick Apply to track your recruitment stages here.
               </p>
             </div>
           ) : (
-            <div className="grid gap-6">
+            <div className="space-y-3">
               {applications.map((app) => {
                 const currentStageStep = getPipelineStageStep(app.status);
                 const title = app.internships?.title || "Internship Role";
-                const companyName = app.internships?.companies?.name || "Partner Organization";
+                const companyName = app.internships?.companies?.name || "Partner Company";
 
                 return (
-                  <div
-                    key={app.id}
-                    className="p-6 rounded-3xl bg-slate-900/80 border border-white/10 space-y-6"
-                  >
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <Card key={app.id} className="p-4 space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <div>
-                        <h3 className="text-base font-bold text-white">{title}</h3>
-                        <p className="text-xs text-slate-400">{companyName}</p>
+                        <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+                        <p className="text-xs text-muted-foreground">{companyName}</p>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <span className="text-[10px] font-mono text-slate-500">
-                          Applied: {new Date(app.applied_at).toLocaleDateString()}
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] font-mono text-muted-foreground">
+                          {new Date(app.applied_at).toLocaleDateString()}
                         </span>
-                        <span
-                          className={`text-xs font-mono uppercase font-bold px-3 py-1 rounded-full border ${
+                        <Badge
+                          variant={
                             app.status === "accepted"
-                              ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
+                              ? "success"
                               : app.status === "rejected"
-                              ? "bg-red-500/10 border-red-500/20 text-red-400"
-                              : "bg-blue-500/10 border-blue-500/20 text-blue-400"
-                          }`}
+                              ? "destructive"
+                              : "default"
+                          }
+                          className="uppercase font-mono text-[10px]"
                         >
                           {app.status}
-                        </span>
+                        </Badge>
                       </div>
                     </div>
 
-                    {/* Timeline Tracker Progress Bar */}
-                    <div className="space-y-2 pt-2">
-                      <div className="grid grid-cols-5 gap-2 text-center text-[10px] font-mono uppercase text-slate-400">
-                        <span className={currentStageStep >= 1 ? "text-blue-400 font-bold" : ""}>Applied</span>
-                        <span className={currentStageStep >= 2 ? "text-blue-400 font-bold" : ""}>Under Review</span>
-                        <span className={currentStageStep >= 3 ? "text-blue-400 font-bold" : ""}>Shortlisted</span>
-                        <span className={currentStageStep >= 4 ? "text-blue-400 font-bold" : ""}>Interview</span>
-                        <span className={currentStageStep >= 5 ? "text-emerald-400 font-bold" : ""}>Selected</span>
+                    {/* Stage Timeline */}
+                    <div className="space-y-1.5 pt-1">
+                      <div className="grid grid-cols-5 text-center text-[10px] font-mono text-muted-foreground uppercase">
+                        <span className={currentStageStep >= 1 ? "text-primary font-bold" : ""}>Applied</span>
+                        <span className={currentStageStep >= 2 ? "text-primary font-bold" : ""}>Reviewing</span>
+                        <span className={currentStageStep >= 3 ? "text-primary font-bold" : ""}>Shortlisted</span>
+                        <span className={currentStageStep >= 4 ? "text-primary font-bold" : ""}>Interview</span>
+                        <span className={currentStageStep >= 5 ? "text-emerald-500 font-bold" : ""}>Selected</span>
                       </div>
-
-                      <div className="h-2 bg-slate-950 rounded-full overflow-hidden flex">
+                      <div className="h-1.5 bg-muted rounded-full overflow-hidden flex">
                         <div
-                          className={`h-full transition-all duration-500 rounded-full ${
-                            currentStageStep === -1
-                              ? "bg-red-500 w-full"
-                              : "bg-gradient-to-r from-blue-500 to-emerald-500"
+                          className={`h-full transition-all duration-300 rounded-full ${
+                            currentStageStep === -1 ? "bg-destructive w-full" : "bg-primary"
                           }`}
                           style={{
                             width:
@@ -561,7 +544,7 @@ export default function InternshipMatcherWorkspace({
                         />
                       </div>
                     </div>
-                  </div>
+                  </Card>
                 );
               })}
             </div>
@@ -569,101 +552,83 @@ export default function InternshipMatcherWorkspace({
         </div>
       )}
 
-      {/* PRE-APPLICATION AI REVIEW MODAL */}
+      {/* PRE-APPLICATION DIAGNOSTIC MODAL */}
       <AnimatePresence>
         {reviewModalJob && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md overflow-y-auto">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-xs">
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
+              initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-slate-900 border border-white/10 rounded-3xl p-6 max-w-lg w-full space-y-5 my-8"
+              exit={{ opacity: 0, scale: 0.98 }}
+              className="bg-card border border-border rounded-xl p-5 max-w-lg w-full space-y-4 shadow-lg"
             >
-              <div className="flex items-center justify-between border-b border-white/5 pb-4">
+              <div className="flex items-start justify-between border-b border-border pb-3">
                 <div>
-                  <span className="text-[9px] uppercase font-mono text-blue-400 font-bold block">
-                    AI Pre-Application Diagnostic Report
-                  </span>
-                  <h3 className="text-base font-bold text-white">{reviewModalJob.title}</h3>
-                  <p className="text-xs text-slate-400">{reviewModalJob.company.name}</p>
+                  <Badge variant="ai" className="mb-1 text-[10px] uppercase font-mono">
+                    AI Diagnostic Report
+                  </Badge>
+                  <h3 className="text-sm font-semibold text-foreground">{reviewModalJob.title}</h3>
+                  <p className="text-xs text-muted-foreground">{reviewModalJob.company.name}</p>
                 </div>
                 <button
                   onClick={() => setReviewModalJob(null)}
-                  className="text-slate-400 hover:text-white text-sm"
+                  className="text-muted-foreground hover:text-foreground text-xs"
                 >
                   ✕
                 </button>
               </div>
 
               {isLoadingReview || !aiReviewData ? (
-                <div className="py-12 text-center space-y-3">
-                  <Loader2 className="w-8 h-8 text-blue-400 animate-spin mx-auto" />
-                  <p className="text-xs text-slate-400">Running AI ATS match validation report...</p>
+                <div className="py-8 text-center space-y-2">
+                  <Loader2 className="w-6 h-6 text-primary animate-spin mx-auto" />
+                  <p className="text-xs text-muted-foreground">Evaluating resume ATS compatibility...</p>
                 </div>
               ) : (
-                <div className="space-y-4 text-xs font-sans">
+                <div className="space-y-3 text-xs">
                   {/* Scores Grid */}
-                  <div className="grid grid-cols-3 gap-3">
-                    <div className="p-3 bg-slate-950 rounded-2xl border border-white/5 text-center">
-                      <span className="text-[9px] uppercase font-mono text-slate-400 block">Resume Match</span>
-                      <span className="text-lg font-bold font-mono text-blue-400">{aiReviewData.resumeMatchPercent}%</span>
+                  <div className="grid grid-cols-3 gap-2 text-center">
+                    <div className="p-2.5 bg-muted/40 rounded-lg border border-border">
+                      <span className="text-[10px] uppercase font-mono text-muted-foreground block">Resume Match</span>
+                      <span className="text-sm font-bold font-mono text-primary">{aiReviewData.resumeMatchPercent}%</span>
                     </div>
-                    <div className="p-3 bg-slate-950 rounded-2xl border border-white/5 text-center">
-                      <span className="text-[9px] uppercase font-mono text-slate-400 block">Expected ATS Match</span>
-                      <span className="text-lg font-bold font-mono text-purple-400">{aiReviewData.expectedAtsMatchPercent}%</span>
+                    <div className="p-2.5 bg-muted/40 rounded-lg border border-border">
+                      <span className="text-[10px] uppercase font-mono text-muted-foreground block">ATS Index</span>
+                      <span className="text-sm font-bold font-mono text-indigo-400">{aiReviewData.expectedAtsMatchPercent}%</span>
                     </div>
-                    <div className="p-3 bg-slate-950 rounded-2xl border border-white/5 text-center">
-                      <span className="text-[9px] uppercase font-mono text-slate-400 block">Readiness Index</span>
-                      <span className="text-lg font-bold font-mono text-emerald-400">{aiReviewData.applicationReadinessScore}%</span>
+                    <div className="p-2.5 bg-muted/40 rounded-lg border border-border">
+                      <span className="text-[10px] uppercase font-mono text-muted-foreground block">Readiness</span>
+                      <span className="text-sm font-bold font-mono text-emerald-500">{aiReviewData.applicationReadinessScore}%</span>
                     </div>
                   </div>
 
-                  {/* Missing Skills */}
-                  {aiReviewData.missingSkills.length > 0 && (
-                    <div className="p-3.5 bg-yellow-500/10 border border-yellow-500/20 rounded-2xl space-y-1.5">
-                      <span className="text-[10px] font-bold uppercase font-mono text-yellow-300">
-                        Missing Technical Skill Requirements
-                      </span>
-                      <div className="flex flex-wrap gap-1.5 pt-1">
-                        {aiReviewData.missingSkills.map((sk, i) => (
-                          <span key={i} className="px-2 py-0.5 bg-yellow-500/20 border border-yellow-500/30 text-yellow-200 text-[10px] font-mono rounded">
-                            {sk}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
                   {/* Suggestions */}
-                  <div className="space-y-2">
-                    <span className="text-[10px] uppercase font-mono text-slate-400 font-bold block">
-                      AI Application Optimization Suggestions
-                    </span>
+                  <div className="space-y-1.5">
+                    <span className="text-[11px] font-semibold text-foreground block">AI Recommendations</span>
                     {aiReviewData.suggestions.map((sug, i) => (
-                      <div key={i} className="flex items-start gap-2 text-slate-300 text-xs">
-                        <Sparkles className="w-3.5 h-3.5 text-blue-400 shrink-0 mt-0.5" />
+                      <div key={i} className="flex items-start gap-2 text-muted-foreground text-xs">
+                        <Sparkles className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
                         <span>{sug}</span>
                       </div>
                     ))}
                   </div>
 
-                  <div className="flex justify-end gap-3 pt-4 border-t border-white/5">
+                  <div className="flex justify-end gap-2 pt-3 border-t border-border">
                     <Button
                       variant="outline"
+                      size="sm"
                       onClick={() => setReviewModalJob(null)}
-                      className="bg-transparent border-white/10 text-slate-400 text-xs cursor-pointer"
                     >
-                      Close Report
+                      Close
                     </Button>
                     <Button
+                      size="sm"
                       onClick={() => {
                         const target = reviewModalJob;
                         setReviewModalJob(null);
                         if (target) setActiveModalJob(target);
                       }}
-                      className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-5 cursor-pointer"
                     >
-                      Proceed to Quick Apply →
+                      Proceed to Apply →
                     </Button>
                   </div>
                 </div>
@@ -676,56 +641,56 @@ export default function InternshipMatcherWorkspace({
       {/* QUICK APPLY MODAL */}
       <AnimatePresence>
         {activeModalJob && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-xs">
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
+              initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-slate-900 border border-white/10 rounded-3xl p-6 max-w-lg w-full space-y-5"
+              exit={{ opacity: 0, scale: 0.98 }}
+              className="bg-card border border-border rounded-xl p-5 max-w-lg w-full space-y-4 shadow-lg"
             >
-              <div className="flex items-center justify-between border-b border-white/5 pb-4">
+              <div className="flex items-start justify-between border-b border-border pb-3">
                 <div>
-                  <h3 className="text-base font-bold text-white">Quick Apply — {activeModalJob.title}</h3>
-                  <p className="text-xs text-slate-400">{activeModalJob.company.name}</p>
+                  <h3 className="text-sm font-semibold text-foreground">Apply to {activeModalJob.title}</h3>
+                  <p className="text-xs text-muted-foreground">{activeModalJob.company.name}</p>
                 </div>
                 <button
                   onClick={() => setActiveModalJob(null)}
-                  className="text-slate-400 hover:text-white text-sm"
+                  className="text-muted-foreground hover:text-foreground text-xs"
                 >
                   ✕
                 </button>
               </div>
 
-              <form onSubmit={handleApplySubmit} className="space-y-4">
-                <div className="p-3 bg-slate-950 rounded-2xl border border-white/5 flex items-center justify-between text-xs font-mono">
-                  <span className="text-slate-400">Attached Credentials:</span>
-                  <span className="text-emerald-400 font-bold">VAJRA Primary Resume + Career DNA</span>
+              <form onSubmit={handleApplySubmit} className="space-y-3">
+                <div className="p-3 bg-muted/40 rounded-lg border border-border flex items-center justify-between text-xs font-mono">
+                  <span className="text-muted-foreground">Attached Credential:</span>
+                  <span className="text-emerald-500 font-semibold">Primary Resume + DNA</span>
                 </div>
 
-                <div className="space-y-1.5">
-                  <Label className="text-xs text-slate-300">Cover Note (Optional)</Label>
+                <div className="space-y-1">
+                  <label className="text-xs text-foreground font-medium">Cover Note (Optional)</label>
                   <textarea
                     rows={3}
-                    placeholder="Briefly state why you're interested in this engineering role..."
+                    placeholder="Brief note highlighting your relevant projects..."
                     value={coverLetter}
                     onChange={(e) => setCoverLetter(e.target.value)}
-                    className="w-full bg-slate-950 border border-white/10 text-xs text-white rounded-xl p-3 placeholder:text-slate-600 focus:outline-none focus:border-blue-500 resize-none"
+                    className="w-full bg-input/40 border border-border text-xs text-foreground rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
                   />
                 </div>
 
-                <div className="flex justify-end gap-3 pt-3 border-t border-white/5">
+                <div className="flex justify-end gap-2 pt-2 border-t border-border">
                   <Button
                     type="button"
                     variant="outline"
+                    size="sm"
                     onClick={() => setActiveModalJob(null)}
-                    className="bg-transparent border-white/10 text-slate-400 text-xs cursor-pointer"
                   >
                     Cancel
                   </Button>
                   <Button
                     type="submit"
+                    size="sm"
                     disabled={isApplying}
-                    className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-semibold px-5 cursor-pointer"
                   >
                     {isApplying ? <Loader2 className="w-4 h-4 animate-spin" /> : "Submit Application"}
                   </Button>

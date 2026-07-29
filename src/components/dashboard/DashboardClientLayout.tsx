@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { Badge } from "@/components/ui/badge";
 import {
   LayoutDashboard,
   FileText,
@@ -25,7 +26,17 @@ import {
   Briefcase,
   BrainCircuit,
   UserCheck,
+  Search,
+  ChevronRight,
+  LucideIcon,
 } from "lucide-react";
+
+interface MenuItem {
+  name: string;
+  href: string;
+  icon: LucideIcon;
+  badge?: string;
+}
 
 interface DashboardClientLayoutProps {
   children: React.ReactNode;
@@ -49,10 +60,10 @@ export default function DashboardClientLayout({
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const role = profile?.role || "student";
 
-  const MENU_ITEMS = {
+  const MENU_ITEMS: Record<string, MenuItem[]> = {
     student: [
       { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-      { name: "Career DNA", href: "/career", icon: FileText },
+      { name: "Career DNA", href: "/career", icon: FileText, badge: "AI" },
       { name: "Internships", href: "/internships", icon: Target },
       { name: "Mock Interview", href: "/interview", icon: BrainCircuit },
       { name: "Mentorship", href: "/mentorship", icon: Users },
@@ -92,17 +103,18 @@ export default function DashboardClientLayout({
     ],
   };
 
-  const menuItems = MENU_ITEMS[role as keyof typeof MENU_ITEMS] || MENU_ITEMS.student;
+  const menuItems = MENU_ITEMS[role] || MENU_ITEMS.student;
 
-  const dashboardLink = role === "student"
-    ? "/dashboard"
-    : role === "company"
-    ? "/company/dashboard"
-    : role === "mentor"
-    ? "/mentor/dashboard"
-    : role === "admin" || role === "super_admin"
-    ? "/admin/dashboard"
-    : "/";
+  const dashboardLink =
+    role === "student"
+      ? "/dashboard"
+      : role === "company"
+      ? "/company/dashboard"
+      : role === "mentor"
+      ? "/mentor/dashboard"
+      : role === "admin" || role === "super_admin"
+      ? "/admin/dashboard"
+      : "/";
 
   const handleLogout = async () => {
     try {
@@ -124,24 +136,45 @@ export default function DashboardClientLayout({
         .map((n) => n[0])
         .join("")
         .toUpperCase()
+        .slice(0, 2)
     : email?.substring(0, 2).toUpperCase() || "US";
 
+  const currentItem = menuItems.find((item) => item.href === pathname);
+
   return (
-    <div className="min-h-screen bg-background flex font-sans overflow-x-hidden text-foreground">
+    <div className="min-h-screen bg-background flex font-sans text-foreground antialiased selection:bg-primary/20">
       {/* 1. Desktop Sidebar */}
-      <aside className="hidden lg:flex flex-col w-72 bg-card/80 backdrop-blur-xl border-r border-border/70 shrink-0 sticky top-0 h-screen z-20 shadow-[0_16px_48px_rgba(0,0,0,0.12)]">
-        {/* Brand Logo */}
-        <div className="h-20 border-b border-border/70 flex items-center px-6">
-          <Link href={dashboardLink} className="flex items-center gap-3 text-xl font-bold font-heading tracking-widest">
-            <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/15 text-sm text-primary shadow-inner shadow-primary/10">V</span>
-            <span className="bg-gradient-to-r from-primary to-violet-500 bg-clip-text text-transparent">
-              VAJRA
-            </span>
+      <aside className="hidden lg:flex flex-col w-64 bg-sidebar border-r border-sidebar-border shrink-0 sticky top-0 h-screen z-20">
+        {/* Brand Header */}
+        <div className="h-14 border-b border-sidebar-border flex items-center justify-between px-4">
+          <Link href={dashboardLink} className="flex items-center gap-2.5 group">
+            <div className="h-7 w-7 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-mono text-xs font-black shadow-xs group-hover:scale-105 transition-transform">
+              V
+            </div>
+            <div className="flex flex-col">
+              <span className="text-sm font-semibold tracking-wider text-sidebar-foreground font-mono leading-none">
+                VAJRA
+              </span>
+              <span className="text-[9px] text-muted-foreground font-mono tracking-widest uppercase">
+                Intelligence
+              </span>
+            </div>
           </Link>
+          <Badge variant="outline" className="text-[10px] uppercase font-mono px-1.5 py-0">
+            v2.4
+          </Badge>
         </div>
 
-        {/* Navigation links */}
-        <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
+        {/* Workspace Nav Header */}
+        <div className="px-3 pt-4 pb-2">
+          <div className="flex items-center justify-between px-2 text-[10px] uppercase font-mono tracking-widest text-muted-foreground font-semibold">
+            <span>Navigation</span>
+            <span className="text-primary font-bold uppercase">{role}</span>
+          </div>
+        </div>
+
+        {/* Navigation items */}
+        <nav className="flex-1 px-3 space-y-1 overflow-y-auto">
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
@@ -149,122 +182,147 @@ export default function DashboardClientLayout({
               <Link
                 key={item.name}
                 href={item.href}
-                className={`flex items-center gap-3 px-4 py-3.5 rounded-xl text-xs font-semibold tracking-wide transition-all ${
+                className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all group ${
                   isActive
-                    ? "bg-primary/10 border border-primary/20 text-foreground font-bold shadow-sm shadow-primary/10"
-                    : "text-muted-foreground hover:text-foreground border border-transparent hover:bg-muted/60"
+                    ? "bg-sidebar-accent text-sidebar-accent-foreground font-semibold border border-sidebar-border shadow-xs"
+                    : "text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent/50"
                 }`}
               >
-                <Icon className="w-4 h-4" />
-                {item.name}
+                <div className="flex items-center gap-2.5">
+                  <Icon
+                    className={`w-4 h-4 transition-colors ${
+                      isActive ? "text-primary" : "text-muted-foreground group-hover:text-sidebar-foreground"
+                    }`}
+                  />
+                  <span>{item.name}</span>
+                </div>
+                {item.badge && (
+                  <Badge variant="ai" className="text-[9px] px-1.5 py-0">
+                    {item.badge}
+                  </Badge>
+                )}
               </Link>
             );
           })}
         </nav>
 
-        {/* Footer Profile card */}
-        <div className="p-4 border-t border-border/70 flex flex-col gap-3">
-          <div className="flex items-center gap-3 px-2">
-            <div className="h-11 w-11 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center font-bold text-sm text-primary">
+        {/* Footer Profile Box */}
+        <div className="p-3 border-t border-sidebar-border flex flex-col gap-2">
+          <div className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg border border-sidebar-border bg-sidebar-accent/30">
+            <div className="h-7 w-7 rounded-md bg-primary/10 border border-primary/20 flex items-center justify-center font-mono font-bold text-xs text-primary shrink-0">
               {userInitials}
             </div>
             <div className="min-w-0 flex-1">
-              <h4 className="text-xs font-semibold text-foreground truncate">
+              <h4 className="text-xs font-semibold text-sidebar-foreground truncate leading-none">
                 {profile?.full_name || "Vajra User"}
               </h4>
-              <p className="text-[10px] text-muted-foreground truncate">{email}</p>
+              <p className="text-[10px] text-muted-foreground truncate mt-0.5">{email}</p>
             </div>
           </div>
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold text-red-400 hover:text-red-300 hover:bg-red-500/5 transition-all cursor-pointer"
+            className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium text-destructive hover:bg-destructive/10 transition-colors cursor-pointer"
           >
-            <LogOut className="w-4 h-4" />
-            Log Out
+            <LogOut className="w-3.5 h-3.5" />
+            <span>Sign out</span>
           </button>
         </div>
       </aside>
 
-      {/* 2. Main Page Area */}
+      {/* 2. Main Area */}
       <div className="flex-1 flex flex-col min-w-0">
-        
         {/* Top Navbar */}
-        <header className="h-20 border-b border-border/70 bg-background/75 backdrop-blur-xl sticky top-0 z-10 flex items-center justify-between px-6 shadow-sm">
-          <div className="flex items-center gap-4">
-            {/* Mobile menu toggle */}
+        <header className="h-14 border-b border-border bg-card/70 backdrop-blur-md sticky top-0 z-10 flex items-center justify-between px-4 sm:px-6">
+          <div className="flex items-center gap-3">
             <button
               onClick={() => setIsMobileOpen(!isMobileOpen)}
-              className="lg:hidden rounded-xl border border-border/70 bg-background/80 p-2 text-muted-foreground shadow-sm backdrop-blur-md hover:text-foreground focus:outline-none"
+              className="lg:hidden rounded-lg border border-border p-1.5 text-muted-foreground hover:text-foreground"
               aria-label="Toggle Menu"
             >
-              <Menu className="w-5 h-5" />
+              <Menu className="w-4 h-4" />
             </button>
-            <h2 className="hidden text-sm font-bold uppercase tracking-wider text-foreground/80 font-sans sm:block">
-              {menuItems.find((item) => item.href === pathname)?.name || "Dashboard"}
-            </h2>
+
+            {/* Breadcrumbs */}
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <span className="font-mono text-[11px] uppercase font-semibold text-foreground/70">
+                {role}
+              </span>
+              <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/60" />
+              <span className="font-semibold text-foreground">
+                {currentItem?.name || "Overview"}
+              </span>
+            </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            {/* Role Status Pill */}
-            <span className="text-[10px] uppercase font-mono tracking-widest text-primary bg-primary/10 border border-primary/20 px-3 py-1 rounded-full">
-              {role} 🚀
-            </span>
+          {/* Right Header Actions */}
+          <div className="flex items-center gap-3">
+            {/* Quick Command Trigger */}
+            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border bg-input/40 text-muted-foreground text-xs cursor-pointer hover:border-foreground/20">
+              <Search className="w-3.5 h-3.5 text-muted-foreground" />
+              <span className="text-[11px]">Search platform...</span>
+              <kbd className="ml-2 font-mono text-[9px] bg-muted px-1.5 py-0.5 rounded border border-border">
+                ⌘K
+              </kbd>
+            </div>
 
             {/* Theme Toggle */}
-            <ThemeToggle className="hidden sm:block" />
+            <ThemeToggle className="h-8 w-8 rounded-lg" />
 
             {/* Notification Bell */}
-            <button className="relative rounded-xl border border-border/70 bg-background/80 p-2 text-muted-foreground transition-all hover:-translate-y-0.5 hover:text-foreground shadow-sm backdrop-blur-md">
-              <Bell className="w-4 h-4" />
-              <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-primary animate-ping" />
+            <button className="relative rounded-lg border border-border p-2 text-muted-foreground transition-all hover:text-foreground hover:bg-secondary cursor-pointer">
+              <Bell className="w-3.5 h-3.5" />
+              <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-primary" />
             </button>
 
-            {/* Profile Avatar */}
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-border/70 bg-background/80 text-xs font-bold text-foreground shadow-sm backdrop-blur-md sm:hidden">
+            {/* User Initials Avatar (Mobile) */}
+            <div className="flex h-7 w-7 items-center justify-center rounded-md border border-border bg-primary/10 text-xs font-mono font-bold text-primary sm:hidden">
               {userInitials}
             </div>
           </div>
         </header>
 
-        {/* Children Page content */}
-        <main className="flex-1 p-4 sm:p-6 relative">
+        {/* Children Page Content Container */}
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
           {children}
         </main>
       </div>
 
-      {/* 3. Mobile Navigation Overlay Drawer */}
+      {/* 3. Mobile Navigation Overlay */}
       <AnimatePresence>
         {isMobileOpen && (
           <>
-            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
-              animate={{ opacity: 0.5 }}
+              animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsMobileOpen(false)}
-              className="fixed inset-0 z-30 bg-foreground/60 lg:hidden backdrop-blur-[2px]"
+              className="fixed inset-0 z-30 bg-background/80 backdrop-blur-xs lg:hidden"
             />
-            {/* Drawer */}
             <motion.aside
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
-              transition={{ type: "spring", bounce: 0, duration: 0.4 }}
-              className="fixed top-0 bottom-0 left-0 w-72 bg-background/95 border-r border-border/70 z-40 lg:hidden flex flex-col backdrop-blur-xl"
+              transition={{ type: "spring", bounce: 0, duration: 0.3 }}
+              className="fixed top-0 bottom-0 left-0 w-64 bg-sidebar border-r border-sidebar-border z-40 lg:hidden flex flex-col"
             >
-              <div className="h-20 border-b border-border/70 flex items-center justify-between px-6">
-                <span className="text-xl font-bold font-heading tracking-widest bg-gradient-to-r from-primary to-violet-500 bg-clip-text text-transparent">
-                  VAJRA
-                </span>
+              <div className="h-14 border-b border-sidebar-border flex items-center justify-between px-4">
+                <div className="flex items-center gap-2">
+                  <div className="h-6 w-6 rounded bg-primary flex items-center justify-center text-primary-foreground font-mono text-xs font-bold">
+                    V
+                  </div>
+                  <span className="text-sm font-semibold tracking-wider text-sidebar-foreground font-mono">
+                    VAJRA
+                  </span>
+                </div>
                 <button
                   onClick={() => setIsMobileOpen(false)}
-                  className="rounded-lg border border-border/70 p-1 text-muted-foreground hover:text-foreground"
+                  className="rounded-lg p-1 text-muted-foreground hover:text-foreground"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-4 h-4" />
                 </button>
               </div>
 
-              <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
+              <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
                 {menuItems.map((item) => {
                   const Icon = item.icon;
                   const isActive = pathname === item.href;
@@ -273,37 +331,44 @@ export default function DashboardClientLayout({
                       key={item.name}
                       href={item.href}
                       onClick={() => setIsMobileOpen(false)}
-                      className={`flex items-center gap-3 px-4 py-3.5 rounded-xl text-xs font-semibold tracking-wide transition-all ${
+                      className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all ${
                         isActive
-                          ? "bg-primary/10 border border-primary/20 text-foreground"
-                          : "text-muted-foreground hover:text-foreground border border-transparent hover:bg-muted/60"
+                          ? "bg-sidebar-accent text-sidebar-accent-foreground font-semibold border border-sidebar-border"
+                          : "text-muted-foreground hover:text-sidebar-foreground"
                       }`}
                     >
-                      <Icon className="w-4 h-4" />
-                      {item.name}
+                      <div className="flex items-center gap-2.5">
+                        <Icon className="w-4 h-4" />
+                        <span>{item.name}</span>
+                      </div>
+                      {item.badge && (
+                        <Badge variant="ai" className="text-[9px] px-1.5 py-0">
+                          {item.badge}
+                        </Badge>
+                      )}
                     </Link>
                   );
                 })}
               </nav>
 
-              <div className="p-4 border-t border-border/70 flex flex-col gap-3">
-                <div className="flex items-center gap-3 px-2">
-                  <div className="h-11 w-11 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center font-bold text-sm text-primary">
+              <div className="p-3 border-t border-sidebar-border flex flex-col gap-2">
+                <div className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg border border-sidebar-border bg-sidebar-accent/30">
+                  <div className="h-7 w-7 rounded-md bg-primary/10 border border-primary/20 flex items-center justify-center font-mono font-bold text-xs text-primary shrink-0">
                     {userInitials}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h4 className="text-xs font-semibold text-foreground truncate">
+                    <h4 className="text-xs font-semibold text-sidebar-foreground truncate leading-none">
                       {profile?.full_name || "Vajra User"}
                     </h4>
-                    <p className="text-[10px] text-muted-foreground truncate">{email}</p>
+                    <p className="text-[10px] text-muted-foreground truncate mt-0.5">{email}</p>
                   </div>
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold text-red-400 hover:text-red-300 hover:bg-red-500/5 transition-all cursor-pointer"
+                  className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium text-destructive hover:bg-destructive/10 transition-colors cursor-pointer"
                 >
-                  <LogOut className="w-4 h-4" />
-                  Log Out
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>Sign out</span>
                 </button>
               </div>
             </motion.aside>

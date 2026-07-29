@@ -241,16 +241,16 @@ Ensure the recommendedLearningRoadmap contains exactly 6 phases to align with th
 
 Do NOT include any Markdown, backticks (like \`\`\`json), or explanations outside of the JSON object. Return clean, raw JSON only.`;
 
-  let attempts = 3;
-  let delay = 1000;
+  let attempts = 1;
+  let delay = 500;
 
   while (attempts > 0) {
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 12000); // 12s timeout limit
+      const timeoutId = setTimeout(() => controller.abort(), 3000); // 3s timeout limit
 
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
         {
           method: "POST",
           headers: {

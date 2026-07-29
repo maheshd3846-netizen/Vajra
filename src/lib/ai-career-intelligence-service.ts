@@ -157,20 +157,25 @@ Projects: ${input.projects.length}, Certificates: ${input.certificates.length}.
 
 Return plain text: "Good morning, ${input.studentName.split(" ")[0]}. [Sentence 1 explaining recent progress]. [Sentence 2 detailing top next opportunity]."`;
 
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2000);
+
       const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
+          signal: controller.signal,
         }
       );
+      clearTimeout(timeoutId);
       if (res.ok) {
         const json = await res.json();
         aiSummaryText = json.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
       }
     } catch {
-      // Fallback
+      // Instant fallback to local AI computation
     }
   }
 

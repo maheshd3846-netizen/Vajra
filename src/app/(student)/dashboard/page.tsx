@@ -7,6 +7,7 @@ import { generateCareerIntelligenceSuite } from "@/lib/ai-career-intelligence-se
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
+  console.log("[INIT STAGE 11] Dashboard fetch started");
   const supabase = await createClient();
   const {
     data: { user },
@@ -73,9 +74,11 @@ export default async function DashboardPage() {
     .eq("student_id", user.id)
     .order("start_date", { ascending: false });
 
+  console.log("[INIT STAGE 12] Dashboard DB queries completed");
+
   const profileName = userProfile?.full_name || user.email?.split("@")[0] || "Student Candidate";
 
-  // Generate Career Intelligence suite
+  console.log("[INIT STAGE 13] Generating Career Intelligence suite...");
   const intelligenceData = await generateCareerIntelligenceSuite({
     studentName: profileName,
     profile: studentProfile as Record<string, unknown> | null,
@@ -87,6 +90,9 @@ export default async function DashboardPage() {
     aiReports: aiReports || [],
     careerTimeline: (careerTimeline || []).map((t) => ({ ...t, description: t.description || "" })),
   });
+
+  console.log("[INIT STAGE 14] Dashboard fetch completed");
+  console.log("[INIT STAGE 15] Dashboard render");
 
   return (
     <StudentCareerIntelligenceDashboard

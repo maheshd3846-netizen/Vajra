@@ -24,6 +24,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  console.log("[INIT STAGE 2] AuthProvider mounted");
   // Use useState lazy initializer so Supabase client reference remains 100% stable across re-renders
   const [supabase] = useState(() => createClient());
 
@@ -44,6 +45,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchProfile = useCallback(
     async (userId: string, email: string) => {
+      console.log("[INIT STAGE 5] Profile fetch started", { userId, email });
       try {
         const { data, error } = await supabase
           .from("users")
@@ -52,12 +54,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           .maybeSingle();
 
         if (data) {
+          console.log("[INIT STAGE 6] Profile fetch completed", { role: data.role });
           setProfile(data);
         } else {
           if (error) {
             console.warn("[AuthProvider] Profile fetch notice:", error.message);
           }
-          // Fallback profile object if user table entry is still processing
+          console.log("[INIT STAGE 6] Profile fetch completed with fallback", { email });
           setProfile({
             id: userId,
             email,
@@ -83,11 +86,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.error("[AuthProvider] Session refresh error:", error.message);
       }
 
-      console.log("[AuthProvider] Session refresh executed:", {
-        sessionExists: !!currentSession,
-        userEmail: currentSession?.user?.email,
-      });
-
       setSession(currentSession);
       setUser(currentSession?.user || null);
 
@@ -108,13 +106,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     async function initAuth() {
       try {
+        console.log("[INIT STAGE 3] Session fetch started");
         const {
           data: { session: currentSession },
         } = await supabase.auth.getSession();
 
         if (!isMounted) return;
 
-        console.log("[AuthProvider] Initializing Session on Mount:", {
+        console.log("[INIT STAGE 4] Session fetch completed", {
           sessionExists: !!currentSession,
           userEmail: currentSession?.user?.email,
         });
@@ -131,6 +130,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.error("[AuthProvider] initAuth error:", err);
       } finally {
         if (isMounted) {
+          console.log("[INIT STAGE 7] Loading state changed");
+          console.log("[INIT STAGE 8] Loading state became false");
           setIsLoading(false);
         }
       }
@@ -148,15 +149,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (!isMounted) return;
 
-      setSession(currentSession);
-      setUser(currentSession?.user || null);
+      try {
+        setSession(currentSession);
+        setUser(currentSession?.user || null);
 
-      if (currentSession?.user) {
-        await fetchProfile(currentSession.user.id, currentSession.user.email || "");
-      } else {
-        setProfile(null);
+        if (currentSession?.user) {
+          await fetchProfile(currentSession.user.id, currentSession.user.email || "");
+        } else {
+          setProfile(null);
+        }
+      } catch (err) {
+        console.error("[AuthProvider] AuthStateChange handler error:", err);
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
-      setIsLoading(false);
     });
 
     return () => {

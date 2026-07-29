@@ -56,6 +56,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  console.log("[INIT STAGE 1] Root layout rendered");
   const themeInitScript = `
     (function () {
       try {
