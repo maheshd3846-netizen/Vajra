@@ -107,7 +107,7 @@ export async function publishPortfolioAction(
       .from("portfolios")
       .select("student_id")
       .eq("asset_url", cleanSlug)
-      .single();
+      .maybeSingle();
 
     if (existingSlug && existingSlug.student_id !== user.id) {
       return { success: false, error: "Subdomain slug already taken by another student." };
@@ -118,7 +118,7 @@ export async function publishPortfolioAction(
       .from("portfolios")
       .select("id")
       .eq("student_id", user.id)
-      .single();
+      .maybeSingle();
 
     if (existingPortfolio) {
       const { error: updateError } = await supabase
@@ -175,12 +175,12 @@ export async function generatePortfolioAction(
       { data: aiReports },
       { data: mentorAssignment },
     ] = await Promise.all([
-      supabase.from("users").select("full_name, email").eq("id", user.id).single(),
+      supabase.from("users").select("full_name, email").eq("id", user.id).maybeSingle(),
       supabase
         .from("student_profiles")
         .select("bio, major, university, gpa, cgpa, graduation_year, github_url, linkedin_url")
         .eq("id", user.id)
-        .single(),
+        .maybeSingle(),
       supabase
         .from("student_skills")
         .select("skill_name, proficiency, verified")
@@ -357,7 +357,7 @@ export async function generatePortfolioAction(
       .from("portfolios")
       .select("id")
       .eq("student_id", user.id)
-      .single();
+      .maybeSingle();
 
     if (existing) {
       await supabase
@@ -394,7 +394,7 @@ export async function getPublicPortfolioAction(
       .from("portfolios")
       .select("id, student_id, title, description, asset_url")
       .eq("asset_url", username.toLowerCase())
-      .single();
+      .maybeSingle();
 
     if (portError || !portfolio) {
       return { success: false, error: "Developer portfolio not found." };
@@ -416,8 +416,8 @@ export async function getPublicPortfolioAction(
         .from("student_profiles")
         .select("major, university, gpa, cgpa, graduation_year, github_url, linkedin_url")
         .eq("id", studentId)
-        .single(),
-      supabase.from("users").select("full_name").eq("id", studentId).single(),
+        .maybeSingle(),
+      supabase.from("users").select("full_name").eq("id", studentId).maybeSingle(),
       supabase
         .from("student_skills")
         .select("skill_name, proficiency, verified")
@@ -559,7 +559,7 @@ export async function getPortfolioStatusAction(): Promise<{
         .from("student_profiles")
         .select("major, university, gpa")
         .eq("id", user.id)
-        .single(),
+        .maybeSingle(),
       supabase.from("student_skills").select("skill_name").eq("student_id", user.id),
       supabase.from("projects").select("id").eq("student_id", user.id),
       supabase.from("resumes").select("id").eq("student_id", user.id),
@@ -569,7 +569,7 @@ export async function getPortfolioStatusAction(): Promise<{
         .from("portfolios")
         .select("asset_url, description")
         .eq("student_id", user.id)
-        .single(),
+        .maybeSingle(),
     ]);
 
     const currentHash = [

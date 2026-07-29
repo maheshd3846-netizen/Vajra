@@ -21,14 +21,14 @@ export default async function DashboardPage() {
     .from("users")
     .select("full_name, avatar_url")
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
 
   // Fetch student profile details
   const { data: studentProfile } = await supabase
     .from("student_profiles")
     .select("major, university, gpa, graduation_year, github_url, linkedin_url")
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
 
   // Fetch student skills
   const { data: skills } = await supabase

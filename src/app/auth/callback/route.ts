@@ -103,7 +103,7 @@ export async function GET(request: Request) {
           { onConflict: "id" }
         )
         .select("role")
-        .single();
+        .maybeSingle();
 
       if (userInsertError) {
         console.error("[Auth Callback Error] Failed to create public.users record:", {

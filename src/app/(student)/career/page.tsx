@@ -20,7 +20,7 @@ export default async function CareerPage() {
     .from("student_profiles")
     .select("major")
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
 
   const targetRole = studentProfile?.major || "Software Engineer";
 

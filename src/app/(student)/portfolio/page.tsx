@@ -23,14 +23,14 @@ export default async function PortfolioBuilderPage() {
     .from("users")
     .select("full_name")
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
 
   // Fetch existing published portfolio (if any)
   const { data: portfolio } = await supabase
     .from("portfolios")
     .select("asset_url, title, description")
     .eq("student_id", user.id)
-    .single();
+    .maybeSingle();
 
   const profileName =
     userProfile?.full_name || user.email?.split("@")[0] || "Vajra Engineer";

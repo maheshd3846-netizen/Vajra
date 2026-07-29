@@ -27,7 +27,7 @@ export default async function CompanyLayout({ children }: LayoutProps) {
     .from("users")
     .select("id, full_name, avatar_url, role")
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
 
   // Role validation
   if (profile && profile.role !== "company" && profile.role !== "admin") {

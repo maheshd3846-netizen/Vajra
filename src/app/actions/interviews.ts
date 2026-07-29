@@ -57,8 +57,8 @@ export async function startInterviewSessionAction(
       { data: projects },
       { data: certificates },
     ] = await Promise.all([
-      supabase.from("users").select("full_name").eq("id", user.id).single(),
-      supabase.from("student_profiles").select("major, university, gpa").eq("id", user.id).single(),
+      supabase.from("users").select("full_name").eq("id", user.id).maybeSingle(),
+      supabase.from("student_profiles").select("major, university, gpa").eq("id", user.id).maybeSingle(),
       supabase.from("student_skills").select("skill_name, proficiency").eq("student_id", user.id),
       supabase.from("projects").select("title, technologies").eq("student_id", user.id),
       supabase.from("certificates").select("name").eq("student_id", user.id),
@@ -163,8 +163,8 @@ export async function finishAndEvaluateInterviewAction(
       { data: projects },
       { data: certificates },
     ] = await Promise.all([
-      supabase.from("users").select("full_name").eq("id", user.id).single(),
-      supabase.from("student_profiles").select("major, university, gpa").eq("id", user.id).single(),
+      supabase.from("users").select("full_name").eq("id", user.id).maybeSingle(),
+      supabase.from("student_profiles").select("major, university, gpa").eq("id", user.id).maybeSingle(),
       supabase.from("student_skills").select("skill_name, proficiency").eq("student_id", user.id),
       supabase.from("projects").select("title, technologies").eq("student_id", user.id),
       supabase.from("certificates").select("name").eq("student_id", user.id),

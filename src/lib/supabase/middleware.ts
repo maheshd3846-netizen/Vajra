@@ -18,7 +18,7 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(callbackUrl);
   }
 
-  const supabaseResponse = NextResponse.next({
+  let supabaseResponse = NextResponse.next({
     request,
   });
 
@@ -29,13 +29,17 @@ export async function updateSession(request: NextRequest) {
     return supabaseResponse;
   }
 
-  // 3. Official @supabase/ssr middleware client (never mutate request.cookies directly)
+  // 3. Official @supabase/ssr middleware client (with request.cookies and response cookie syncing)
   const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
     cookies: {
       getAll() {
         return request.cookies.getAll();
       },
       setAll(cookiesToSet) {
+        cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+        supabaseResponse = NextResponse.next({
+          request,
+        });
         cookiesToSet.forEach(({ name, value, options }) =>
           supabaseResponse.cookies.set(name, value, options)
         );
@@ -43,7 +47,15 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  // IMPORTANT: Avoid writing any logic between createServerClient and supabase.auth.getUser()
+  // Helper function to return redirect response while preserving all session cookies
+  const redirectWithCookies = (destinationUrl: URL) => {
+    const redirectResponse = NextResponse.redirect(destinationUrl);
+    supabaseResponse.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
+    });
+    return redirectResponse;
+  };
+
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -79,11 +91,20 @@ export async function updateSession(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("redirectTo", path);
-    return NextResponse.redirect(url);
+    return redirectWithCookies(url);
   }
 
   if (user) {
-    const userRole = user.user_metadata?.role || "student";
+    // Align role with database source of truth if user_metadata role is absent
+    let userRole = user.user_metadata?.role;
+    if (!userRole) {
+      const { data: dbUser } = await supabase
+        .from("users")
+        .select("role")
+        .eq("id", user.id)
+        .maybeSingle();
+      userRole = dbUser?.role || "student";
+    }
 
     if (
       path === "/login" || path.startsWith("/login/") ||
@@ -91,7 +112,9 @@ export async function updateSession(request: NextRequest) {
       path === "/forgot-password" || path.startsWith("/forgot-password/")
     ) {
       console.log("[Middleware] Authenticated user on auth route. Redirecting to role dashboard", { userRole });
-      return redirectToRoleDashboard(request, userRole);
+      const targetUrl = request.nextUrl.clone();
+      targetUrl.pathname = getRoleDashboardPath(userRole);
+      return redirectWithCookies(targetUrl);
     }
 
     const studentRoutes = ["/dashboard", "/career", "/internships", "/interview", "/mentorship", "/portfolio", "/settings"];
@@ -99,35 +122,40 @@ export async function updateSession(request: NextRequest) {
 
     if (isStudentRoute && userRole !== "student" && userRole !== "admin" && userRole !== "super_admin") {
       console.log("[Middleware] Role mismatch for student route. Redirecting.", { userRole, path });
-      return redirectToRoleDashboard(request, userRole);
+      const targetUrl = request.nextUrl.clone();
+      targetUrl.pathname = getRoleDashboardPath(userRole);
+      return redirectWithCookies(targetUrl);
     }
     if (path.startsWith("/company") && userRole !== "company" && userRole !== "admin" && userRole !== "super_admin") {
       console.log("[Middleware] Role mismatch for company route. Redirecting.", { userRole, path });
-      return redirectToRoleDashboard(request, userRole);
+      const targetUrl = request.nextUrl.clone();
+      targetUrl.pathname = getRoleDashboardPath(userRole);
+      return redirectWithCookies(targetUrl);
     }
     if (path.startsWith("/mentor") && userRole !== "mentor" && userRole !== "admin" && userRole !== "super_admin") {
       console.log("[Middleware] Role mismatch for mentor route. Redirecting.", { userRole, path });
-      return redirectToRoleDashboard(request, userRole);
+      const targetUrl = request.nextUrl.clone();
+      targetUrl.pathname = getRoleDashboardPath(userRole);
+      return redirectWithCookies(targetUrl);
     }
     if (path.startsWith("/admin") && userRole !== "admin" && userRole !== "super_admin") {
       console.log("[Middleware] Role mismatch for admin route. Redirecting.", { userRole, path });
-      return redirectToRoleDashboard(request, userRole);
+      const targetUrl = request.nextUrl.clone();
+      targetUrl.pathname = getRoleDashboardPath(userRole);
+      return redirectWithCookies(targetUrl);
     }
   }
 
   return supabaseResponse;
 }
 
-function redirectToRoleDashboard(request: NextRequest, role: string | undefined) {
-  const url = request.nextUrl.clone();
+function getRoleDashboardPath(role: string | undefined): string {
   if (role === "company") {
-    url.pathname = "/company/dashboard";
+    return "/company/dashboard";
   } else if (role === "mentor") {
-    url.pathname = "/mentor/dashboard";
+    return "/mentor/dashboard";
   } else if (role === "admin" || role === "super_admin") {
-    url.pathname = "/admin/dashboard";
-  } else {
-    url.pathname = "/dashboard";
+    return "/admin/dashboard";
   }
-  return NextResponse.redirect(url);
+  return "/dashboard";
 }

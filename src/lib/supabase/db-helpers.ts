@@ -12,7 +12,7 @@ export async function getUserProfile(client: Client, userId: string) {
     .from("users")
     .select("*")
     .eq("id", userId)
-    .single();
+    .maybeSingle();
 }
 
 export async function updateUserProfile(
@@ -25,7 +25,7 @@ export async function updateUserProfile(
     .update(updates)
     .eq("id", userId)
     .select()
-    .single();
+    .maybeSingle();
 }
 
 // ==========================================
@@ -36,7 +36,7 @@ export async function getStudentProfile(client: Client, userId: string) {
     .from("student_profiles")
     .select("*, users(*)")
     .eq("id", userId)
-    .single();
+    .maybeSingle();
 }
 
 export async function updateStudentProfile(
@@ -49,7 +49,7 @@ export async function updateStudentProfile(
     .update(updates)
     .eq("id", userId)
     .select()
-    .single();
+    .maybeSingle();
 }
 
 // ==========================================
@@ -60,7 +60,7 @@ export async function getCompanyProfile(client: Client, userId: string) {
     .from("companies")
     .select("*, users(*)")
     .eq("id", userId)
-    .single();
+    .maybeSingle();
 }
 
 export async function updateCompanyProfile(
@@ -73,7 +73,7 @@ export async function updateCompanyProfile(
     .update(updates)
     .eq("id", userId)
     .select()
-    .single();
+    .maybeSingle();
 }
 
 // ==========================================
@@ -84,7 +84,7 @@ export async function getMentorProfile(client: Client, userId: string) {
     .from("mentors")
     .select("*, users(*)")
     .eq("id", userId)
-    .single();
+    .maybeSingle();
 }
 
 export async function updateMentorProfile(
@@ -97,7 +97,7 @@ export async function updateMentorProfile(
     .update(updates)
     .eq("id", userId)
     .select()
-    .single();
+    .maybeSingle();
 }
 
 // ==========================================
@@ -124,7 +124,7 @@ export async function getInternshipById(client: Client, id: string) {
     .from("internships")
     .select("*, companies(*)")
     .eq("id", id)
-    .single();
+    .maybeSingle();
 }
 
 export async function createInternship(
@@ -135,7 +135,7 @@ export async function createInternship(
     .from("internships")
     .insert(internship)
     .select()
-    .single();
+    .maybeSingle();
 }
 
 // ==========================================
@@ -163,7 +163,7 @@ export async function createApplication(
     .from("applications")
     .insert(application)
     .select()
-    .single();
+    .maybeSingle();
 }
 
 export async function updateApplicationStatus(
@@ -176,5 +176,5 @@ export async function updateApplicationStatus(
     .update({ status })
     .eq("id", applicationId)
     .select()
-    .single();
+    .maybeSingle();
 }

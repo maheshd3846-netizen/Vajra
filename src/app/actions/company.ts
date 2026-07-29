@@ -149,7 +149,7 @@ export async function fetchCompanyDashboardAction(): Promise<{
           registration_doc_url,
           trust_score
         `)
-        .single();
+        .maybeSingle();
 
       if (createCompErr || !createdCompany) {
         console.error("[Company Action Error] Auto-provisioning company record failed:", createCompErr);

@@ -72,16 +72,44 @@ function LoginFormContent() {
       }
 
       // Fetch user profile to determine role and redirection
-      const { data: userProfile, error: profileError } = await supabase
+      let { data: userProfile } = await supabase
         .from("users")
         .select("*")
         .eq("id", authData.user.id)
-        .single();
+        .maybeSingle();
 
-      if (profileError || !userProfile) {
-        toast.error("Profile creation failed or could not fetch user profile details.");
-        setIsLoading(false);
-        return;
+      if (!userProfile) {
+        // Auto-provision user record if not present
+        const defaultRole = (authData.user.user_metadata?.role as string) || "student";
+        const fullName =
+          authData.user.user_metadata?.full_name ||
+          authData.user.user_metadata?.name ||
+          authData.user.email?.split("@")[0] ||
+          "User";
+
+        const { data: newProfile } = await supabase
+          .from("users")
+          .upsert(
+            {
+              id: authData.user.id,
+              email: authData.user.email!,
+              role: defaultRole,
+              full_name: fullName,
+            },
+            { onConflict: "id" }
+          )
+          .select("*")
+          .maybeSingle();
+
+        userProfile = newProfile || {
+          id: authData.user.id,
+          email: authData.user.email!,
+          role: defaultRole,
+          full_name: fullName,
+          avatar_url: null,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
       }
 
       toast.success("Successfully logged in!");
@@ -92,7 +120,7 @@ function LoginFormContent() {
           .from("student_profiles")
           .select("*")
           .eq("id", authData.user.id)
-          .single();
+          .maybeSingle();
 
         if (!studentProfile || !studentProfile.university || !studentProfile.major) {
           router.push("/onboarding");

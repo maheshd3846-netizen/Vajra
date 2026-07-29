@@ -24,7 +24,7 @@ export default async function MentorLayout({ children }: LayoutProps) {
     .from("users")
     .select("id, full_name, avatar_url, role")
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
 
   // Role validation
   if (profile && profile.role !== "mentor" && profile.role !== "admin") {

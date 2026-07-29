@@ -470,12 +470,12 @@ export async function runAiApplicationReviewAction(
       { data: resumes },
       { data: jobRaw },
     ] = await Promise.all([
-      supabase.from("users").select("full_name").eq("id", user.id).single(),
+      supabase.from("users").select("full_name").eq("id", user.id).maybeSingle(),
       supabase
         .from("student_profiles")
         .select("major, university, gpa")
         .eq("id", user.id)
-        .single(),
+        .maybeSingle(),
       supabase
         .from("student_skills")
         .select("skill_name, proficiency")
@@ -498,7 +498,7 @@ export async function runAiApplicationReviewAction(
           companies ( name )
         `)
         .eq("id", internshipId)
-        .single(),
+        .maybeSingle(),
     ]);
 
     if (!jobRaw) {
@@ -577,7 +577,7 @@ export async function applyToInternshipAction(
       .from("internships")
       .select("company_id, companies ( verification_status, is_verified )")
       .eq("id", internshipId)
-      .single();
+      .maybeSingle();
 
     if (job?.companies) {
       const compRaw = job.companies as unknown as { verification_status?: string; is_verified?: boolean };

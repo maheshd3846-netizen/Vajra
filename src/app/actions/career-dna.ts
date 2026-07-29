@@ -29,13 +29,13 @@ export async function recalculateCareerDnaAction(): Promise<RecalculateCareerDna
       .from("users")
       .select("full_name, avatar_url")
       .eq("id", user.id)
-      .single();
+      .maybeSingle();
 
     const { data: studentProfile } = await supabase
       .from("student_profiles")
       .select("major, university, gpa, cgpa, graduation_year, github_url, linkedin_url")
       .eq("id", user.id)
-      .single();
+      .maybeSingle();
 
     // 2. Fetch skills
     const { data: skills } = await supabase

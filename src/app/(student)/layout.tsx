@@ -24,7 +24,7 @@ export default async function StudentLayout({ children }: LayoutProps) {
     .from("users")
     .select("id, full_name, avatar_url, role")
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
 
   // Role validation
   if (profile && profile.role !== "student" && profile.role !== "admin") {

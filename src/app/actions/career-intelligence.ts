@@ -33,8 +33,8 @@ export async function fetchCareerIntelligenceAction(): Promise<{
       { data: aiReports },
       { data: careerTimeline },
     ] = await Promise.all([
-      supabase.from("users").select("full_name").eq("id", user.id).single(),
-      supabase.from("student_profiles").select("major, university, gpa").eq("id", user.id).single(),
+      supabase.from("users").select("full_name").eq("id", user.id).maybeSingle(),
+      supabase.from("student_profiles").select("major, university, gpa").eq("id", user.id).maybeSingle(),
       supabase.from("student_skills").select("skill_name, proficiency, verified").eq("student_id", user.id),
       supabase.from("projects").select("id, title, technologies").eq("student_id", user.id),
       supabase.from("resumes").select("id, is_primary").eq("student_id", user.id),

@@ -20,7 +20,7 @@ export default async function AdminSettingsPage() {
     .from("users")
     .select("full_name, role")
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
 
   return (
     <div className="space-y-8 max-w-3xl mx-auto text-white">

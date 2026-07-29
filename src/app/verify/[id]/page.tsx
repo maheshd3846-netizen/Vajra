@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client"; // Use browser client helper to bypass server-side headers check or use server client with unknown fallbacks
+import { createClient } from "@/lib/supabase/server";
 import { ShieldCheck, Calendar, BadgeCheck, Check } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -21,14 +21,14 @@ export default async function VerifyCertificatePage({ params }: VerifyPageProps)
   let hashId = "vj-react-8b9a2d";
 
   try {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // Query certificate matching ID
     const { data: cert } = await supabase
       .from("certificates")
       .select("student_id, name, issuer, issue_date, credential_id")
       .eq("id", id)
-      .single();
+      .maybeSingle();
 
     if (cert) {
       certificateName = cert.name;
@@ -41,7 +41,7 @@ export default async function VerifyCertificatePage({ params }: VerifyPageProps)
         .from("student_profiles")
         .select("university")
         .eq("id", cert.student_id)
-        .single();
+        .maybeSingle();
 
       if (student) {
         university = student.university || "Stanford University";
@@ -51,7 +51,7 @@ export default async function VerifyCertificatePage({ params }: VerifyPageProps)
         .from("users")
         .select("full_name")
         .eq("id", cert.student_id)
-        .single();
+        .maybeSingle();
 
       if (userProfile) {
         studentName = userProfile.full_name || "Vajra User";

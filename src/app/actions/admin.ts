@@ -60,7 +60,7 @@ export async function fetchAdminCompanyVerificationQueueAction(): Promise<{
       .from("users")
       .select("role")
       .eq("id", user.id)
-      .single();
+      .maybeSingle();
 
     if (!userRole || (userRole.role !== "admin" && userRole.role !== "super_admin")) {
       // Fallback: grant demo access if role isn't admin in sandbox
@@ -168,7 +168,7 @@ export async function updateCompanyVerificationStatusAction(
       .from("companies")
       .select("id, name, is_verified, verification_status, trust_score")
       .eq("id", companyId)
-      .single();
+      .maybeSingle();
 
     if (oldError || !oldCompany) {
       return { success: false, error: "Target company record not found." };
