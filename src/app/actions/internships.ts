@@ -156,7 +156,7 @@ export async function fetchFilteredInternshipsAction(
       resumes: activeResumes,
     };
 
-    const savedSet = new Set((savedRows || []).map((s) => s.internship_id));
+    const savedSet = new Set<string>((savedRows || []).map((s: { internship_id: string }) => s.internship_id));
 
     // 2. Query internships with company data
     const { data: internships, error: internshipsError } = await supabase
@@ -193,7 +193,8 @@ export async function fetchFilteredInternshipsAction(
     // 3. Process & Filter out blacklisted companies
     const processedInternships: EnhancedInternshipRecord[] = [];
 
-    (internships || []).forEach((item) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (internships || []).forEach((item: any) => {
       const compRaw = item.companies as unknown as {
         name: string;
         logo_url: string | null;
@@ -311,7 +312,7 @@ export async function fetchFilteredInternshipsAction(
     return {
       success: true,
       internships: results,
-      savedIds: Array.from(savedSet),
+      savedIds: Array.from(savedSet) as string[],
     };
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : "Could not retrieve internship listings.";
