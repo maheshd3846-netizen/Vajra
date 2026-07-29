@@ -1,16 +1,13 @@
 import React from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-<<<<<<< HEAD
 import { Users, Calendar, Sparkles } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Panel } from "@/components/ui/panel";
 import { Section } from "@/components/ui/section";
-=======
 import MentorStudentsClient, {
   type StudentCohortItem,
 } from "@/components/mentor/MentorStudentsClient";
->>>>>>> 03665dce1bbee32c9280c9884c4aaee70d7fbd2f
 
 export const dynamic = "force-dynamic";
 
@@ -54,7 +51,6 @@ export default async function MentorStudentsPage() {
 
   const cohortList = (assignments as unknown as StudentCohortItem[]) || [];
 
-<<<<<<< HEAD
   return (
     <Container className="py-8 sm:py-10">
       <Section className="space-y-8">
@@ -128,7 +124,4 @@ export default async function MentorStudentsPage() {
       </Section>
     </Container>
   );
-=======
-  return <MentorStudentsClient initialCohort={cohortList} />;
->>>>>>> 03665dce1bbee32c9280c9884c4aaee70d7fbd2f
 }

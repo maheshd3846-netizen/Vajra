@@ -271,13 +271,11 @@ export default function RegisterPage() {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               {/* Full Name / Company Name */}
               <div className="space-y-1.5">
-<<<<<<< HEAD
                 <Label htmlFor="fullName" className="text-xs font-semibold text-foreground/80">
                   Full Name
-=======
+                  </Label>
                 <Label htmlFor="fullName" className="text-xs font-semibold text-slate-200">
                   {selectedRole === "company" ? "Company / Recruiter Name" : "Full Name"}
->>>>>>> 03665dce1bbee32c9280c9884c4aaee70d7fbd2f
                 </Label>
                 <div className="relative">
                   <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />

@@ -1,16 +1,10 @@
 import React from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-<<<<<<< HEAD
 import { Settings as SettingsIcon } from "lucide-react";
 import { StudentSettingsForm } from "@/components/student/StudentSettingsForm";
 import { Container } from "@/components/ui/container";
 import { Section } from "@/components/ui/section";
-=======
-import StudentSettingsClient, {
-  type StudentProfileInitialData,
-} from "@/components/student/StudentSettingsClient";
->>>>>>> 03665dce1bbee32c9280c9884c4aaee70d7fbd2f
 
 export const dynamic = "force-dynamic";
 
@@ -91,7 +85,6 @@ export default async function SettingsPage() {
     .eq("id", user.id)
     .maybeSingle();
 
-<<<<<<< HEAD
   return (
     <Container className="py-8 sm:py-10">
       <Section className="space-y-8">
@@ -124,33 +117,4 @@ export default async function SettingsPage() {
       </Section>
     </Container>
   );
-=======
-  const { data: studentSkills } = await supabase
-    .from("student_skills")
-    .select("skill_name")
-    .eq("student_id", user.id);
-
-  const skillsList = (studentSkills || []).map((s) => s.skill_name);
-
-  const initialData: StudentProfileInitialData = {
-    full_name: userProfile?.full_name || "",
-    email: user.email || "",
-    avatar_url: userProfile?.avatar_url || "",
-    bio: studentProfile?.bio || "",
-    university: studentProfile?.university || "",
-    degree: studentProfile?.degree || "",
-    branch: studentProfile?.branch || studentProfile?.major || "",
-    graduation_year: studentProfile?.graduation_year ? String(studentProfile.graduation_year) : "",
-    cgpa: studentProfile?.cgpa ? String(studentProfile.cgpa) : studentProfile?.gpa ? String(studentProfile.gpa) : "",
-    target_role: studentProfile?.target_role || "",
-    skills: skillsList,
-    linkedin_url: studentProfile?.linkedin_url || "",
-    github_url: studentProfile?.github_url || "",
-    portfolio_url: studentProfile?.portfolio_url || "",
-    phone: studentProfile?.phone || "",
-    location: studentProfile?.location || "",
-  };
-
-  return <StudentSettingsClient initialData={initialData} />;
->>>>>>> 03665dce1bbee32c9280c9884c4aaee70d7fbd2f
 }

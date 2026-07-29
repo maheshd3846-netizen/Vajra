@@ -1,16 +1,10 @@
 import React from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-<<<<<<< HEAD
 import { Settings, Building, Shield } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Panel } from "@/components/ui/panel";
 import { Section } from "@/components/ui/section";
-=======
-import CompanySettingsClient, {
-  type CompanyProfileInitialData,
-} from "@/components/company/CompanySettingsClient";
->>>>>>> 03665dce1bbee32c9280c9884c4aaee70d7fbd2f
 
 export const dynamic = "force-dynamic";
 
@@ -45,7 +39,6 @@ export default async function CompanySettingsPage() {
     .eq("id", user.id)
     .maybeSingle();
 
-<<<<<<< HEAD
   return (
     <Container className="py-8 sm:py-10">
       <Section className="space-y-8">
@@ -109,23 +102,4 @@ export default async function CompanySettingsPage() {
       </Section>
     </Container>
   );
-=======
-  const initialData: CompanyProfileInitialData = {
-    name: company?.name || "",
-    logo_url: company?.logo_url || "",
-    industry: company?.industry || "",
-    website: company?.website || "",
-    company_size: company?.company_size || "",
-    description: company?.description || "",
-    headquarters: company?.headquarters || "",
-    contact_email: company?.contact_email || user.email || "",
-    contact_phone: company?.contact_phone || "",
-    hr_name: company?.hr_name || "",
-    is_verified: Boolean(company?.is_verified),
-    gst_number: company?.gst_number || "",
-    official_email: company?.official_email || user.email || "",
-  };
-
-  return <CompanySettingsClient initialData={initialData} />;
->>>>>>> 03665dce1bbee32c9280c9884c4aaee70d7fbd2f
 }
