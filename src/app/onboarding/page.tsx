@@ -390,30 +390,19 @@ export default function OnboardingPage() {
 
                   {/* CGPA */}
                   <div className="space-y-1.5">
-<<<<<<< HEAD
-                    <Label htmlFor="gpa" className="text-xs font-semibold text-muted-foreground">
-                      GPA / Score
-=======
-                    <Label htmlFor="cgpa" className="text-xs font-semibold text-slate-200">
+                    <Label htmlFor="cgpa" className="text-xs font-semibold text-muted-foreground">
                       CGPA (0.0 to 10.0)
->>>>>>> 03665dce1bbee32c9280c9884c4aaee70d7fbd2f
                     </Label>
                     <Input
                       id="cgpa"
                       placeholder="e.g. 8.75"
                       type="number"
                       step="0.01"
-<<<<<<< HEAD
-                      value={academic.gpa}
-                      onChange={(e) => setAcademic((prev) => ({ ...prev, gpa: e.target.value }))}
-                      className="rounded-[20px] border-[#BFDFFF] bg-white/80 text-foreground placeholder:text-muted-foreground focus-visible:ring-primary/40 dark:bg-muted/40 dark:border-border"
-=======
                       min="0"
                       max="10"
                       value={academic.cgpa}
                       onChange={(e) => setAcademic((prev) => ({ ...prev, cgpa: e.target.value }))}
-                      className="bg-slate-950/50 border-white/10 text-white rounded-xl placeholder:text-slate-600 focus-visible:ring-blue-500"
->>>>>>> 03665dce1bbee32c9280c9884c4aaee70d7fbd2f
+                      className="rounded-[20px] border-[#BFDFFF] bg-white/80 text-foreground placeholder:text-muted-foreground focus-visible:ring-primary/40 dark:bg-muted/40 dark:border-border"
                     />
                   </div>
                 </div>

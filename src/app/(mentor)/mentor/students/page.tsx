@@ -1,10 +1,13 @@
 import React from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+<<<<<<< HEAD
 import { Users, Calendar, Sparkles } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Panel } from "@/components/ui/panel";
 import { Section } from "@/components/ui/section";
+=======
+>>>>>>> 55182242192c3070e7e903a330be5521e50fc2c5
 import MentorStudentsClient, {
   type StudentCohortItem,
 } from "@/components/mentor/MentorStudentsClient";
@@ -51,6 +54,7 @@ export default async function MentorStudentsPage() {
 
   const cohortList = (assignments as unknown as StudentCohortItem[]) || [];
 
+<<<<<<< HEAD
   return (
     <Container className="py-8 sm:py-10">
       <Section className="space-y-8">
@@ -124,4 +128,7 @@ export default async function MentorStudentsPage() {
       </Section>
     </Container>
   );
+=======
+  return <MentorStudentsClient initialCohort={cohortList} />;
+>>>>>>> 55182242192c3070e7e903a330be5521e50fc2c5
 }

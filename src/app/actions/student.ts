@@ -1,7 +1,6 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-<<<<<<< HEAD
 import { updateStudentProfile, updateUserProfile } from "@/lib/supabase/db-helpers";
 
 export interface StudentSettingsPayload {
@@ -14,19 +13,6 @@ export interface StudentSettingsPayload {
   githubUrl: string;
   linkedinUrl: string;
 }
-
-function parseNumber(value: string): number | null {
-  const trimmed = value.trim();
-  if (!trimmed) {
-    return null;
-  }
-
-  const parsed = trimmed.includes(".") ? Number.parseFloat(trimmed) : Number.parseInt(trimmed, 10);
-  return Number.isFinite(parsed) ? parsed : null;
-}
-
-export async function updateStudentSettingsAction(payload: StudentSettingsPayload): Promise<{ success: boolean; error?: string }> {
-=======
 
 export interface UpdateStudentProfilePayload {
   full_name?: string;
@@ -60,6 +46,70 @@ export interface SaveStudentOnboardingPayload {
   portfolio_url?: string | null;
   skills?: string[];
   proficiency?: "beginner" | "intermediate" | "advanced";
+}
+
+function parseNumber(value: string): number | null {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  const parsed = trimmed.includes(".") ? Number.parseFloat(trimmed) : Number.parseInt(trimmed, 10);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+export async function updateStudentSettingsAction(
+  payload: StudentSettingsPayload
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { success: false, error: "Unauthorized access. Please sign in again." };
+    }
+
+    const fullName = payload.fullName.trim();
+    const university = payload.university.trim();
+    const major = payload.major.trim();
+    const bio = payload.bio.trim();
+    const githubUrl = payload.githubUrl.trim();
+    const linkedinUrl = payload.linkedinUrl.trim();
+
+    if (!fullName || !university || !major) {
+      return { success: false, error: "Full name, university, and major are required." };
+    }
+
+    const studentUpdate = await updateStudentProfile(supabase, user.id, {
+      bio: bio || null,
+      university,
+      major,
+      graduation_year: parseNumber(payload.graduationYear),
+      gpa: parseNumber(payload.gpa),
+      github_url: githubUrl || null,
+      linkedin_url: linkedinUrl || null,
+    });
+
+    if (studentUpdate.error) {
+      throw studentUpdate.error;
+    }
+
+    const userUpdate = await updateUserProfile(supabase, user.id, {
+      full_name: fullName,
+    });
+
+    if (userUpdate.error) {
+      throw userUpdate.error;
+    }
+
+    return { success: true };
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : "Failed to save student profile.";
+    console.error("updateStudentSettingsAction error:", err);
+    return { success: false, error: errorMessage };
+  }
 }
 
 /**
@@ -120,11 +170,11 @@ export async function saveStudentOnboardingAction(
     // 2. Prepare student_profiles payload
     const targetRoleVal = payload.target_role || "Software Engineer";
     const majorVal = payload.branch || payload.major || payload.degree || targetRoleVal;
-    
+
     // Extract 10-point CGPA safely
     const rawCgpa = payload.cgpa ?? (payload.gpa && payload.gpa > 4 ? payload.gpa : payload.gpa ? payload.gpa * 2.5 : null);
     const cgpaVal = rawCgpa !== null ? Math.min(10.0, Math.max(0.0, rawCgpa)) : null;
-    
+
     // Convert to 4-point GPA strictly <= 4.00 to satisfy legacy check constraints
     const gpaVal = cgpaVal !== null ? Math.min(4.0, Number(((cgpaVal / 10) * 4).toFixed(2))) : null;
 
@@ -230,7 +280,6 @@ export async function saveStudentOnboardingAction(
 export async function updateStudentProfileAction(
   payload: UpdateStudentProfilePayload
 ): Promise<{ success: boolean; error?: string }> {
->>>>>>> 03665dce1bbee32c9280c9884c4aaee70d7fbd2f
   try {
     const supabase = await createClient();
     const {
@@ -238,42 +287,6 @@ export async function updateStudentProfileAction(
     } = await supabase.auth.getUser();
 
     if (!user) {
-<<<<<<< HEAD
-      return { success: false, error: "Unauthorized access. Please sign in again." };
-    }
-
-    const fullName = payload.fullName.trim();
-    const university = payload.university.trim();
-    const major = payload.major.trim();
-    const bio = payload.bio.trim();
-    const githubUrl = payload.githubUrl.trim();
-    const linkedinUrl = payload.linkedinUrl.trim();
-
-    if (!fullName || !university || !major) {
-      return { success: false, error: "Full name, university, and major are required." };
-    }
-
-    const studentUpdate = await updateStudentProfile(supabase, user.id, {
-      bio: bio || null,
-      university,
-      major,
-      graduation_year: parseNumber(payload.graduationYear),
-      gpa: parseNumber(payload.gpa),
-      github_url: githubUrl || null,
-      linkedin_url: linkedinUrl || null,
-    });
-
-    if (studentUpdate.error) {
-      throw studentUpdate.error;
-    }
-
-    const userUpdate = await updateUserProfile(supabase, user.id, {
-      full_name: fullName,
-    });
-
-    if (userUpdate.error) {
-      throw userUpdate.error;
-=======
       return { success: false, error: "Unauthorized access. Please sign in." };
     }
 
@@ -376,21 +389,12 @@ export async function updateStudentProfileAction(
           console.error("Error updating student_skills:", skillsErr);
         }
       }
->>>>>>> 03665dce1bbee32c9280c9884c4aaee70d7fbd2f
     }
 
     return { success: true };
   } catch (err: unknown) {
-<<<<<<< HEAD
-    const errorMessage = err instanceof Error ? err.message : "Failed to save student profile.";
-    console.error("updateStudentSettingsAction error:", err);
-    return { success: false, error: errorMessage };
-  }
-}
-=======
     const errorMessage = err instanceof Error ? err.message : "Failed to update profile.";
     console.error("updateStudentProfileAction error:", err);
     return { success: false, error: errorMessage };
   }
 }
->>>>>>> 03665dce1bbee32c9280c9884c4aaee70d7fbd2f

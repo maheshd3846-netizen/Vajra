@@ -110,13 +110,9 @@ export default function CompanyApplicantsClient({
   });
 
   return (
-<<<<<<< HEAD
-    <div className="space-y-8 max-w-5xl mx-auto text-foreground font-sans">
-=======
-    <div className="space-y-8 max-w-6xl mx-auto text-white font-sans">
->>>>>>> 03665dce1bbee32c9280c9884c4aaee70d7fbd2f
+    <div className="space-y-8 max-w-6xl mx-auto text-foreground font-sans">
       {/* Header */}
-      <div className="space-y-2 border-b border-[#BFDFFF] pb-6">
+      <div className="space-y-2 border-b border-border/70 pb-6">
         <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-primary">
           <Sparkles className="w-4 h-4" />
           Applicant Tracking & Pipeline Manager
@@ -124,43 +120,22 @@ export default function CompanyApplicantsClient({
         <h1 className="text-3xl font-bold tracking-tight font-heading text-foreground">
           Manage Candidate Applications
         </h1>
-<<<<<<< HEAD
         <p className="text-sm text-muted-foreground max-w-2xl font-sans">
           Review candidate profile benchmarks, inspect PDF resumes, and advance candidates through recruitment stages.
         </p>
       </div>
 
-      {/* Candidates Pipeline */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between border-b border-[#BFDFFF] pb-3">
-          <h2 className="text-sm font-bold uppercase font-mono tracking-wider text-foreground">
-            Candidates Pipeline ({candidates.length})
-          </h2>
-        </div>
-
-        {candidates.length === 0 ? (
-          <div className="space-y-3 rounded-[28px] border border-[#BFDFFF] bg-white/80 p-12 text-center">
-            <Users className="mx-auto h-10 w-10 text-slate-500" />
-            <p className="text-sm font-bold text-foreground">No applications received yet</p>
-            <p className="mx-auto max-w-sm text-xs text-muted-foreground font-sans">
-              As student engineers apply to your active job listings, candidate records and resume cards will populate here in real-time.
-=======
-        <p className="text-sm text-slate-400 max-w-2xl font-sans">
-          Review candidate profiles, Career DNA scores, PDF resumes, and perform recruitment actions (Shortlist, Schedule Interview, Select, Reject).
-        </p>
-      </div>
-
       {/* Stage Filter Pills */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-white/5">
-        <span className="text-xs text-slate-400 font-mono shrink-0 mr-1">Filter Stage:</span>
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-border/70">
+        <span className="text-xs text-muted-foreground font-mono shrink-0 mr-1">Filter Stage:</span>
         {["all", ...PIPELINE_STAGES].map((st) => (
           <button
             key={st}
             onClick={() => setFilterStage(st)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-medium capitalize transition shrink-0 ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-medium capitalize transition shrink-0 cursor-pointer ${
               filterStage === st
-                ? "bg-blue-600 text-white shadow-md"
-                : "bg-slate-900 text-slate-400 hover:text-white border border-white/10"
+                ? "bg-primary text-primary-foreground shadow-md"
+                : "bg-muted text-muted-foreground hover:text-foreground border border-border/70"
             }`}
           >
             {st} ({st === "all" ? candidates.length : candidates.filter((c) => c.status === st).length})
@@ -171,12 +146,11 @@ export default function CompanyApplicantsClient({
       {/* Candidates List */}
       <div className="space-y-4">
         {filteredCandidates.length === 0 ? (
-          <div className="p-12 rounded-3xl bg-slate-900/60 border border-white/10 text-center space-y-3">
-            <Users className="w-10 h-10 text-slate-500 mx-auto" />
-            <p className="text-sm font-bold text-white">No candidates in this stage</p>
-            <p className="text-xs text-slate-400 max-w-sm mx-auto font-sans">
+          <div className="p-12 rounded-3xl bg-card border border-border/70 text-center space-y-3">
+            <Users className="w-10 h-10 text-muted-foreground mx-auto" />
+            <p className="text-sm font-bold text-foreground">No candidates in this stage</p>
+            <p className="text-xs text-muted-foreground max-w-sm mx-auto font-sans">
               As student engineers apply to your active job listings, candidate records will populate here in real-time.
->>>>>>> 03665dce1bbee32c9280c9884c4aaee70d7fbd2f
             </p>
           </div>
         ) : (
@@ -184,25 +158,12 @@ export default function CompanyApplicantsClient({
             {filteredCandidates.map((cand) => (
               <div
                 key={cand.id}
-<<<<<<< HEAD
-                className="space-y-4 rounded-[28px] border border-[#BFDFFF] bg-white/90 p-6 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_12px_40px_rgba(59,130,246,0.10)]"
-              >
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                  <div className="space-y-1">
-                    <h3 className="text-base font-bold text-foreground">{cand.studentName}</h3>
-                    <p className="text-xs text-muted-foreground font-sans">
-                      {cand.major || "Engineering"} at {cand.university || "Institute of Technology"}
-                    </p>
-                    <div className="flex items-center gap-2 text-xs font-mono pt-1">
-                      <span className="text-slate-500">Applied Role:</span>
-                      <span className="font-bold text-primary">{cand.internshipTitle}</span>
-=======
-                className="p-6 rounded-3xl bg-slate-900/80 border border-white/10 hover:border-white/20 transition-all space-y-4 shadow-xl"
+                className="p-6 rounded-3xl bg-card border border-border/70 hover:border-border transition-all space-y-4 shadow-xl"
               >
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                   {/* Student Summary Info */}
                   <div className="flex items-start gap-4 flex-1">
-                    <div className="h-14 w-14 rounded-2xl bg-slate-800 border border-white/10 overflow-hidden flex items-center justify-center font-bold text-xl text-blue-400 shrink-0">
+                    <div className="h-14 w-14 rounded-2xl bg-muted border border-border/70 overflow-hidden flex items-center justify-center font-bold text-xl text-primary shrink-0">
                       {cand.avatarUrl ? (
                         <img src={cand.avatarUrl} alt={cand.studentName} className="h-full w-full object-cover" />
                       ) : (
@@ -212,7 +173,7 @@ export default function CompanyApplicantsClient({
 
                     <div className="space-y-1">
                       <div className="flex items-center gap-3">
-                        <h3 className="text-base font-bold text-white">{cand.studentName}</h3>
+                        <h3 className="text-base font-bold text-foreground">{cand.studentName}</h3>
                         <span
                           className={`text-[10px] uppercase font-mono tracking-wider px-2.5 py-0.5 rounded-full border ${
                             cand.status === "accepted"
@@ -223,20 +184,20 @@ export default function CompanyApplicantsClient({
                               ? "bg-blue-500/10 border-blue-500/20 text-blue-400"
                               : cand.status === "rejected"
                               ? "bg-red-500/10 border-red-500/20 text-red-400"
-                              : "bg-slate-800 border-white/10 text-slate-300"
+                              : "bg-muted border-border/70 text-muted-foreground"
                           }`}
                         >
                           {cand.status}
                         </span>
                       </div>
 
-                      <p className="text-xs text-slate-400 font-sans">
+                      <p className="text-xs text-muted-foreground font-sans">
                         {cand.branch || cand.degree || "Engineering"} {cand.university ? `• ${cand.university}` : ""} {cand.cgpa ? `(CGPA: ${cand.cgpa})` : ""}
                       </p>
 
                       <div className="flex flex-wrap items-center gap-3 text-xs pt-1">
-                        <span className="text-slate-400 font-sans">
-                          Applied: <strong className="text-blue-400">{cand.internshipTitle}</strong>
+                        <span className="text-muted-foreground font-sans">
+                          Applied: <strong className="text-primary">{cand.internshipTitle}</strong>
                         </span>
 
                         <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 text-[11px] font-mono">
@@ -244,17 +205,16 @@ export default function CompanyApplicantsClient({
                           Career DNA: {cand.careerDnaScore}/100
                         </span>
                       </div>
->>>>>>> 03665dce1bbee32c9280c9884c4aaee70d7fbd2f
                     </div>
                   </div>
 
                   {/* Actions & Status Controller */}
-                  <div className="flex flex-wrap items-center gap-2 shrink-0 border-t lg:border-t-0 border-white/5 pt-3 lg:pt-0">
+                  <div className="flex flex-wrap items-center gap-2 shrink-0 border-t lg:border-t-0 border-border/70 pt-3 lg:pt-0">
                     <button
                       onClick={() => setSelectedCandidateModal(cand)}
-                      className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-200 hover:text-white bg-slate-800 hover:bg-slate-700 border border-white/10 rounded-xl transition"
+                      className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-foreground hover:bg-muted border border-border/70 rounded-xl transition"
                     >
-                      <Eye className="w-3.5 h-3.5 text-blue-400" />
+                      <Eye className="w-3.5 h-3.5 text-primary" />
                       View Profile
                     </button>
 
@@ -263,42 +223,14 @@ export default function CompanyApplicantsClient({
                         href={cand.resume_url}
                         target="_blank"
                         rel="noreferrer"
-<<<<<<< HEAD
-                        className="flex cursor-pointer items-center gap-1.5 rounded-[18px] border border-[#BFDFFF] bg-white px-3.5 py-2.5 text-xs text-muted-foreground font-sans transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:text-foreground hover:shadow-[0_12px_24px_rgba(59,130,246,0.10)]"
-                      >
-                        <FileText className="w-3.5 h-3.5 text-primary" />
-                        View Resume
-                      </a>
-                    )}
-
-                    <div className="flex items-center gap-1.5 rounded-[18px] border border-[#BFDFFF] bg-white px-3 py-1.5">
-                      {updatingId === cand.id ? (
-                        <Loader2 className="w-4 h-4 animate-spin text-primary" />
-                      ) : (
-                        <select
-                          value={cand.status}
-                          onChange={(e) =>
-                            handleStatusChange(cand.id, e.target.value as CandidateItem["status"])
-                          }
-                          className="cursor-pointer bg-transparent text-xs font-mono uppercase font-bold text-primary focus:outline-none"
-                        >
-                          {PIPELINE_STAGES.map((stage) => (
-                            <option key={stage} value={stage} className="bg-white capitalize font-sans text-foreground">
-                              Stage: {stage.toUpperCase()}
-                            </option>
-                          ))}
-                        </select>
-                      )}
-                    </div>
-=======
-                        className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-200 hover:text-white bg-slate-800 hover:bg-slate-700 border border-white/10 rounded-xl transition"
+                        className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-foreground hover:bg-muted border border-border/70 rounded-xl transition"
                       >
                         <Download className="w-3.5 h-3.5 text-emerald-400" />
                         Resume
                       </a>
                     )}
 
-                    <div className="h-5 w-px bg-white/10 hidden sm:block" />
+                    <div className="h-5 w-px bg-border/70 hidden sm:block" />
 
                     {/* Quick Stage Action Buttons */}
                     {cand.status !== "shortlisted" && (
@@ -342,16 +274,11 @@ export default function CompanyApplicantsClient({
                         Reject
                       </button>
                     )}
->>>>>>> 03665dce1bbee32c9280c9884c4aaee70d7fbd2f
                   </div>
                 </div>
 
                 {cand.cover_letter && (
-<<<<<<< HEAD
-                  <div className="rounded-[18px] border border-[#BFDFFF] bg-white/80 p-3 text-xs leading-relaxed text-muted-foreground font-sans italic">
-=======
-                  <div className="p-3.5 bg-slate-950/60 rounded-2xl border border-white/5 text-xs text-slate-400 font-sans italic leading-relaxed">
->>>>>>> 03665dce1bbee32c9280c9884c4aaee70d7fbd2f
+                  <div className="p-3.5 bg-muted/40 rounded-2xl border border-border/70 text-xs text-muted-foreground font-sans italic leading-relaxed">
                     &ldquo;{cand.cover_letter}&rdquo;
                   </div>
                 )}
