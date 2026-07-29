@@ -58,7 +58,7 @@ export function calculateCareerDnaScores(aggregatedData: {
   if (profile?.university) completionPoints += 20;
   if (profile?.major) completionPoints += 20;
   if (profile?.graduation_year) completionPoints += 20;
-  if (profile?.gpa) completionPoints += 10;
+  if (profile?.cgpa || profile?.gpa) completionPoints += 10;
   if (profile?.github_url || profile?.linkedin_url) completionPoints += 10;
   const profileCompletionScore = completionPoints;
 

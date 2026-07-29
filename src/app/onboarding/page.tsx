@@ -64,7 +64,7 @@ export default function OnboardingPage() {
   const [academic, setAcademic] = useState({
     university: "",
     gradYear: "",
-    gpa: "",
+    cgpa: "",
     priorInternship: "No",
   });
 
@@ -104,7 +104,7 @@ export default function OnboardingPage() {
             branch: majorField,
             target_role: majorField,
             graduation_year: academic.gradYear ? parseInt(academic.gradYear, 10) : null,
-            gpa: academic.gpa ? parseFloat(academic.gpa) : null,
+            cgpa: academic.cgpa ? parseFloat(academic.cgpa) : null,
             github_url: socials.github || null,
             linkedin_url: socials.linkedin || null,
             portfolio_url: socials.portfolio || null,
@@ -145,7 +145,7 @@ export default function OnboardingPage() {
       toast.error("Please select at least one skill.");
       return;
     }
-    if (currentStep === 3 && (!academic.university || !academic.gradYear || !academic.gpa)) {
+    if (currentStep === 3 && (!academic.university || !academic.gradYear || !academic.cgpa)) {
       toast.error("Please complete all academic details.");
       return;
     }
@@ -388,18 +388,20 @@ export default function OnboardingPage() {
                     />
                   </div>
 
-                  {/* GPA */}
+                  {/* CGPA */}
                   <div className="space-y-1.5">
-                    <Label htmlFor="gpa" className="text-xs font-semibold text-slate-200">
-                      GPA / Score
+                    <Label htmlFor="cgpa" className="text-xs font-semibold text-slate-200">
+                      CGPA (0.0 to 10.0)
                     </Label>
                     <Input
-                      id="gpa"
-                      placeholder="e.g. 3.85"
+                      id="cgpa"
+                      placeholder="e.g. 8.75"
                       type="number"
                       step="0.01"
-                      value={academic.gpa}
-                      onChange={(e) => setAcademic((prev) => ({ ...prev, gpa: e.target.value }))}
+                      min="0"
+                      max="10"
+                      value={academic.cgpa}
+                      onChange={(e) => setAcademic((prev) => ({ ...prev, cgpa: e.target.value }))}
                       className="bg-slate-950/50 border-white/10 text-white rounded-xl placeholder:text-slate-600 focus-visible:ring-blue-500"
                     />
                   </div>

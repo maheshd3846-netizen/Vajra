@@ -94,8 +94,13 @@ export async function saveStudentOnboardingAction(
     // 2. Prepare student_profiles payload
     const targetRoleVal = payload.target_role || "Software Engineer";
     const majorVal = payload.branch || payload.major || payload.degree || targetRoleVal;
-    const gpaVal = payload.gpa ?? (payload.cgpa ? Math.min(4.0, Number(((payload.cgpa / 10) * 4).toFixed(2))) : null);
-    const cgpaVal = payload.cgpa ?? (payload.gpa ? Number(Math.min(10.0, payload.gpa * 2.5).toFixed(2)) : null);
+    
+    // Extract 10-point CGPA safely
+    const rawCgpa = payload.cgpa ?? (payload.gpa && payload.gpa > 4 ? payload.gpa : payload.gpa ? payload.gpa * 2.5 : null);
+    const cgpaVal = rawCgpa !== null ? Math.min(10.0, Math.max(0.0, rawCgpa)) : null;
+    
+    // Convert to 4-point GPA strictly <= 4.00 to satisfy legacy check constraints
+    const gpaVal = cgpaVal !== null ? Math.min(4.0, Number(((cgpaVal / 10) * 4).toFixed(2))) : null;
 
     const profileData = {
       id: user.id,

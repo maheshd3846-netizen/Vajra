@@ -13,7 +13,8 @@ export interface PublicPortfolioData {
     fullName: string;
     major: string | null;
     university: string | null;
-    gpa: number | null;
+    cgpa?: number | null;
+    gpa?: number | null;
     gradYear: number | null;
     githubUrl: string | null;
     linkedinUrl: string | null;

@@ -47,10 +47,10 @@ export default function ProfessionalTheme({ data }: { data: PublicPortfolioData 
                   Class of {student.gradYear}
                 </div>
               )}
-              {student.gpa && (
+              {(student.cgpa || student.gpa) && (
                 <div className="text-xs text-slate-400 flex items-center gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                  GPA {student.gpa}
+                  CGPA {student.cgpa || student.gpa}
                 </div>
               )}
               <div className="pt-3 border-t border-white/10 space-y-2">

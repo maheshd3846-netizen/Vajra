@@ -178,7 +178,7 @@ export async function generatePortfolioAction(
       supabase.from("users").select("full_name, email").eq("id", user.id).single(),
       supabase
         .from("student_profiles")
-        .select("bio, major, university, gpa, graduation_year, github_url, linkedin_url")
+        .select("bio, major, university, gpa, cgpa, graduation_year, github_url, linkedin_url")
         .eq("id", user.id)
         .single(),
       supabase
@@ -276,6 +276,7 @@ export async function generatePortfolioAction(
         email: userProfile?.email,
         major: studentProfile?.major || null,
         university: studentProfile?.university || null,
+        cgpa: studentProfile?.cgpa || null,
         gpa: studentProfile?.gpa || null,
         graduationYear: studentProfile?.graduation_year || null,
         bio: studentProfile?.bio || null,
@@ -413,7 +414,7 @@ export async function getPublicPortfolioAction(
     ] = await Promise.all([
       supabase
         .from("student_profiles")
-        .select("major, university, gpa, graduation_year, github_url, linkedin_url")
+        .select("major, university, gpa, cgpa, graduation_year, github_url, linkedin_url")
         .eq("id", studentId)
         .single(),
       supabase.from("users").select("full_name").eq("id", studentId).single(),
