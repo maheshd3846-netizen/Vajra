@@ -112,10 +112,10 @@ export default function AuroraTheme({ data }: AuroraThemeProps) {
                   Class of {student.gradYear}
                 </div>
               )}
-              {student.gpa && (
+              {(student.cgpa || student.gpa) && (
                 <div className="flex items-center gap-1.5 text-white/40">
                   <GraduationCap className="w-3.5 h-3.5" />
-                  GPA {student.gpa}
+                  CGPA {student.cgpa || student.gpa}
                 </div>
               )}
               {careerDna && (

@@ -11,7 +11,8 @@ export interface StudentProfileForMatching {
   fullName: string;
   major: string | null;
   university: string | null;
-  gpa: number | null;
+  cgpa?: number | null;
+  gpa?: number | null;
   careerDnaScore: number;
   readinessScore: number;
   skills: { skill_name: string; proficiency: string; verified?: boolean }[];

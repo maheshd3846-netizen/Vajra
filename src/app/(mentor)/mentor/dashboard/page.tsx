@@ -1,10 +1,18 @@
 import React from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+<<<<<<< HEAD
 import { Users, Shield, Award, Sparkles } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Panel } from "@/components/ui/panel";
 import { Section } from "@/components/ui/section";
+=======
+import MentorDashboardClient, {
+  type MentorDashboardData,
+  type MentorDashboardStudentItem,
+} from "@/components/mentor/MentorDashboardClient";
+import { fetchMentorDashboardAction } from "@/app/actions/mentor";
+>>>>>>> 03665dce1bbee32c9280c9884c4aaee70d7fbd2f
 
 export const dynamic = "force-dynamic";
 
@@ -18,26 +26,26 @@ export default async function MentorDashboardPage() {
     redirect("/login");
   }
 
-  // Fetch mentor profile
+  // Fetch mentor record
   const { data: mentor } = await supabase
     .from("mentors")
-    .select("bio, company_name, job_title, expertise, is_verified")
+    .select("is_verified")
     .eq("id", user.id)
     .single();
 
-  // Fetch mentor assignments count
-  const { count: activeStudentsCount } = await supabase
-    .from("mentor_assignments")
-    .select("*", { count: "exact", head: true })
-    .eq("mentor_id", user.id)
-    .eq("status", "active");
+  const res = await fetchMentorDashboardAction();
 
-  const { count: completedStudentsCount } = await supabase
-    .from("mentor_assignments")
-    .select("*", { count: "exact", head: true })
-    .eq("mentor_id", user.id)
-    .eq("status", "completed");
+  const dashboardData: MentorDashboardData = {
+    totalStudents: res.data?.totalStudents || 0,
+    activeStudents: res.data?.activeStudents || 0,
+    pendingReviews: res.data?.pendingReviews || 0,
+    upcomingSessions: res.data?.upcomingSessions || 0,
+    avgCareerDna: res.data?.avgCareerDna || 78,
+    students: (res.data?.students as unknown as MentorDashboardStudentItem[]) || [],
+    isVerified: Boolean(mentor?.is_verified),
+  };
 
+<<<<<<< HEAD
   return (
     <Container className="py-8 sm:py-10">
       <Section className="space-y-8">
@@ -92,4 +100,7 @@ export default async function MentorDashboardPage() {
       </Section>
     </Container>
   );
+=======
+  return <MentorDashboardClient initialData={dashboardData} />;
+>>>>>>> 03665dce1bbee32c9280c9884c4aaee70d7fbd2f
 }

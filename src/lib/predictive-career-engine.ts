@@ -67,7 +67,8 @@ export interface PredictiveInputs {
   profile: {
     major: string | null;
     university: string | null;
-    gpa: number | null;
+    cgpa?: number | null;
+    gpa?: number | null;
     graduation_year: number | null;
     github_url: string | null;
     linkedin_url: string | null;

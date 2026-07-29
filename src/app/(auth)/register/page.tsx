@@ -23,10 +23,14 @@ const registerSchema = z
     password: z.string().min(6, "Password must be at least 6 characters"),
     confirmPassword: z.string(),
   })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
-  });
+  .refine(
+    (data: { password?: string; confirmPassword?: string }) =>
+      data.password === data.confirmPassword,
+    {
+      message: "Passwords do not match",
+      path: ["confirmPassword"],
+    }
+  );
 
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
@@ -49,14 +53,20 @@ export default function RegisterPage() {
   const onSubmit = async (values: RegisterFormValues) => {
     setIsLoading(true);
     try {
+      const userMetaData: Record<string, string> = {
+        role: selectedRole,
+        full_name: values.fullName,
+      };
+
+      if (selectedRole === "company") {
+        userMetaData.company_name = values.fullName;
+      }
+
       const { data, error } = await supabase.auth.signUp({
         email: values.email,
         password: values.password,
         options: {
-          data: {
-            role: selectedRole,
-            full_name: values.fullName,
-          },
+          data: userMetaData,
         },
       });
 
@@ -74,11 +84,21 @@ export default function RegisterPage() {
 
       if (data?.user) {
         toast.success("Account created successfully!");
-        
-        if (selectedRole === "student") {
-          router.push("/onboarding");
+
+        if (data.session) {
+          // Direct login / session active
+          if (selectedRole === "student") {
+            router.push("/onboarding");
+          } else if (selectedRole === "company") {
+            router.push("/company/dashboard");
+          } else if (selectedRole === "mentor") {
+            router.push("/mentor/dashboard");
+          } else {
+            router.push("/login");
+          }
         } else {
-          toast.info("Please sign in to complete your configuration.");
+          // Email verification needed or auto confirmation pending
+          toast.info("Please check your email to verify your account or sign in.");
           router.push("/login");
         }
       }
@@ -94,7 +114,7 @@ export default function RegisterPage() {
     toast.loading("Redirecting to Google Sign-Up...");
 
     try {
-      const callbackUrl = `${window.location.origin}/auth/callback`;
+      const callbackUrl = `${window.location.origin}/auth/callback?role=${selectedRole}`;
 
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
@@ -102,6 +122,7 @@ export default function RegisterPage() {
           redirectTo: callbackUrl,
           queryParams: {
             role: selectedRole,
+            prompt: "select_account",
           },
         },
       });
@@ -248,16 +269,21 @@ export default function RegisterPage() {
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              {/* Full Name */}
+              {/* Full Name / Company Name */}
               <div className="space-y-1.5">
+<<<<<<< HEAD
                 <Label htmlFor="fullName" className="text-xs font-semibold text-foreground/80">
                   Full Name
+=======
+                <Label htmlFor="fullName" className="text-xs font-semibold text-slate-200">
+                  {selectedRole === "company" ? "Company / Recruiter Name" : "Full Name"}
+>>>>>>> 03665dce1bbee32c9280c9884c4aaee70d7fbd2f
                 </Label>
                 <div className="relative">
                   <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="fullName"
-                    placeholder="John Doe"
+                    placeholder={selectedRole === "company" ? "Acme Technologies" : "John Doe"}
                     type="text"
                     className="pl-10 rounded-xl border-border/70 bg-background/70 text-foreground placeholder:text-muted-foreground/70"
                     {...register("fullName")}
@@ -277,7 +303,7 @@ export default function RegisterPage() {
                   <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="email"
-                    placeholder="name@university.edu"
+                    placeholder="name@company.com"
                     type="email"
                     className="pl-10 rounded-xl border-border/70 bg-background/70 text-foreground placeholder:text-muted-foreground/70"
                     {...register("email")}

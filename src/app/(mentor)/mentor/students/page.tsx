@@ -1,28 +1,18 @@
 import React from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+<<<<<<< HEAD
 import { Users, Calendar, Sparkles } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Panel } from "@/components/ui/panel";
 import { Section } from "@/components/ui/section";
+=======
+import MentorStudentsClient, {
+  type StudentCohortItem,
+} from "@/components/mentor/MentorStudentsClient";
+>>>>>>> 03665dce1bbee32c9280c9884c4aaee70d7fbd2f
 
 export const dynamic = "force-dynamic";
-
-interface MentorAssignmentItem {
-  id: string;
-  status: string;
-  assigned_at: string;
-  student_profiles: {
-    id: string;
-    university: string | null;
-    major: string | null;
-    gpa: number | null;
-    users: {
-      full_name: string | null;
-      email: string;
-    } | null;
-  } | null;
-}
 
 export default async function MentorStudentsPage() {
   const supabase = await createClient();
@@ -45,17 +35,26 @@ export default async function MentorStudentsPage() {
         id,
         university,
         major,
+        degree,
+        branch,
+        graduation_year,
         gpa,
+        cgpa,
+        phone,
+        target_role,
         users (
           full_name,
-          email
+          email,
+          avatar_url
         )
       )
     `)
-    .eq("mentor_id", user.id);
+    .eq("mentor_id", user.id)
+    .order("assigned_at", { ascending: false });
 
-  const activeStudents = (assignments as unknown as MentorAssignmentItem[]) || [];
+  const cohortList = (assignments as unknown as StudentCohortItem[]) || [];
 
+<<<<<<< HEAD
   return (
     <Container className="py-8 sm:py-10">
       <Section className="space-y-8">
@@ -129,4 +128,7 @@ export default async function MentorStudentsPage() {
       </Section>
     </Container>
   );
+=======
+  return <MentorStudentsClient initialCohort={cohortList} />;
+>>>>>>> 03665dce1bbee32c9280c9884c4aaee70d7fbd2f
 }

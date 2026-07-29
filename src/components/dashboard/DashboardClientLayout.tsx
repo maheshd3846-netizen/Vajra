@@ -24,6 +24,7 @@ import {
   BarChart3,
   Briefcase,
   BrainCircuit,
+  UserCheck,
 } from "lucide-react";
 
 interface DashboardClientLayoutProps {
@@ -62,6 +63,7 @@ export default function DashboardClientLayout({
       { name: "Dashboard", href: "/company/dashboard", icon: LayoutDashboard },
       { name: "Internships", href: "/company/internships", icon: Briefcase },
       { name: "Applicants", href: "/company/applicants", icon: Users },
+      { name: "Intern Tracker", href: "/company/interns", icon: UserCheck },
       { name: "Settings", href: "/company/settings", icon: Settings },
     ],
     mentor: [

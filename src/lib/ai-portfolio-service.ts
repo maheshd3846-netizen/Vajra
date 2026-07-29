@@ -15,7 +15,8 @@ export interface PortfolioProfile {
     email?: string;
     major: string | null;
     university: string | null;
-    gpa: number | null;
+    cgpa?: number | null;
+    gpa?: number | null;
     graduationYear: number | null;
     bio: string | null;
     githubUrl: string | null;
@@ -300,7 +301,7 @@ Return this exact JSON schema (no additional keys):
 Name: ${profile.student.fullName}
 Major: ${profile.student.major || "Software Engineering"}
 University: ${profile.student.university || "Institute of Technology"}
-GPA: ${profile.student.gpa || "N/A"}
+CGPA: ${profile.student.cgpa || profile.student.gpa || "N/A"}
 Graduation Year: ${profile.student.graduationYear || "N/A"}
 GitHub: ${profile.student.githubUrl || "N/A"}
 LinkedIn: ${profile.student.linkedinUrl || "N/A"}

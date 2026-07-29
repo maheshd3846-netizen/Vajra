@@ -78,34 +78,75 @@ export async function fetchFilteredInternshipsAction(
   error?: string;
 }> {
   try {
+    console.log("===== INTERNSHIP ACTION RUNNING =====");
+    console.log("Environment Verification:");
+    console.log("  NEXT_PUBLIC_SUPABASE_URL:", process.env.NEXT_PUBLIC_SUPABASE_URL || "MISSING");
+    console.log("  NEXT_PUBLIC_SUPABASE_ANON_KEY exists:", !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+
     const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    
+    // Auth & Session Verification
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    const { data: { user }, error: userAuthError } = await supabase.auth.getUser();
+
+    console.log("Auth & Session Status:");
+    console.log("  Current User:", user ? { id: user.id, email: user.email, role: user.role } : "No User");
+    console.log("  Session Active:", !!session);
+    console.log("  Access Token Exists:", !!session?.access_token);
+
+    if (userAuthError) {
+      const errObj = userAuthError as { code?: string; details?: string; hint?: string };
+      console.error("User Auth Error:", {
+        code: errObj?.code,
+        message: userAuthError.message,
+        details: errObj?.details,
+        hint: errObj?.hint,
+      });
+    }
+
+    if (sessionError) {
+      const errObj = sessionError as { code?: string; details?: string; hint?: string };
+      console.error("Session Error:", {
+        code: errObj?.code,
+        message: sessionError.message,
+        details: errObj?.details,
+        hint: errObj?.hint,
+      });
+    }
 
     if (!user) {
-      return { success: false, error: "Unauthorized access." };
+      console.error("Authentication/Session Failure: User is not authenticated.");
+      return { success: false, error: "Unauthorized access. User session not found." };
     }
 
     // 1. Fetch student data for AI matching
+    console.log("Executing Supabase Queries for Student Profile & Context...");
+    console.log("  Query 1: SELECT full_name FROM public.users WHERE id = ", user.id);
+    console.log("  Query 2: SELECT major, university, gpa FROM public.student_profiles WHERE id = ", user.id);
+    console.log("  Query 3: SELECT skill_name, proficiency FROM public.student_skills WHERE student_id = ", user.id);
+    console.log("  Query 4: SELECT id, title, technologies FROM public.projects WHERE student_id = ", user.id);
+    console.log("  Query 5: SELECT id, name FROM public.certificates WHERE student_id = ", user.id);
+    console.log("  Query 6: SELECT id, is_primary FROM public.resumes WHERE student_id = ", user.id);
+    console.log("  Query 7: SELECT internship_id FROM public.saved_internships WHERE student_id = ", user.id);
+
     const [
-      { data: userProfile },
-      { data: studentProfile },
-      { data: studentSkills },
-      { data: projects },
-      { data: certificates },
-      { data: resumes },
-      { data: savedRows },
+      { data: userProfile, error: errUsers },
+      { data: studentProfile, error: errProfile },
+      { data: studentSkills, error: errSkills },
+      { data: projects, error: errProjects },
+      { data: certificates, error: errCertificates },
+      { data: resumes, error: errResumes },
+      { data: savedRows, error: errSaved },
     ] = await Promise.all([
-      supabase.from("users").select("full_name").eq("id", user.id).single(),
+      supabase.from("users").select("full_name").eq("id", user.id).maybeSingle(),
       supabase
         .from("student_profiles")
         .select("major, university, gpa")
         .eq("id", user.id)
-        .single(),
+        .maybeSingle(),
       supabase
         .from("student_skills")
-        .select("skill_name, proficiency, verified")
+        .select("skill_name, proficiency")
         .eq("student_id", user.id),
       supabase
         .from("projects")
@@ -124,6 +165,28 @@ export async function fetchFilteredInternshipsAction(
         .select("internship_id")
         .eq("student_id", user.id),
     ]);
+
+    const queryErrors = [
+      { table: "users", err: errUsers },
+      { table: "student_profiles", err: errProfile },
+      { table: "student_skills", err: errSkills },
+      { table: "projects", err: errProjects },
+      { table: "certificates", err: errCertificates },
+      { table: "resumes", err: errResumes },
+      { table: "saved_internships", err: errSaved },
+    ];
+
+    for (const q of queryErrors) {
+      if (q.err) {
+        console.error(`Supabase Query Error on Table '${q.table}':`, {
+          code: q.err.code,
+          message: q.err.message,
+          details: q.err.details,
+          hint: q.err.hint,
+        });
+        throw new Error(`Supabase query failed for '${q.table}': ${q.err.message} (Code: ${q.err.code})`);
+      }
+    }
 
     const activeSkills = studentSkills || [];
     const activeProjects = projects || [];
@@ -156,9 +219,11 @@ export async function fetchFilteredInternshipsAction(
       resumes: activeResumes,
     };
 
-    const savedSet = new Set((savedRows || []).map((s) => s.internship_id));
+    const savedSet = new Set<string>((savedRows || []).map((s: { internship_id: string }) => s.internship_id));
 
     // 2. Query internships with company data
+    console.log("  Query 8: SELECT internships.*, companies.* FROM public.internships JOIN public.companies ON internships.company_id = companies.id WHERE status = 'open' ORDER BY created_at DESC");
+
     const { data: internships, error: internshipsError } = await supabase
       .from("internships")
       .select(`
@@ -187,13 +252,20 @@ export async function fetchFilteredInternshipsAction(
       .order("created_at", { ascending: false });
 
     if (internshipsError) {
-      throw internshipsError;
+      console.error("Supabase Query Error on Table 'internships' / Join 'companies':", {
+        code: internshipsError.code,
+        message: internshipsError.message,
+        details: internshipsError.details,
+        hint: internshipsError.hint,
+      });
+      throw new Error(`Supabase query failed for 'internships': ${internshipsError.message} (Code: ${internshipsError.code})`);
     }
 
     // 3. Process & Filter out blacklisted companies
     const processedInternships: EnhancedInternshipRecord[] = [];
 
-    (internships || []).forEach((item) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (internships || []).forEach((item: any) => {
       const compRaw = item.companies as unknown as {
         name: string;
         logo_url: string | null;
@@ -311,12 +383,19 @@ export async function fetchFilteredInternshipsAction(
     return {
       success: true,
       internships: results,
-      savedIds: Array.from(savedSet),
+      savedIds: Array.from(savedSet) as string[],
     };
   } catch (err: unknown) {
-    const errorMessage = err instanceof Error ? err.message : "Could not retrieve internship listings.";
-    console.error("fetchFilteredInternshipsAction failed:", err);
-    return { success: false, error: errorMessage };
+    const errorObj = err as Error;
+    console.error("===== INTERNSHIP ACTION ERROR =====");
+    console.error("Error object:", err);
+    console.error("Message:", errorObj?.message);
+    console.error("Stack:", errorObj?.stack);
+
+    return {
+      success: false,
+      error: errorObj?.message || "Unknown error",
+    };
   }
 }
 
@@ -399,7 +478,7 @@ export async function runAiApplicationReviewAction(
         .single(),
       supabase
         .from("student_skills")
-        .select("skill_name, proficiency, verified")
+        .select("skill_name, proficiency")
         .eq("student_id", user.id),
       supabase.from("projects").select("id, title, technologies").eq("student_id", user.id),
       supabase.from("certificates").select("id, name").eq("student_id", user.id),

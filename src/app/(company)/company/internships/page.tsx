@@ -1,10 +1,17 @@
 import React from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+<<<<<<< HEAD
 import { Briefcase, MapPin, DollarSign, Calendar, Sparkles } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Panel } from "@/components/ui/panel";
 import { Section } from "@/components/ui/section";
+=======
+import CompanyInternshipsClient, {
+  type InternshipListItem,
+  type PipelineSummaryStats,
+} from "@/components/company/CompanyInternshipsClient";
+>>>>>>> 03665dce1bbee32c9280c9884c4aaee70d7fbd2f
 
 export const dynamic = "force-dynamic";
 
@@ -18,15 +25,34 @@ export default async function CompanyInternshipsPage() {
     redirect("/login");
   }
 
-  // Fetch internships listed by this company
-  const { data: internships } = await supabase
+  // Fetch company's internship postings
+  const { data: internshipsData } = await supabase
     .from("internships")
-    .select("id, title, location, type, salary_range, status, created_at")
+    .select(`
+      id,
+      title,
+      description,
+      location,
+      type,
+      internship_type,
+      duration,
+      stipend,
+      salary_range,
+      requirements,
+      skills_needed,
+      eligibility,
+      deadline,
+      openings_count,
+      status,
+      created_at
+    `)
     .eq("company_id", user.id)
     .order("created_at", { ascending: false });
 
-  const activeInternships = internships || [];
+  const internshipsList = (internshipsData as InternshipListItem[]) || [];
+  const internshipIds = internshipsList.map((i) => i.id);
 
+<<<<<<< HEAD
   return (
     <Container className="py-8 sm:py-10">
       <Section className="space-y-8">
@@ -90,4 +116,30 @@ export default async function CompanyInternshipsPage() {
       </Section>
     </Container>
   );
+=======
+  const stats: PipelineSummaryStats = {
+    totalApplicants: 0,
+    shortlisted: 0,
+    rejected: 0,
+    pending: 0,
+    selected: 0,
+  };
+
+  if (internshipIds.length > 0) {
+    const { data: apps } = await supabase
+      .from("applications")
+      .select("status")
+      .in("internship_id", internshipIds);
+
+    (apps || []).forEach((app) => {
+      stats.totalApplicants++;
+      if (app.status === "shortlisted") stats.shortlisted++;
+      else if (app.status === "rejected") stats.rejected++;
+      else if (app.status === "accepted") stats.selected++;
+      else if (app.status === "applied" || app.status === "reviewing") stats.pending++;
+    });
+  }
+
+  return <CompanyInternshipsClient initialInternships={internshipsList} stats={stats} />;
+>>>>>>> 03665dce1bbee32c9280c9884c4aaee70d7fbd2f
 }
