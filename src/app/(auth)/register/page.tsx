@@ -122,6 +122,7 @@ export default function RegisterPage() {
           redirectTo: callbackUrl,
           queryParams: {
             role: selectedRole,
+            prompt: "select_account",
           },
         },
       });

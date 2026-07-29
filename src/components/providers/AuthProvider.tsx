@@ -114,8 +114,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     setIsLoading(true);
-    console.log("[AuthProvider] Signing out user:", user?.email);
-    await supabase.auth.signOut();
+    console.log("[AuthProvider] Signing out user globally:", user?.email);
+    try {
+      await supabase.auth.signOut({ scope: "global" });
+    } catch (err) {
+      console.warn("[AuthProvider] Global signOut notice:", err);
+      await supabase.auth.signOut();
+    }
     setUser(null);
     setSession(null);
     setProfile(null);
