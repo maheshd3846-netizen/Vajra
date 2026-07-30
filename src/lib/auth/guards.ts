@@ -133,7 +133,13 @@ export async function requireMentorStudentAccess(studentId: string): Promise<Aut
     .eq("student_id", studentId)
     .maybeSingle();
 
-  const isAssignedViaCompany = assignedIntern && (assignedIntern as any).companies?.mentor_id === ctx.userId;
+  type AssignedCompanyIntern = {
+    company_id: string;
+    companies: { mentor_id: string | null } | null;
+  };
+
+  const isAssignedViaCompany =
+    assignedIntern && (assignedIntern as unknown as AssignedCompanyIntern).companies?.mentor_id === ctx.userId;
 
   if (isAssignedViaCompany) return ctx;
 

@@ -697,7 +697,7 @@ export default function StudentProgressClient({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
                   <div className="space-y-1.5">
                     <label className="text-xs font-semibold font-mono text-slate-700 dark:text-slate-300">
                       Hours Worked ({hoursWorked} hrs)
@@ -715,7 +715,7 @@ export default function StudentProgressClient({
 
                   <div className="space-y-1.5">
                     <label className="text-xs font-semibold font-mono text-slate-700 dark:text-slate-300">
-                      Productivity Rating ({productivityRating}/5 Stars)
+                      Productivity ({productivityRating}/5)
                     </label>
                     <input
                       type="range"
@@ -729,9 +729,25 @@ export default function StudentProgressClient({
 
                   <div className="space-y-1.5">
                     <label className="text-xs font-semibold font-mono text-slate-700 dark:text-slate-300">
+                      Work Status
+                    </label>
+                    <select
+                      value={workStatus}
+                      onChange={(e) => setWorkStatus(e.target.value as "not_started" | "in_progress" | "completed" | "blocked")}
+                      className="w-full text-xs p-2 rounded-xl border border-border bg-background text-slate-700 dark:text-slate-300 outline-none"
+                    >
+                      <option value="completed">Completed</option>
+                      <option value="in_progress">In Progress</option>
+                      <option value="blocked">Blocked</option>
+                      <option value="not_started">Not Started</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold font-mono text-slate-700 dark:text-slate-300">
                       Overall Mood
                     </label>
-                    <div className="flex gap-2">
+                    <div className="flex gap-1.5">
                       <button
                         type="button"
                         onClick={() => setMood("great")}
@@ -796,12 +812,38 @@ export default function StudentProgressClient({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <label className="text-xs font-semibold font-mono text-slate-700 dark:text-slate-300">
-                      Challenges Faced & Solutions
+                      Challenges Faced
                     </label>
                     <textarea
                       value={challengesFaced}
                       onChange={(e) => setChallengesFaced(e.target.value)}
-                      placeholder="Briefly describe any blockers and how you resolved them..."
+                      placeholder="Briefly describe any blockers..."
+                      className="w-full text-xs p-3 rounded-xl border border-border bg-background outline-none h-16"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold font-mono text-slate-700 dark:text-slate-300">
+                      Solutions Implemented
+                    </label>
+                    <textarea
+                      value={solutionsImplemented}
+                      onChange={(e) => setSolutionsImplemented(e.target.value)}
+                      placeholder="Describe solutions implemented..."
+                      className="w-full text-xs p-3 rounded-xl border border-border bg-background outline-none h-16"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold font-mono text-slate-700 dark:text-slate-300">
+                      Learning Outcome
+                    </label>
+                    <textarea
+                      value={learningOutcome}
+                      onChange={(e) => setLearningOutcome(e.target.value)}
+                      placeholder="Key takeaways or skills learned today..."
                       className="w-full text-xs p-3 rounded-xl border border-border bg-background outline-none h-16"
                     />
                   </div>
@@ -867,6 +909,78 @@ export default function StudentProgressClient({
                   </button>
                 </div>
               </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* REPORT DETAILS MODAL */}
+      <AnimatePresence>
+        {selectedReport && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="w-full max-w-lg bg-card border border-border rounded-2xl shadow-2xl p-6 space-y-4 max-h-[80vh] overflow-y-auto"
+            >
+              <div className="flex items-center justify-between border-b border-border pb-3">
+                <div className="flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                  <h3 className="text-base font-bold font-mono text-slate-900 dark:text-slate-100">
+                    Report Details ({selectedReport.report_date})
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setSelectedReport(null)}
+                  className="rounded-lg p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="space-y-3 text-xs">
+                <div>
+                  <span className="font-semibold text-slate-500 uppercase font-mono block">Tasks Completed</span>
+                  <p className="text-slate-700 dark:text-slate-300 mt-1 whitespace-pre-line bg-muted/30 p-2.5 rounded-xl border border-border">
+                    {selectedReport.tasks_completed}
+                  </p>
+                </div>
+
+                {selectedReport.challenges_faced && (
+                  <div>
+                    <span className="font-semibold text-slate-500 uppercase font-mono block">Challenges Faced</span>
+                    <p className="text-slate-700 dark:text-slate-300 mt-1 whitespace-pre-line bg-muted/30 p-2.5 rounded-xl border border-border">
+                      {selectedReport.challenges_faced}
+                    </p>
+                  </div>
+                )}
+
+                {selectedReport.solutions_implemented && (
+                  <div>
+                    <span className="font-semibold text-slate-500 uppercase font-mono block">Solutions Implemented</span>
+                    <p className="text-slate-700 dark:text-slate-300 mt-1 whitespace-pre-line bg-muted/30 p-2.5 rounded-xl border border-border">
+                      {selectedReport.solutions_implemented}
+                    </p>
+                  </div>
+                )}
+
+                {selectedReport.learning_outcome && (
+                  <div>
+                    <span className="font-semibold text-slate-500 uppercase font-mono block">Learning Outcome</span>
+                    <p className="text-slate-700 dark:text-slate-300 mt-1 whitespace-pre-line bg-muted/30 p-2.5 rounded-xl border border-border">
+                      {selectedReport.learning_outcome}
+                    </p>
+                  </div>
+                )}
+
+                {selectedReport.ai_feedback?.summary && (
+                  <div className="p-3 rounded-xl bg-indigo-50/60 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/60 space-y-1">
+                    <span className="font-semibold font-mono text-indigo-900 dark:text-indigo-200 block">AI Code Review & Feedback</span>
+                    <p className="text-slate-700 dark:text-slate-300">{selectedReport.ai_feedback.summary}</p>
+                  </div>
+                )}
+              </div>
             </motion.div>
           </div>
         )}

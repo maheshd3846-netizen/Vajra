@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { AppRole } from "@/lib/auth/rbac";
 import {
   calculateCompanyTrustScore,
   type CompanyVerificationStatus,
@@ -374,7 +375,7 @@ export async function assignCompanyToMentorAction(
     const { AuditLoggerService } = await import("@/lib/services/audit-logger");
     await AuditLoggerService.log({
       userId: user.id,
-      role: role as any,
+      role: role as AppRole,
       action: "ASSIGN_COMPANY_TO_MENTOR",
       resource: "companies",
       recordId: companyId,
