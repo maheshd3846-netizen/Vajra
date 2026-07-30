@@ -1,18 +1,18 @@
 import React from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import AdminInternshipsClient, {
-  type AdminInternshipRecord,
-} from "@/components/admin/AdminInternshipsClient";
+import MentorInternshipsClient, {
+  type PendingInternshipItem,
+} from "@/components/mentor/MentorInternshipsClient";
 
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Internship Governance | Admin Dashboard | Vajra Platform",
-  description: "Platform-wide internship moderation, mentor overrides, and compliance tracking.",
+  title: "Internship Approval Queue | Mentor Dashboard | Vajra Platform",
+  description: "Review and approve company internship postings for student discovery.",
 };
 
-export default async function AdminInternshipsPage() {
+export default async function MentorInternshipsPage() {
   const supabase = await createClient();
   const {
     data: { user },
@@ -22,7 +22,7 @@ export default async function AdminInternshipsPage() {
     redirect("/login");
   }
 
-  // Fetch all internships across platform
+  // Fetch all internships for review
   const { data: rawInternships, error } = await supabase
     .from("internships")
     .select(`
@@ -54,10 +54,10 @@ export default async function AdminInternshipsPage() {
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("AdminInternshipsPage DB error:", error);
+    console.error("MentorInternshipsPage DB error:", error);
   }
 
-  const formattedInternships: AdminInternshipRecord[] = (rawInternships || []).map((item) => {
+  const formattedInternships: PendingInternshipItem[] = (rawInternships || []).map((item) => {
     const compRaw = item.companies as unknown as {
       name: string;
       logo_url: string | null;
@@ -93,5 +93,5 @@ export default async function AdminInternshipsPage() {
     };
   });
 
-  return <AdminInternshipsClient initialInternships={formattedInternships} />;
+  return <MentorInternshipsClient initialInternships={formattedInternships} />;
 }

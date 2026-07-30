@@ -1,6 +1,6 @@
-"use server";
-
 import { createClient } from "@/lib/supabase/server";
+import { revalidatePath } from "next/cache";
+import { createNotificationAction } from "./notifications";
 import {
   calculateInternshipMatch,
   runAiApplicationReview,
@@ -248,7 +248,7 @@ export async function fetchFilteredInternshipsAction(
           description
         )
       `)
-      .eq("status", "open")
+      .in("status", ["approved", "open"])
       .order("created_at", { ascending: false });
 
     if (internshipsError) {
@@ -618,10 +618,211 @@ export async function applyToInternshipAction(
       throw applyError;
     }
 
+    // Send Notification to Company
+    if (job?.company_id) {
+      await createNotificationAction({
+        userId: job.company_id,
+        title: "New Application Received",
+        message: `A candidate has submitted an application for your internship.`,
+        type: "application",
+        link: "/company/applicants",
+      });
+    }
+
     return { success: true };
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : "Failed to submit application.";
     console.error("applyToInternshipAction failed:", err);
+    return { success: false, error: errorMessage };
+  }
+}
+
+/**
+ * Company Creates New Internship Listing (Defaults to pending_approval)
+ */
+export async function createCompanyInternshipAction(payload: {
+  title: string;
+  description: string;
+  location?: string;
+  type: "remote" | "hybrid" | "on-site";
+  requirements?: string[];
+  skills_needed?: string[];
+  salary_range?: string;
+  stipend?: string;
+  duration?: string;
+  eligibility?: string;
+  deadline?: string;
+  openings_count?: number;
+}): Promise<{ success: boolean; internshipId?: string; error?: string }> {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return { success: false, error: "Unauthorized access." };
+
+    const { data: internship, error: createErr } = await supabase
+      .from("internships")
+      .insert({
+        company_id: user.id,
+        title: payload.title,
+        description: payload.description,
+        location: payload.location || "Remote",
+        type: payload.type || "remote",
+        requirements: payload.requirements || [],
+        skills_needed: payload.skills_needed || [],
+        salary_range: payload.stipend || payload.salary_range || "Negotiable",
+        stipend: payload.stipend || payload.salary_range || "Negotiable",
+        duration: payload.duration || "3 Months",
+        eligibility: payload.eligibility || "Open to all students",
+        deadline: payload.deadline || null,
+        openings_count: payload.openings_count || 1,
+        status: "pending_approval",
+      })
+      .select("id")
+      .single();
+
+    if (createErr) throw createErr;
+
+    // Log status history
+    await supabase.from("internship_status_history").insert({
+      internship_id: internship.id,
+      old_status: null,
+      new_status: "pending_approval",
+      changed_by: user.id,
+      reason: "Initial submission by company for mentor/admin review",
+    });
+
+    revalidatePath("/company/internships");
+    revalidatePath("/mentor/internships");
+    revalidatePath("/admin/internships");
+
+    return { success: true, internshipId: internship.id };
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : "Failed to create internship.";
+    console.error("createCompanyInternshipAction error:", err);
+    return { success: false, error: errorMessage };
+  }
+}
+
+/**
+ * Mentor / Admin Update Internship Approval Status
+ */
+export async function updateInternshipApprovalStatusAction(
+  internshipId: string,
+  newStatus: "approved" | "changes_requested" | "rejected" | "suspended" | "archived" | "open",
+  feedbackNotes?: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return { success: false, error: "Unauthorized access." };
+
+    const { data: job, error: jobErr } = await supabase
+      .from("internships")
+      .select("id, title, company_id, status")
+      .eq("id", internshipId)
+      .maybeSingle();
+
+    if (jobErr || !job) return { success: false, error: "Internship record not found." };
+
+    const oldStatus = job.status;
+
+    // Update internship
+    const { error: updateErr } = await supabase
+      .from("internships")
+      .update({
+        status: newStatus,
+        admin_feedback: feedbackNotes || null,
+        reviewed_by: user.id,
+        reviewed_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", internshipId);
+
+    if (updateErr) throw updateErr;
+
+    // Insert into status history audit log
+    await supabase.from("internship_status_history").insert({
+      internship_id: internshipId,
+      old_status: oldStatus,
+      new_status: newStatus,
+      changed_by: user.id,
+      reason: feedbackNotes || `Status updated to ${newStatus}`,
+    });
+
+    // Notify company owner
+    const statusTitles: Record<string, string> = {
+      approved: "Internship Approved & Published!",
+      rejected: "Internship Listing Rejected",
+      changes_requested: "Modifications Requested for Internship",
+      suspended: "Internship Listing Suspended",
+      archived: "Internship Listing Archived",
+    };
+
+    const statusMessages: Record<string, string> = {
+      approved: `Your internship listing "${job.title}" has been approved and is now live for students.`,
+      rejected: `Your internship listing "${job.title}" was not approved. Notes: ${feedbackNotes || "Does not meet guidelines."}`,
+      changes_requested: `Please review requested changes for "${job.title}": ${feedbackNotes || "Action required."}`,
+      suspended: `Your internship listing "${job.title}" has been temporarily suspended.`,
+      archived: `Your internship listing "${job.title}" has been archived.`,
+    };
+
+    await createNotificationAction({
+      userId: job.company_id,
+      title: statusTitles[newStatus] || "Internship Status Updated",
+      message: statusMessages[newStatus] || `Status updated to ${newStatus}.`,
+      type: "internship_review",
+      link: "/company/internships",
+    });
+
+    revalidatePath("/mentor/internships");
+    revalidatePath("/admin/internships");
+    revalidatePath("/company/internships");
+    revalidatePath("/student/internships");
+
+    return { success: true };
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : "Failed to update internship approval status.";
+    console.error("updateInternshipApprovalStatusAction error:", err);
+    return { success: false, error: errorMessage };
+  }
+}
+
+/**
+ * Student Withdraw Application
+ */
+export async function withdrawApplicationAction(applicationId: string) {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return { success: false, error: "Unauthorized access." };
+
+    const { error: withdrawErr } = await supabase
+      .from("applications")
+      .update({
+        status: "withdrawn",
+        withdrawn_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", applicationId)
+      .eq("student_id", user.id);
+
+    if (withdrawErr) throw withdrawErr;
+
+    revalidatePath("/student/applications");
+    revalidatePath("/company/applicants");
+
+    return { success: true };
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : "Failed to withdraw application.";
     return { success: false, error: errorMessage };
   }
 }

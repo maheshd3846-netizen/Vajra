@@ -339,7 +339,7 @@ export async function createInternshipAction(
       eligibility: payload.eligibility || "Open to all graduates",
       deadline: payload.deadline ? new Date(payload.deadline).toISOString() : null,
       openings_count: payload.openings_count || 1,
-      status: payload.status || "open",
+      status: "pending_approval",
     });
 
     if (insertError) throw insertError;

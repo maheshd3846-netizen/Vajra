@@ -208,13 +208,16 @@ export interface Database {
           requirements: string[]
           skills_needed: string[]
           salary_range: string | null
-          status: "draft" | "published" | "open" | "closed"
+          status: "pending_approval" | "approved" | "changes_requested" | "rejected" | "suspended" | "archived" | "open" | "closed" | "draft" | "published"
           internship_type: string | null
           duration: string | null
           stipend: string | null
           eligibility: string | null
           deadline: string | null
           openings_count: number
+          admin_feedback?: string | null
+          reviewed_by?: string | null
+          reviewed_at?: string | null
           created_at: string
           updated_at: string
         }
@@ -228,13 +231,16 @@ export interface Database {
           requirements?: string[]
           skills_needed?: string[]
           salary_range?: string | null
-          status?: "draft" | "published" | "open" | "closed"
+          status?: "pending_approval" | "approved" | "changes_requested" | "rejected" | "suspended" | "archived" | "open" | "closed" | "draft" | "published"
           internship_type?: string | null
           duration?: string | null
           stipend?: string | null
           eligibility?: string | null
           deadline?: string | null
           openings_count?: number
+          admin_feedback?: string | null
+          reviewed_by?: string | null
+          reviewed_at?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -248,13 +254,16 @@ export interface Database {
           requirements?: string[]
           skills_needed?: string[]
           salary_range?: string | null
-          status?: "draft" | "published" | "open" | "closed"
+          status?: "pending_approval" | "approved" | "changes_requested" | "rejected" | "suspended" | "archived" | "open" | "closed" | "draft" | "published"
           internship_type?: string | null
           duration?: string | null
           stipend?: string | null
           eligibility?: string | null
           deadline?: string | null
           openings_count?: number
+          admin_feedback?: string | null
+          reviewed_by?: string | null
+          reviewed_at?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -266,7 +275,10 @@ export interface Database {
           student_id: string
           resume_url: string
           cover_letter: string | null
-          status: "applied" | "reviewing" | "shortlisted" | "interviewing" | "accepted" | "rejected"
+          status: "applied" | "reviewing" | "shortlisted" | "interview_scheduled" | "interviewing" | "selected" | "accepted" | "rejected" | "joined" | "completed" | "withdrawn"
+          interview_date?: string | null
+          interview_notes?: string | null
+          withdrawn_at?: string | null
           applied_at: string
           updated_at: string
         }
@@ -276,7 +288,10 @@ export interface Database {
           student_id: string
           resume_url: string
           cover_letter?: string | null
-          status?: "applied" | "reviewing" | "shortlisted" | "interviewing" | "accepted" | "rejected"
+          status?: "applied" | "reviewing" | "shortlisted" | "interview_scheduled" | "interviewing" | "selected" | "accepted" | "rejected" | "joined" | "completed" | "withdrawn"
+          interview_date?: string | null
+          interview_notes?: string | null
+          withdrawn_at?: string | null
           applied_at?: string
           updated_at?: string
         }
@@ -286,7 +301,10 @@ export interface Database {
           student_id?: string
           resume_url?: string
           cover_letter?: string | null
-          status?: "applied" | "reviewing" | "shortlisted" | "interviewing" | "accepted" | "rejected"
+          status?: "applied" | "reviewing" | "shortlisted" | "interview_scheduled" | "interviewing" | "selected" | "accepted" | "rejected" | "joined" | "completed" | "withdrawn"
+          interview_date?: string | null
+          interview_notes?: string | null
+          withdrawn_at?: string | null
           applied_at?: string
           updated_at?: string
         }
