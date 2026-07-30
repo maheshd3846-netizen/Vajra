@@ -28,6 +28,9 @@ import {
   UserCheck,
   Search,
   ChevronRight,
+  TrendingUp,
+  Activity,
+  CalendarCheck,
   LucideIcon,
 } from "lucide-react";
 
@@ -65,6 +68,7 @@ export default function DashboardClientLayout({
       { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
       { name: "Career DNA", href: "/career", icon: FileText, badge: "AI" },
       { name: "Internships", href: "/internships", icon: Target },
+      { name: "Progress Tracker", href: "/internships/progress", icon: TrendingUp, badge: "NEW" },
       { name: "Mock Interview", href: "/interview", icon: BrainCircuit },
       { name: "Mentorship", href: "/mentorship", icon: Users },
       { name: "Portfolio", href: "/portfolio", icon: Globe },
@@ -75,11 +79,13 @@ export default function DashboardClientLayout({
       { name: "Internships", href: "/company/internships", icon: Briefcase },
       { name: "Applicants", href: "/company/applicants", icon: Users },
       { name: "Intern Tracker", href: "/company/interns", icon: UserCheck },
+      { name: "Progress Tracker", href: "/company/progress", icon: Activity, badge: "LIVE" },
       { name: "Settings", href: "/company/settings", icon: Settings },
     ],
     mentor: [
       { name: "Dashboard", href: "/mentor/dashboard", icon: LayoutDashboard },
       { name: "Students", href: "/mentor/students", icon: GraduationCap },
+      { name: "Progress Reviews", href: "/mentor/progress", icon: CalendarCheck, badge: "REVIEW" },
       { name: "Feedback", href: "/mentor/feedback", icon: MessageSquare },
       { name: "Settings", href: "/mentor/settings", icon: Settings },
     ],
