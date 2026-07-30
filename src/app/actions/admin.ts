@@ -355,7 +355,7 @@ export async function assignCompanyToMentorAction(
     // Get current company details
     const { data: oldCompany } = await supabase
       .from("companies")
-      .select("id, name, mentor_id")
+      .select("id, name")
       .eq("id", companyId)
       .maybeSingle();
 
@@ -363,11 +363,11 @@ export async function assignCompanyToMentorAction(
       return { success: false, error: "Target company not found." };
     }
 
-    // Update company mentor assignment
+    // Update company mentor assignment in company_interns table
     const { error: updateErr } = await supabase
-      .from("companies")
+      .from("company_interns")
       .update({ mentor_id: mentorId })
-      .eq("id", companyId);
+      .eq("company_id", companyId);
 
     if (updateErr) throw updateErr;
 
@@ -379,8 +379,7 @@ export async function assignCompanyToMentorAction(
       action: "ASSIGN_COMPANY_TO_MENTOR",
       resource: "companies",
       recordId: companyId,
-      oldData: { mentor_id: oldCompany.mentor_id },
-      newData: { mentor_id: mentorId },
+      newData: { mentorId },
     });
 
     return { success: true };

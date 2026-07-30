@@ -70,35 +70,20 @@ export async function requirePermission(permission: Permission): Promise<Authent
 }
 
 /**
- * Guard ensuring Mentor has access ONLY to companies assigned to them
+ * Guard ensuring Mentor or Admin has access to company management
  */
 export async function requireMentorCompanyAccess(companyId: string): Promise<AuthenticatedUserContext> {
   const ctx = await getAuthenticatedUserContext();
 
-  if (ctx.role === "super_admin" || ctx.role === "admin") {
-    return ctx; // Global operational managers
+  if (ctx.role === "super_admin" || ctx.role === "admin" || ctx.role === "mentor") {
+    return ctx; // Mentors and Admins can view & manage companies
   }
 
   if (ctx.role === "company" && ctx.userId === companyId) {
     return ctx; // Company accessing self
   }
 
-  if (ctx.role !== "mentor") {
-    throw new Error("Forbidden: Only mentors or administrators can access company management.");
-  }
-
-  const supabase = await createClient();
-  const { data: company } = await supabase
-    .from("companies")
-    .select("mentor_id")
-    .eq("id", companyId)
-    .maybeSingle();
-
-  if (!company || company.mentor_id !== ctx.userId) {
-    throw new Error("Forbidden: Mentor is not assigned to manage this company.");
-  }
-
-  return ctx;
+  throw new Error("Forbidden: Only mentors or administrators can access company management.");
 }
 
 /**
@@ -124,24 +109,12 @@ export async function requireMentorStudentAccess(studentId: string): Promise<Aut
   // Check if student belongs to mentor's assigned company via company_interns or mentor_assignments
   const { data: assignedIntern } = await supabase
     .from("company_interns")
-    .select(`
-      company_id,
-      companies!inner (
-        mentor_id
-      )
-    `)
+    .select("id")
     .eq("student_id", studentId)
+    .eq("mentor_id", ctx.userId)
     .maybeSingle();
 
-  type AssignedCompanyIntern = {
-    company_id: string;
-    companies: { mentor_id: string | null } | null;
-  };
-
-  const isAssignedViaCompany =
-    assignedIntern && (assignedIntern as unknown as AssignedCompanyIntern).companies?.mentor_id === ctx.userId;
-
-  if (isAssignedViaCompany) return ctx;
+  if (assignedIntern) return ctx;
 
   const { data: directAssignment } = await supabase
     .from("mentor_assignments")

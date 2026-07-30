@@ -287,7 +287,7 @@ export async function fetchMentorDashboardAction() {
 }
 
 /**
- * Fetch Companies Scoped to Current Mentor (or pending unassigned registration approvals)
+ * Fetch All Registered Companies for Mentor Management
  */
 export async function fetchMentorScopedCompaniesAction() {
   try {
@@ -296,12 +296,13 @@ export async function fetchMentorScopedCompaniesAction() {
 
     if (!user) return { success: false, error: "Unauthorized access." };
 
-    // Fetch assigned companies or unassigned pending companies
     const { data: companies, error } = await supabase
       .from("companies")
       .select(`
         id,
         name,
+        official_email,
+        contact_email,
         website,
         industry,
         logo_url,
@@ -309,10 +310,8 @@ export async function fetchMentorScopedCompaniesAction() {
         is_verified,
         verification_status,
         status,
-        mentor_id,
         created_at
       `)
-      .or(`mentor_id.eq.${user.id},mentor_id.is.null`)
       .order("created_at", { ascending: false });
 
     if (error) throw error;
@@ -337,26 +336,22 @@ export async function approveCompanyRegistrationAction(companyId: string) {
 
     if (!user) return { success: false, error: "Unauthorized access." };
 
-    // Verify mentor permission & company assignment check
+    // Verify company existence
     const { data: company } = await supabase
       .from("companies")
-      .select("id, mentor_id, name")
+      .select("id, name")
       .eq("id", companyId)
       .maybeSingle();
 
     if (!company) return { success: false, error: "Company not found." };
-    if (company.mentor_id && company.mentor_id !== user.id) {
-      return { success: false, error: "Forbidden: Company is assigned to another mentor." };
-    }
 
-    // Approve company registration and assign to current mentor if unassigned
+    // Approve company registration
     const { error: updateErr } = await supabase
       .from("companies")
       .update({
         verification_status: "verified",
         is_verified: true,
         status: "active",
-        mentor_id: company.mentor_id || user.id,
         trust_score: 90,
       })
       .eq("id", companyId);
@@ -371,7 +366,7 @@ export async function approveCompanyRegistrationAction(companyId: string) {
       action: "APPROVE_COMPANY_REGISTRATION",
       resource: "companies",
       recordId: companyId,
-      newData: { status: "active", verification_status: "verified", mentor_id: user.id },
+      newData: { status: "active", verification_status: "verified" },
     });
 
     return { success: true };
@@ -523,7 +518,6 @@ export interface CompanyItem {
   linkedin_url: string | null;
   status: string;
   verification_status: string;
-  mentor_id: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -638,7 +632,6 @@ export async function fetchMentorCompaniesAction(): Promise<{
         linkedin_url: null,
         status: "active",
         verification_status: "pending",
-        mentor_id: null,
         created_at: u.created_at || new Date().toISOString(),
         updated_at: u.created_at || new Date().toISOString(),
       });
@@ -665,7 +658,6 @@ export async function fetchMentorCompaniesAction(): Promise<{
       status?: string | null;
       verification_status?: string | null;
       is_verified?: boolean | null;
-      mentor_id?: string | null;
       created_at?: string | null;
       updated_at?: string | null;
     }) => {
@@ -698,7 +690,6 @@ export async function fetchMentorCompaniesAction(): Promise<{
         linkedin_url: c.linkedin_url || existing?.linkedin_url || null,
         status,
         verification_status: verificationStatus,
-        mentor_id: c.mentor_id || null,
         created_at: createdAt,
         updated_at: c.updated_at || createdAt,
       });
@@ -871,31 +862,46 @@ export async function updateMentorCompanyVerificationAction(
     if (!user) return { success: false, error: "Unauthorized access." };
 
     const isVerified = verification_status === "verified";
-    const status = verification_status === "suspended" ? "suspended" : verification_status === "rejected" ? "rejected" : "active";
+    const status =
+      verification_status === "suspended"
+        ? "suspended"
+        : verification_status === "rejected"
+        ? "rejected"
+        : "active";
+
+    const updates: Record<string, unknown> = {
+      verification_status,
+      is_verified: isVerified,
+      status,
+      updated_at: new Date().toISOString(),
+    };
 
     const { error: updateErr } = await supabase
       .from("companies")
-      .update({
-        verification_status,
-        is_verified: isVerified,
-        status,
-        updated_at: new Date().toISOString(),
-      })
+      .update(updates)
       .eq("id", companyId);
 
-    if (updateErr) throw updateErr;
+    if (updateErr) {
+      console.error("updateMentorCompanyVerificationAction DB update error:", updateErr);
+      return { success: false, error: updateErr.message || "Failed to update verification status." };
+    }
 
-    const { AuditLoggerService } = await import("@/lib/services/audit-logger");
-    await AuditLoggerService.log({
-      userId: user.id,
-      role: "mentor",
-      action: `COMPANY_VERIFICATION_${verification_status.toUpperCase()}`,
-      resource: "companies",
-      recordId: companyId,
-      newData: { verification_status, is_verified: isVerified, status },
-    });
+    try {
+      const { AuditLoggerService } = await import("@/lib/services/audit-logger");
+      await AuditLoggerService.log({
+        userId: user.id,
+        role: "mentor",
+        action: `COMPANY_VERIFICATION_${verification_status.toUpperCase()}`,
+        resource: "companies",
+        recordId: companyId,
+        newData: { verification_status, is_verified: isVerified, status },
+      });
+    } catch (auditErr) {
+      console.warn("[AuditLogger] Non-critical warning:", auditErr);
+    }
 
     revalidatePath("/mentor/dashboard/companies");
+    revalidatePath("/mentor/companies");
     return { success: true };
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : "Failed to update verification status.";

@@ -14,8 +14,7 @@ ADD COLUMN IF NOT EXISTS address TEXT,
 ADD COLUMN IF NOT EXISTS city TEXT,
 ADD COLUMN IF NOT EXISTS state TEXT,
 ADD COLUMN IF NOT EXISTS country TEXT,
-ADD COLUMN IF NOT EXISTS linkedin_url TEXT,
-ADD COLUMN IF NOT EXISTS mentor_id UUID REFERENCES public.mentors(id) ON DELETE SET NULL;
+ADD COLUMN IF NOT EXISTS linkedin_url TEXT;
 
 -- 4. Expand verification_status & status check constraints
 ALTER TABLE public.companies DROP CONSTRAINT IF EXISTS companies_verification_status_check;
@@ -27,7 +26,6 @@ ALTER TABLE public.companies ADD CONSTRAINT companies_status_check
   CHECK (status IN ('active', 'inactive', 'pending', 'suspended', 'rejected'));
 
 -- 5. Indexes
-CREATE INDEX IF NOT EXISTS idx_companies_mentor_id ON public.companies(mentor_id);
 CREATE INDEX IF NOT EXISTS idx_companies_verification_status ON public.companies(verification_status);
 CREATE INDEX IF NOT EXISTS idx_companies_status ON public.companies(status);
 
@@ -36,8 +34,8 @@ DROP POLICY IF EXISTS mentor_scoped_companies ON public.companies;
 CREATE POLICY mentor_scoped_companies ON public.companies
   FOR ALL TO authenticated
   USING (
-    public.get_auth_user_role() = 'mentor' AND (mentor_id = auth.uid() OR mentor_id IS NULL)
+    public.get_auth_user_role() = 'mentor'
   )
   WITH CHECK (
-    public.get_auth_user_role() = 'mentor' AND (mentor_id = auth.uid() OR mentor_id IS NULL)
+    public.get_auth_user_role() = 'mentor'
   );

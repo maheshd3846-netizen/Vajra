@@ -71,6 +71,26 @@ ALTER TABLE public.daily_progress_reports ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.progress_mentor_reviews ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.progress_notifications ENABLE ROW LEVEL SECURITY;
 
+-- Ensure dependent table company_interns exists if 00006 was not run previously
+CREATE TABLE IF NOT EXISTS public.company_interns (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  company_id UUID NOT NULL REFERENCES public.companies(id) ON DELETE CASCADE,
+  student_id UUID NOT NULL REFERENCES public.student_profiles(id) ON DELETE CASCADE,
+  internship_id UUID REFERENCES public.internships(id) ON DELETE SET NULL,
+  mentor_id UUID REFERENCES public.mentors(id) ON DELETE SET NULL,
+  joining_date DATE NOT NULL DEFAULT CURRENT_DATE,
+  progress_pct INT CHECK (progress_pct >= 0 AND progress_pct <= 100) DEFAULT 0,
+  attendance_pct INT CHECK (attendance_pct >= 0 AND attendance_pct <= 100) DEFAULT 100,
+  status TEXT CHECK (status IN ('active', 'completed', 'terminated')) DEFAULT 'active',
+  notes TEXT,
+  rating NUMERIC(3,2) CHECK (rating >= 0.00 AND rating <= 5.00),
+  weekly_reports JSONB NOT NULL DEFAULT '[]',
+  assigned_tasks JSONB NOT NULL DEFAULT '[]',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE(company_id, student_id, internship_id)
+);
+
 -- RLS Policies for daily_progress_reports
 DROP POLICY IF EXISTS progress_reports_student_manage ON public.daily_progress_reports;
 CREATE POLICY progress_reports_student_manage ON public.daily_progress_reports

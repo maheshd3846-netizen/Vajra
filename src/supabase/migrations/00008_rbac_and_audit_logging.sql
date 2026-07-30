@@ -1,8 +1,6 @@
 -- VAJRA Migration 00008: Enterprise RBAC, Mentor Scoping & Audit Logging System
 
--- 1. Extend Companies Table with Assigned Mentor FK
-ALTER TABLE public.companies 
-ADD COLUMN IF NOT EXISTS mentor_id UUID REFERENCES public.mentors(id) ON DELETE SET NULL;
+-- 1. (Mentor mapping is handled via public.company_interns table)
 
 -- 2. Extend Users & Companies Tables with Account Status
 ALTER TABLE public.users 
@@ -11,8 +9,7 @@ ADD COLUMN IF NOT EXISTS account_status TEXT CHECK (account_status IN ('active',
 ALTER TABLE public.companies 
 ADD COLUMN IF NOT EXISTS status TEXT CHECK (status IN ('pending', 'active', 'suspended', 'rejected')) DEFAULT 'active';
 
--- Index for mentor_id and account status lookups
-CREATE INDEX IF NOT EXISTS idx_companies_mentor_id ON public.companies(mentor_id);
+-- Index for account status lookups
 CREATE INDEX IF NOT EXISTS idx_users_account_status ON public.users(account_status);
 CREATE INDEX IF NOT EXISTS idx_companies_status ON public.companies(status);
 
@@ -53,8 +50,8 @@ CREATE OR REPLACE FUNCTION public.is_mentor_for_company(p_company_id UUID)
 RETURNS BOOLEAN SECURITY DEFINER SET search_path = public AS $$
 BEGIN
   RETURN EXISTS (
-    SELECT 1 FROM public.companies 
-    WHERE id = p_company_id AND mentor_id = auth.uid()
+    SELECT 1 FROM public.company_interns ci
+    WHERE ci.company_id = p_company_id AND ci.mentor_id = auth.uid()
   );
 END;
 $$ LANGUAGE plpgsql STABLE;
@@ -65,8 +62,7 @@ RETURNS BOOLEAN SECURITY DEFINER SET search_path = public AS $$
 BEGIN
   RETURN EXISTS (
     SELECT 1 FROM public.company_interns ci
-    JOIN public.companies c ON c.id = ci.company_id
-    WHERE ci.student_id = p_student_id AND (c.mentor_id = auth.uid() OR ci.mentor_id = auth.uid())
+    WHERE ci.student_id = p_student_id AND ci.mentor_id = auth.uid()
   ) OR EXISTS (
     SELECT 1 FROM public.mentor_assignments ma
     WHERE ma.student_id = p_student_id AND ma.mentor_id = auth.uid() AND ma.status = 'active'
@@ -173,15 +169,15 @@ CREATE POLICY admin_all_companies ON public.companies
   USING (public.get_auth_user_role() = 'admin')
   WITH CHECK (public.get_auth_user_role() = 'admin');
 
--- Mentor can select and update ONLY companies assigned to them
+-- Mentor can select and update ALL companies directly
 DROP POLICY IF EXISTS mentor_scoped_companies ON public.companies;
 CREATE POLICY mentor_scoped_companies ON public.companies
   FOR ALL TO authenticated
   USING (
-    public.get_auth_user_role() = 'mentor' AND (mentor_id = auth.uid() OR mentor_id IS NULL)
+    public.get_auth_user_role() = 'mentor'
   )
   WITH CHECK (
-    public.get_auth_user_role() = 'mentor' AND mentor_id = auth.uid()
+    public.get_auth_user_role() = 'mentor'
   );
 
 -- Company self management

@@ -205,7 +205,6 @@ export default function MentorCompaniesClient({
             linkedin_url: formData.linkedin_url || null,
             status: formData.status || "active",
             verification_status: "pending",
-            mentor_id: "self",
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
           };
@@ -523,19 +522,19 @@ export default function MentorCompaniesClient({
 
       {/* Companies Responsive Data Table */}
       <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs border-collapse">
+        <div className="overflow-x-auto scrollbar-thin">
+          <table className="w-full min-w-[950px] text-left text-xs border-collapse">
             <thead>
-              <tr className="bg-muted/50 border-b border-border text-slate-600 dark:text-slate-400 font-mono uppercase text-[11px]">
-                <th className="p-4">Company</th>
-                <th className="p-4">Industry</th>
-                <th className="p-4">Website</th>
-                <th className="p-4">Email</th>
-                <th className="p-4">Contact Person</th>
-                <th className="p-4">Status</th>
-                <th className="p-4">Verification</th>
-                <th className="p-4">Date Added</th>
-                <th className="p-4 text-right">Actions</th>
+              <tr className="bg-muted/50 border-b border-border text-slate-600 dark:text-slate-400 font-mono uppercase text-[11px] whitespace-nowrap">
+                <th className="p-4 min-w-[200px]">Company</th>
+                <th className="p-4 min-w-[120px]">Industry</th>
+                <th className="p-4 min-w-[100px]">Website</th>
+                <th className="p-4 min-w-[180px]">Email</th>
+                <th className="p-4 min-w-[140px]">Contact Person</th>
+                <th className="p-4 min-w-[100px]">Status</th>
+                <th className="p-4 min-w-[130px]">Verification</th>
+                <th className="p-4 min-w-[100px]">Date Added</th>
+                <th className="p-4 min-w-[160px] text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
