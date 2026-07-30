@@ -284,3 +284,221 @@ export async function fetchMentorDashboardAction() {
     return { success: false, error: errorMessage };
   }
 }
+
+/**
+ * Fetch Companies Scoped to Current Mentor (or pending unassigned registration approvals)
+ */
+export async function fetchMentorScopedCompaniesAction() {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) return { success: false, error: "Unauthorized access." };
+
+    // Fetch assigned companies or unassigned pending companies
+    const { data: companies, error } = await supabase
+      .from("companies")
+      .select(`
+        id,
+        name,
+        website,
+        industry,
+        logo_url,
+        description,
+        is_verified,
+        verification_status,
+        status,
+        mentor_id,
+        created_at
+      `)
+      .or(`mentor_id.eq.${user.id},mentor_id.is.null`)
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    return {
+      success: true,
+      companies: companies || [],
+    };
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : "Failed to fetch assigned companies.";
+    return { success: false, error: errorMessage };
+  }
+}
+
+/**
+ * Mentor Approve Company Registration
+ */
+export async function approveCompanyRegistrationAction(companyId: string) {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) return { success: false, error: "Unauthorized access." };
+
+    // Verify mentor permission & company assignment check
+    const { data: company } = await supabase
+      .from("companies")
+      .select("id, mentor_id, name")
+      .eq("id", companyId)
+      .maybeSingle();
+
+    if (!company) return { success: false, error: "Company not found." };
+    if (company.mentor_id && company.mentor_id !== user.id) {
+      return { success: false, error: "Forbidden: Company is assigned to another mentor." };
+    }
+
+    // Approve company registration and assign to current mentor if unassigned
+    const { error: updateErr } = await supabase
+      .from("companies")
+      .update({
+        verification_status: "verified",
+        is_verified: true,
+        status: "active",
+        mentor_id: company.mentor_id || user.id,
+        trust_score: 90,
+      })
+      .eq("id", companyId);
+
+    if (updateErr) throw updateErr;
+
+    // Log Audit Event
+    const { AuditLoggerService } = await import("@/lib/services/audit-logger");
+    await AuditLoggerService.log({
+      userId: user.id,
+      role: "mentor",
+      action: "APPROVE_COMPANY_REGISTRATION",
+      resource: "companies",
+      recordId: companyId,
+      newData: { status: "active", verification_status: "verified", mentor_id: user.id },
+    });
+
+    return { success: true };
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : "Failed to approve company registration.";
+    return { success: false, error: errorMessage };
+  }
+}
+
+/**
+ * Mentor Reject Company Registration
+ */
+export async function rejectCompanyRegistrationAction(companyId: string, reason?: string) {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) return { success: false, error: "Unauthorized access." };
+
+    const { error: updateErr } = await supabase
+      .from("companies")
+      .update({
+        verification_status: "pending",
+        is_verified: false,
+        status: "rejected",
+      })
+      .eq("id", companyId);
+
+    if (updateErr) throw updateErr;
+
+    const { AuditLoggerService } = await import("@/lib/services/audit-logger");
+    await AuditLoggerService.log({
+      userId: user.id,
+      role: "mentor",
+      action: "REJECT_COMPANY_REGISTRATION",
+      resource: "companies",
+      recordId: companyId,
+      newData: { status: "rejected", reason: reason || "Rejected by Mentor" },
+    });
+
+    return { success: true };
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : "Failed to reject company registration.";
+    return { success: false, error: errorMessage };
+  }
+}
+
+/**
+ * Mentor Soft Delete / Deactivate Student
+ */
+export async function softDeleteStudentByMentorAction(studentId: string) {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) return { success: false, error: "Unauthorized access." };
+
+    const { requireMentorStudentAccess } = await import("@/lib/auth/guards");
+    await requireMentorStudentAccess(studentId);
+
+    // Update student user account_status to suspended
+    const { error: updateErr } = await supabase
+      .from("users")
+      .update({ account_status: "suspended" })
+      .eq("id", studentId);
+
+    if (updateErr) throw updateErr;
+
+    const { AuditLoggerService } = await import("@/lib/services/audit-logger");
+    await AuditLoggerService.log({
+      userId: user.id,
+      role: "mentor",
+      action: "SOFT_DELETE_STUDENT",
+      resource: "student_profiles",
+      recordId: studentId,
+    });
+
+    return { success: true };
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : "Failed to soft delete student.";
+    return { success: false, error: errorMessage };
+  }
+}
+
+/**
+ * Mentor Issue Internship Completion Certificate
+ */
+export async function issueCertificateByMentorAction(
+  studentId: string,
+  certificateName: string,
+  issuer: string
+) {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) return { success: false, error: "Unauthorized access." };
+
+    const { requireMentorStudentAccess } = await import("@/lib/auth/guards");
+    await requireMentorStudentAccess(studentId);
+
+    const { data: cert, error: certErr } = await supabase
+      .from("certificates")
+      .insert({
+        student_id: studentId,
+        name: certificateName,
+        issuer: issuer || "Vajra Enterprise Mentorship Platform",
+        issue_date: new Date().toISOString().split("T")[0],
+        credential_id: `CERT-${Date.now().toString(36).toUpperCase()}`,
+      })
+      .select("id")
+      .single();
+
+    if (certErr) throw certErr;
+
+    const { AuditLoggerService } = await import("@/lib/services/audit-logger");
+    await AuditLoggerService.log({
+      userId: user.id,
+      role: "mentor",
+      action: "ISSUE_INTERNSHIP_CERTIFICATE",
+      resource: "certificates",
+      recordId: cert.id,
+      newData: { student_id: studentId, certificate_name: certificateName },
+    });
+
+    return { success: true, certificateId: cert.id };
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : "Failed to issue certificate.";
+    return { success: false, error: errorMessage };
+  }
+}

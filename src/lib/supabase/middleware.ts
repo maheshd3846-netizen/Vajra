@@ -95,14 +95,38 @@ export async function updateSession(request: NextRequest) {
     return redirectWithCookies(url);
   }
 
-  // Authenticated user trying to access auth routes -> Redirect to appropriate dashboard
+  // Authenticated user role check & RBAC route protection
   if (user) {
+    const userRole = user.user_metadata?.role || "student";
+
+    // 1. RBAC Route Guards
+    if (path.startsWith("/admin") && userRole !== "admin" && userRole !== "super_admin") {
+      console.warn(`[Middleware RBAC] Unauthorized role '${userRole}' attempted access to '/admin'`);
+      const redirectUrl = request.nextUrl.clone();
+      redirectUrl.pathname = userRole === "mentor" ? "/mentor/dashboard" : userRole === "company" ? "/company/dashboard" : "/dashboard";
+      return redirectWithCookies(redirectUrl);
+    }
+
+    if (path.startsWith("/mentor") && userRole !== "mentor" && userRole !== "admin" && userRole !== "super_admin") {
+      console.warn(`[Middleware RBAC] Unauthorized role '${userRole}' attempted access to '/mentor'`);
+      const redirectUrl = request.nextUrl.clone();
+      redirectUrl.pathname = userRole === "company" ? "/company/dashboard" : "/dashboard";
+      return redirectWithCookies(redirectUrl);
+    }
+
+    if (path.startsWith("/company") && userRole !== "company" && userRole !== "admin" && userRole !== "super_admin") {
+      console.warn(`[Middleware RBAC] Unauthorized role '${userRole}' attempted access to '/company'`);
+      const redirectUrl = request.nextUrl.clone();
+      redirectUrl.pathname = userRole === "mentor" ? "/mentor/dashboard" : "/dashboard";
+      return redirectWithCookies(redirectUrl);
+    }
+
+    // Redirect auth pages to corresponding role dashboard
     if (
       path === "/login" || path.startsWith("/login/") ||
       path === "/register" || path.startsWith("/register/") ||
       path === "/forgot-password" || path.startsWith("/forgot-password/")
     ) {
-      const userRole = user.user_metadata?.role || "student";
       console.log("[Middleware] Authenticated user on auth route. Redirecting to role dashboard", { userRole });
       const targetUrl = request.nextUrl.clone();
       targetUrl.pathname =

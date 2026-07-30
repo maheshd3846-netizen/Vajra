@@ -269,7 +269,7 @@ export async function fetchAdminAuditLogsAction(): Promise<{
       .from("audit_logs")
       .select("id, user_id, action, table_name, record_id, old_data, new_data, created_at")
       .order("created_at", { ascending: false })
-      .limit(30);
+      .limit(50);
 
     if (error) {
       throw error;
@@ -282,6 +282,195 @@ export async function fetchAdminAuditLogsAction(): Promise<{
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : "Failed to fetch audit logs.";
     console.error("fetchAdminAuditLogsAction error:", err);
+    return { success: false, error: errorMessage };
+  }
+}
+
+/**
+ * Fetch List of Available Mentors for Company Assignment
+ */
+export async function fetchAdminMentorsAction(): Promise<{
+  success: boolean;
+  mentors?: Array<{ id: string; name: string; email: string }>;
+  error?: string;
+}> {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { success: false, error: "Unauthorized access." };
+    }
+
+    const { data: mentors, error } = await supabase
+      .from("users")
+      .select("id, full_name, email")
+      .eq("role", "mentor")
+      .order("full_name", { ascending: true });
+
+    if (error) throw error;
+
+    return {
+      success: true,
+      mentors: (mentors || []).map((m) => ({
+        id: m.id,
+        name: m.full_name || m.email,
+        email: m.email,
+      })),
+    };
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : "Failed to fetch mentors.";
+    return { success: false, error: errorMessage };
+  }
+}
+
+/**
+ * Assign Company to a Specific Mentor (Admin Privilege)
+ */
+export async function assignCompanyToMentorAction(
+  companyId: string,
+  mentorId: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { success: false, error: "Unauthorized access." };
+    }
+
+    // Role verification
+    const { data: userRole } = await supabase
+      .from("users")
+      .select("role")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    const role = userRole?.role || user.user_metadata?.role;
+    if (!role || (role !== "admin" && role !== "super_admin")) {
+      return { success: false, error: "Forbidden: Admin privileges required." };
+    }
+
+    // Get current company details
+    const { data: oldCompany } = await supabase
+      .from("companies")
+      .select("id, name, mentor_id")
+      .eq("id", companyId)
+      .maybeSingle();
+
+    if (!oldCompany) {
+      return { success: false, error: "Target company not found." };
+    }
+
+    // Update company mentor assignment
+    const { error: updateErr } = await supabase
+      .from("companies")
+      .update({ mentor_id: mentorId })
+      .eq("id", companyId);
+
+    if (updateErr) throw updateErr;
+
+    // Log Audit Event
+    const { AuditLoggerService } = await import("@/lib/services/audit-logger");
+    await AuditLoggerService.log({
+      userId: user.id,
+      role: role as any,
+      action: "ASSIGN_COMPANY_TO_MENTOR",
+      resource: "companies",
+      recordId: companyId,
+      oldData: { mentor_id: oldCompany.mentor_id },
+      newData: { mentor_id: mentorId },
+    });
+
+    return { success: true };
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : "Failed to assign company to mentor.";
+    console.error("assignCompanyToMentorAction error:", err);
+    return { success: false, error: errorMessage };
+  }
+}
+
+/**
+ * Suspend User Account (Admin privilege with Super Admin immutability guard)
+ */
+export async function suspendUserAction(
+  targetUserId: string,
+  reason?: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { success: false, error: "Unauthorized access." };
+    }
+
+    const { assertAdminCanModifyTarget } = await import("@/lib/auth/guards");
+    await assertAdminCanModifyTarget(user.id, targetUserId);
+
+    // Update target user account status
+    const { error: updateErr } = await supabase
+      .from("users")
+      .update({ account_status: "suspended" })
+      .eq("id", targetUserId);
+
+    if (updateErr) throw updateErr;
+
+    // Audit Logger
+    const { AuditLoggerService } = await import("@/lib/services/audit-logger");
+    await AuditLoggerService.log({
+      userId: user.id,
+      action: "SUSPEND_USER",
+      resource: "users",
+      recordId: targetUserId,
+      newData: { status: "suspended", reason: reason || "Admin suspension" },
+    });
+
+    return { success: true };
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : "Failed to suspend user.";
+    console.error("suspendUserAction error:", err);
+    return { success: false, error: errorMessage };
+  }
+}
+
+/**
+ * Activate User Account
+ */
+export async function activateUserAction(
+  targetUserId: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { success: false, error: "Unauthorized access." };
+    }
+
+    const { assertAdminCanModifyTarget } = await import("@/lib/auth/guards");
+    await assertAdminCanModifyTarget(user.id, targetUserId);
+
+    const { error: updateErr } = await supabase
+      .from("users")
+      .update({ account_status: "active" })
+      .eq("id", targetUserId);
+
+    if (updateErr) throw updateErr;
+
+    const { AuditLoggerService } = await import("@/lib/services/audit-logger");
+    await AuditLoggerService.log({
+      userId: user.id,
+      action: "ACTIVATE_USER",
+      resource: "users",
+      recordId: targetUserId,
+      newData: { status: "active" },
+    });
+
+    return { success: true };
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : "Failed to activate user.";
+    console.error("activateUserAction error:", err);
     return { success: false, error: errorMessage };
   }
 }
