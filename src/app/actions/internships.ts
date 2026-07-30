@@ -1,3 +1,5 @@
+"use server";
+
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { createNotificationAction } from "./notifications";
@@ -15,6 +17,7 @@ import {
   type CompanyVerificationStatus,
 } from "@/lib/ai-company-trust-engine";
 import { calculateCareerDnaScores } from "@/lib/ai-career-dna-service";
+import { DEMO_INTERNSHIPS } from "@/lib/demo-seed-data";
 
 export interface EnhancedInternshipRecord {
   id: string;
@@ -261,12 +264,14 @@ export async function fetchFilteredInternshipsAction(
       throw new Error(`Supabase query failed for 'internships': ${internshipsError.message} (Code: ${internshipsError.code})`);
     }
 
+    const rawList = (internships && internships.length > 0) ? internships : DEMO_INTERNSHIPS;
+
     // 3. Process & Filter out blacklisted companies
     const processedInternships: EnhancedInternshipRecord[] = [];
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (internships || []).forEach((item: any) => {
-      const compRaw = item.companies as unknown as {
+    rawList.forEach((item: any) => {
+      const compRaw = (item.companies || item.company) as unknown as {
         name: string;
         logo_url: string | null;
         is_verified: boolean;

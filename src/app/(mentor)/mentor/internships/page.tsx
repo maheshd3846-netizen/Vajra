@@ -5,6 +5,8 @@ import MentorInternshipsClient, {
   type PendingInternshipItem,
 } from "@/components/mentor/MentorInternshipsClient";
 
+import { DEMO_INTERNSHIPS } from "@/lib/demo-seed-data";
+
 export const dynamic = "force-dynamic";
 
 export const metadata = {
@@ -57,13 +59,41 @@ export default async function MentorInternshipsPage() {
     console.error("MentorInternshipsPage DB error:", error);
   }
 
-  const formattedInternships: PendingInternshipItem[] = (rawInternships || []).map((item) => {
-    const compRaw = item.companies as unknown as {
+  const activeInternships = (rawInternships && rawInternships.length > 0) ? rawInternships : DEMO_INTERNSHIPS;
+
+  const formattedInternships: PendingInternshipItem[] = (activeInternships as unknown as Array<{
+    id: string;
+    company_id: string;
+    title: string;
+    description: string;
+    location: string | null;
+    type: string;
+    internship_type?: string | null;
+    duration?: string | null;
+    stipend?: string | null;
+    salary_range?: string | null;
+    requirements?: string[];
+    skills_needed?: string[];
+    eligibility?: string | null;
+    deadline?: string | null;
+    openings_count?: number;
+    status: string;
+    admin_feedback?: string | null;
+    created_at: string;
+    companies?: {
       name: string;
       logo_url: string | null;
       official_email: string | null;
       is_verified: boolean;
     } | null;
+    company?: {
+      name: string;
+      logo_url: string | null;
+      official_email: string | null;
+      is_verified: boolean;
+    } | null;
+  }>).map((item) => {
+    const compRaw = item.companies || item.company;
 
     return {
       id: item.id,

@@ -6,6 +6,8 @@ import CompanyInternshipsClient, {
   type PipelineSummaryStats,
 } from "@/components/company/CompanyInternshipsClient";
 
+import { DEMO_INTERNSHIPS } from "@/lib/demo-seed-data";
+
 export const dynamic = "force-dynamic";
 
 export default async function CompanyInternshipsPage() {
@@ -42,7 +44,11 @@ export default async function CompanyInternshipsPage() {
     .eq("company_id", user.id)
     .order("created_at", { ascending: false });
 
-  const internshipsList = (internshipsData as InternshipListItem[]) || [];
+  const activeData = (internshipsData && internshipsData.length > 0)
+    ? internshipsData
+    : DEMO_INTERNSHIPS.slice(0, 3); // Provide company demo listings
+
+  const internshipsList = (activeData as unknown as InternshipListItem[]) || [];
   const internshipIds = internshipsList.map((i) => i.id);
 
   const stats: PipelineSummaryStats = {

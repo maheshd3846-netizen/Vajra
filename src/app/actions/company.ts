@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { revalidatePath } from "next/cache";
 import {
   calculateCompanyTrustScore,
   getCompanyVerificationStatus,
@@ -344,6 +345,11 @@ export async function createInternshipAction(
 
     if (insertError) throw insertError;
 
+    revalidatePath("/company/internships");
+    revalidatePath("/company/dashboard");
+    revalidatePath("/mentor/internships");
+    revalidatePath("/admin/internships");
+
     return { success: true };
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : "Failed to create internship.";
@@ -401,6 +407,11 @@ export async function updateInternshipAction(
 
     if (updateError) throw updateError;
 
+    revalidatePath("/company/internships");
+    revalidatePath("/company/dashboard");
+    revalidatePath("/mentor/internships");
+    revalidatePath("/admin/internships");
+
     return { success: true };
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : "Failed to update internship.";
@@ -430,6 +441,11 @@ export async function deleteInternshipAction(id: string): Promise<{ success: boo
       .eq("company_id", user.id);
 
     if (error) throw error;
+
+    revalidatePath("/company/internships");
+    revalidatePath("/company/dashboard");
+    revalidatePath("/mentor/internships");
+    revalidatePath("/admin/internships");
 
     return { success: true };
   } catch (err: unknown) {

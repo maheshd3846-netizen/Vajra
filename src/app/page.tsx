@@ -8,6 +8,8 @@ import MentorTeaser from "@/components/landing/MentorTeaser";
 import FaqSection from "@/components/landing/FaqSection";
 import Footer from "@/components/landing/Footer";
 
+export const dynamic = "force-dynamic";
+
 export default function Home() {
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-background text-foreground">

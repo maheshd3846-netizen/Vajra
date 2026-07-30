@@ -21,13 +21,9 @@ import {
   DollarSign,
   Clock,
   Eye,
-  Trash2,
   Ban,
-  Archive,
   X,
   MessageSquare,
-  Users,
-  Sparkles,
   Briefcase,
 } from "lucide-react";
 
