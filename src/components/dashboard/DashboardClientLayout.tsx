@@ -84,6 +84,7 @@ export default function DashboardClientLayout({
     ],
     mentor: [
       { name: "Dashboard", href: "/mentor/dashboard", icon: LayoutDashboard },
+      { name: "Companies", href: "/mentor/dashboard/companies", icon: Building },
       { name: "Students", href: "/mentor/students", icon: GraduationCap },
       { name: "Progress Reviews", href: "/mentor/progress", icon: CalendarCheck, badge: "REVIEW" },
       { name: "Feedback", href: "/mentor/feedback", icon: MessageSquare },

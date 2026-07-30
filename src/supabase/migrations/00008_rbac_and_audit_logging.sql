@@ -123,15 +123,16 @@ $$ LANGUAGE plpgsql;
 DROP POLICY IF EXISTS users_read_authenticated ON public.users;
 DROP POLICY IF EXISTS admin_all_users ON public.users;
 DROP POLICY IF EXISTS users_insert_self ON public.users;
-DROP POLICY IF EXISTS users_update_self ON public.users;
 
 -- Super Admin full access on users
+DROP POLICY IF EXISTS super_admin_all_users ON public.users;
 CREATE POLICY super_admin_all_users ON public.users
   FOR ALL TO authenticated
   USING (public.is_super_admin())
   WITH CHECK (public.is_super_admin());
 
 -- Admin access on non-super_admin users
+DROP POLICY IF EXISTS admin_manage_users ON public.users;
 CREATE POLICY admin_manage_users ON public.users
   FOR ALL TO authenticated
   USING (
@@ -142,11 +143,13 @@ CREATE POLICY admin_manage_users ON public.users
   );
 
 -- Users can read authenticated profiles (basic search/directory)
+DROP POLICY IF EXISTS users_read_self_and_directory ON public.users;
 CREATE POLICY users_read_self_and_directory ON public.users
   FOR SELECT TO authenticated
   USING (true);
 
 -- User self management
+DROP POLICY IF EXISTS users_update_self ON public.users;
 CREATE POLICY users_update_self ON public.users
   FOR UPDATE TO authenticated
   USING (auth.uid() = id)
@@ -158,17 +161,20 @@ CREATE POLICY users_update_self ON public.users
 DROP POLICY IF EXISTS admin_all_companies ON public.companies;
 DROP POLICY IF EXISTS companies_insert_self ON public.companies;
 
+DROP POLICY IF EXISTS super_admin_all_companies ON public.companies;
 CREATE POLICY super_admin_all_companies ON public.companies
   FOR ALL TO authenticated
   USING (public.is_super_admin())
   WITH CHECK (public.is_super_admin());
 
+DROP POLICY IF EXISTS admin_all_companies ON public.companies;
 CREATE POLICY admin_all_companies ON public.companies
   FOR ALL TO authenticated
   USING (public.get_auth_user_role() = 'admin')
   WITH CHECK (public.get_auth_user_role() = 'admin');
 
 -- Mentor can select and update ONLY companies assigned to them
+DROP POLICY IF EXISTS mentor_scoped_companies ON public.companies;
 CREATE POLICY mentor_scoped_companies ON public.companies
   FOR ALL TO authenticated
   USING (
@@ -179,12 +185,14 @@ CREATE POLICY mentor_scoped_companies ON public.companies
   );
 
 -- Company self management
+DROP POLICY IF EXISTS company_manage_self ON public.companies;
 CREATE POLICY company_manage_self ON public.companies
   FOR ALL TO authenticated
   USING (auth.uid() = id)
   WITH CHECK (auth.uid() = id);
 
 -- Public/Authenticated read verified companies
+DROP POLICY IF EXISTS companies_read_verified ON public.companies;
 CREATE POLICY companies_read_verified ON public.companies
   FOR SELECT TO authenticated
   USING (is_verified = true OR status = 'active');
@@ -192,17 +200,20 @@ CREATE POLICY companies_read_verified ON public.companies
 -- 5.3 STUDENT PROFILES TABLE POLICIES
 DROP POLICY IF EXISTS admin_all_student_profiles ON public.student_profiles;
 
+DROP POLICY IF EXISTS super_admin_all_student_profiles ON public.student_profiles;
 CREATE POLICY super_admin_all_student_profiles ON public.student_profiles
   FOR ALL TO authenticated
   USING (public.is_super_admin())
   WITH CHECK (public.is_super_admin());
 
+DROP POLICY IF EXISTS admin_all_student_profiles ON public.student_profiles;
 CREATE POLICY admin_all_student_profiles ON public.student_profiles
   FOR ALL TO authenticated
   USING (public.get_auth_user_role() = 'admin')
   WITH CHECK (public.get_auth_user_role() = 'admin');
 
 -- Mentor can manage ONLY students belonging to assigned companies or assigned directly
+DROP POLICY IF EXISTS mentor_scoped_student_profiles ON public.student_profiles;
 CREATE POLICY mentor_scoped_student_profiles ON public.student_profiles
   FOR ALL TO authenticated
   USING (
@@ -213,12 +224,14 @@ CREATE POLICY mentor_scoped_student_profiles ON public.student_profiles
   );
 
 -- Student manage self
+DROP POLICY IF EXISTS student_manage_self ON public.student_profiles;
 CREATE POLICY student_manage_self ON public.student_profiles
   FOR ALL TO authenticated
   USING (auth.uid() = id)
   WITH CHECK (auth.uid() = id);
 
 -- Companies can view assigned interns' profiles
+DROP POLICY IF EXISTS company_view_assigned_students ON public.student_profiles;
 CREATE POLICY company_view_assigned_students ON public.student_profiles
   FOR SELECT TO authenticated
   USING (
@@ -231,12 +244,14 @@ CREATE POLICY company_view_assigned_students ON public.student_profiles
 -- 5.4 INTERNSHIPS POLICIES
 DROP POLICY IF EXISTS admin_all_internships ON public.internships;
 
+DROP POLICY IF EXISTS admin_superadmin_all_internships ON public.internships;
 CREATE POLICY admin_superadmin_all_internships ON public.internships
   FOR ALL TO authenticated
   USING (public.is_admin_or_super_admin())
   WITH CHECK (public.is_admin_or_super_admin());
 
 -- Mentors manage internships for assigned companies
+DROP POLICY IF EXISTS mentor_scoped_internships ON public.internships;
 CREATE POLICY mentor_scoped_internships ON public.internships
   FOR ALL TO authenticated
   USING (
@@ -247,12 +262,14 @@ CREATE POLICY mentor_scoped_internships ON public.internships
   );
 
 -- Company manage own internships
+DROP POLICY IF EXISTS company_manage_own_internships ON public.internships;
 CREATE POLICY company_manage_own_internships ON public.internships
   FOR ALL TO authenticated
   USING (company_id = auth.uid())
   WITH CHECK (company_id = auth.uid());
 
 -- Students & public view open/published internships
+DROP POLICY IF EXISTS internships_read_open ON public.internships;
 CREATE POLICY internships_read_open ON public.internships
   FOR SELECT TO authenticated
   USING (status IN ('open', 'published'));
@@ -261,11 +278,13 @@ CREATE POLICY internships_read_open ON public.internships
 DROP POLICY IF EXISTS admin_all_audit_logs ON public.audit_logs;
 
 -- Super Admin can view all audit logs
+DROP POLICY IF EXISTS super_admin_all_audit_logs ON public.audit_logs;
 CREATE POLICY super_admin_all_audit_logs ON public.audit_logs
   FOR SELECT TO authenticated
   USING (public.is_super_admin());
 
 -- Admin can view non-super_admin audit logs
+DROP POLICY IF EXISTS admin_view_audit_logs ON public.audit_logs;
 CREATE POLICY admin_view_audit_logs ON public.audit_logs
   FOR SELECT TO authenticated
   USING (
@@ -273,6 +292,7 @@ CREATE POLICY admin_view_audit_logs ON public.audit_logs
   );
 
 -- Authenticated users can insert audit logs via server operations
+DROP POLICY IF EXISTS authenticated_insert_audit_logs ON public.audit_logs;
 CREATE POLICY authenticated_insert_audit_logs ON public.audit_logs
   FOR INSERT TO authenticated
   WITH CHECK (auth.uid() IS NOT NULL OR user_id = auth.uid());

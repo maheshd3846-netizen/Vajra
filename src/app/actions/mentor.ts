@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { revalidatePath } from "next/cache";
 
 export interface UpdateMentorProfilePayload {
   full_name?: string;
@@ -499,6 +500,445 @@ export async function issueCertificateByMentorAction(
     return { success: true, certificateId: cert.id };
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : "Failed to issue certificate.";
+    return { success: false, error: errorMessage };
+  }
+}
+
+export interface CompanyItem {
+  id: string;
+  name: string;
+  logo_url: string | null;
+  industry: string | null;
+  description: string | null;
+  website: string | null;
+  official_email: string | null;
+  contact_email: string | null;
+  contact_person: string | null;
+  contact_phone: string | null;
+  address: string | null;
+  city: string | null;
+  state: string | null;
+  country: string | null;
+  company_size: string | null;
+  linkedin_url: string | null;
+  status: string;
+  verification_status: string;
+  mentor_id: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AddMentorCompanyPayload {
+  name: string;
+  logo_url?: string;
+  industry?: string;
+  description?: string;
+  website?: string;
+  official_email?: string;
+  contact_person?: string;
+  contact_phone?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  company_size?: string;
+  linkedin_url?: string;
+  status?: "active" | "inactive";
+}
+
+/**
+ * Fetch Companies for Mentor Dashboard (Includes ALL registered companies & mentor additions)
+ */
+export async function fetchMentorCompaniesAction(): Promise<{
+  success: boolean;
+  companies?: CompanyItem[];
+  stats?: {
+    total: number;
+    verified: number;
+    pending: number;
+    rejected: number;
+  };
+  error?: string;
+}> {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return { success: false, error: "Unauthorized access." };
+
+    const { data: userRole } = await supabase
+      .from("users")
+      .select("role")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    const role = userRole?.role || user.user_metadata?.role;
+    if (!role || (role !== "mentor" && role !== "admin" && role !== "super_admin")) {
+      return { success: false, error: "Forbidden: Mentor or Admin privileges required." };
+    }
+
+    // 1. Fetch all companies from companies table directly
+    const { data: companiesData, error: compErr } = await supabase
+      .from("companies")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (compErr) {
+      console.error("[fetchMentorCompaniesAction] Error fetching companies:", {
+        message: compErr.message,
+        details: compErr.details,
+        hint: compErr.hint,
+        code: compErr.code,
+        query: "from('companies').select('*')",
+        userId: user.id,
+        userRole: role,
+      });
+    }
+
+    // 2. Fetch all registered user accounts with role = 'company'
+    const { data: companyUsers, error: userErr } = await supabase
+      .from("users")
+      .select("id, email, full_name, avatar_url, created_at")
+      .eq("role", "company");
+
+    if (userErr) {
+      console.error("[fetchMentorCompaniesAction] Error fetching company users:", {
+        code: userErr.code,
+        message: userErr.message,
+        details: userErr.details,
+        hint: userErr.hint,
+        query: "from('users').select('id, email, full_name, avatar_url, created_at').eq('role', 'company')",
+        userId: user.id,
+        userRole: role,
+      });
+    }
+
+    const companyMap = new Map<string, CompanyItem>();
+
+    // First, populate from registered company users
+    (companyUsers || []).forEach((u) => {
+      companyMap.set(u.id, {
+        id: u.id,
+        name: u.full_name || u.email.split("@")[0] || "Registered Company",
+        logo_url: u.avatar_url || null,
+        industry: "Technology",
+        description: null,
+        website: null,
+        official_email: u.email,
+        contact_email: u.email,
+        contact_person: u.full_name || null,
+        contact_phone: null,
+        address: null,
+        city: null,
+        state: null,
+        country: "India",
+        company_size: "11-50 employees",
+        linkedin_url: null,
+        status: "active",
+        verification_status: "pending",
+        mentor_id: null,
+        created_at: u.created_at || new Date().toISOString(),
+        updated_at: u.created_at || new Date().toISOString(),
+      });
+    });
+
+    // Second, merge / override with companies table data
+    (companiesData || []).forEach((c: {
+      id: string;
+      name?: string | null;
+      logo_url?: string | null;
+      industry?: string | null;
+      description?: string | null;
+      website?: string | null;
+      official_email?: string | null;
+      contact_email?: string | null;
+      contact_person?: string | null;
+      contact_phone?: string | null;
+      address?: string | null;
+      city?: string | null;
+      state?: string | null;
+      country?: string | null;
+      company_size?: string | null;
+      linkedin_url?: string | null;
+      status?: string | null;
+      verification_status?: string | null;
+      is_verified?: boolean | null;
+      mentor_id?: string | null;
+      created_at?: string | null;
+      updated_at?: string | null;
+    }) => {
+      const existing = companyMap.get(c.id);
+
+      const officialEmail = c.official_email || c.contact_email || existing?.official_email || null;
+      const name = c.name || existing?.name || "Registered Company";
+      const logoUrl = c.logo_url || existing?.logo_url || null;
+      const contactPerson = c.contact_person || existing?.contact_person || null;
+      const status = c.status || existing?.status || "active";
+      const verificationStatus = c.verification_status || (c.is_verified ? "verified" : "pending");
+      const createdAt = c.created_at || existing?.created_at || new Date().toISOString();
+
+      companyMap.set(c.id, {
+        id: c.id,
+        name,
+        logo_url: logoUrl,
+        industry: c.industry || existing?.industry || "Technology",
+        description: c.description || existing?.description || null,
+        website: c.website || existing?.website || null,
+        official_email: officialEmail,
+        contact_email: officialEmail,
+        contact_person: contactPerson,
+        contact_phone: c.contact_phone || existing?.contact_phone || null,
+        address: c.address || existing?.address || null,
+        city: c.city || existing?.city || null,
+        state: c.state || existing?.state || null,
+        country: c.country || existing?.country || "India",
+        company_size: c.company_size || existing?.company_size || "11-50 employees",
+        linkedin_url: c.linkedin_url || existing?.linkedin_url || null,
+        status,
+        verification_status: verificationStatus,
+        mentor_id: c.mentor_id || null,
+        created_at: createdAt,
+        updated_at: c.updated_at || createdAt,
+      });
+    });
+
+    const companyList = Array.from(companyMap.values()).sort(
+      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
+
+    const stats = {
+      total: companyList.length,
+      verified: companyList.filter((c) => c.verification_status === "verified").length,
+      pending: companyList.filter((c) => c.verification_status === "pending" || !c.verification_status).length,
+      rejected: companyList.filter((c) => c.verification_status === "rejected").length,
+    };
+
+    return {
+      success: true,
+      companies: companyList,
+      stats,
+    };
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : "Failed to fetch companies.";
+    console.error("fetchMentorCompaniesAction error:", err);
+    return { success: false, error: errorMessage };
+  }
+}
+
+/**
+ * Add Company by Mentor
+ */
+export async function addMentorCompanyAction(
+  payload: AddMentorCompanyPayload
+): Promise<{ success: boolean; companyId?: string; error?: string }> {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return { success: false, error: "Unauthorized access." };
+
+    if (!payload.name || !payload.official_email) {
+      return { success: false, error: "Company name and official email are required." };
+    }
+
+    const newCompany = {
+      name: payload.name.trim(),
+      logo_url: payload.logo_url?.trim() || null,
+      industry: payload.industry?.trim() || "Technology",
+      description: payload.description?.trim() || null,
+      website: payload.website?.trim() || null,
+      official_email: payload.official_email.trim().toLowerCase(),
+      contact_email: payload.official_email.trim().toLowerCase(),
+      contact_person: payload.contact_person?.trim() || null,
+      contact_phone: payload.contact_phone?.trim() || null,
+      address: payload.address?.trim() || null,
+      city: payload.city?.trim() || null,
+      state: payload.state?.trim() || null,
+      country: payload.country?.trim() || null,
+      company_size: payload.company_size?.trim() || "11-50 employees",
+      linkedin_url: payload.linkedin_url?.trim() || null,
+      status: payload.status || "active",
+      verification_status: "pending",
+      is_verified: false,
+      mentor_id: user.id,
+    };
+
+    const { data: inserted, error: insertErr } = await supabase
+      .from("companies")
+      .insert(newCompany)
+      .select("id")
+      .single();
+
+    if (insertErr) throw insertErr;
+
+    const { AuditLoggerService } = await import("@/lib/services/audit-logger");
+    await AuditLoggerService.log({
+      userId: user.id,
+      role: "mentor",
+      action: "ADD_COMPANY",
+      resource: "companies",
+      recordId: inserted.id,
+      newData: newCompany,
+    });
+
+    revalidatePath("/mentor/dashboard/companies");
+    return { success: true, companyId: inserted.id };
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : "Failed to add company.";
+    console.error("addMentorCompanyAction error:", err);
+    return { success: false, error: errorMessage };
+  }
+}
+
+/**
+ * Update Company Details by Mentor
+ */
+export async function updateMentorCompanyAction(
+  companyId: string,
+  payload: AddMentorCompanyPayload
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return { success: false, error: "Unauthorized access." };
+
+    const updates = {
+      name: payload.name.trim(),
+      logo_url: payload.logo_url?.trim() || null,
+      industry: payload.industry?.trim() || null,
+      description: payload.description?.trim() || null,
+      website: payload.website?.trim() || null,
+      official_email: payload.official_email?.trim().toLowerCase() || null,
+      contact_email: payload.official_email?.trim().toLowerCase() || null,
+      contact_person: payload.contact_person?.trim() || null,
+      contact_phone: payload.contact_phone?.trim() || null,
+      address: payload.address?.trim() || null,
+      city: payload.city?.trim() || null,
+      state: payload.state?.trim() || null,
+      country: payload.country?.trim() || null,
+      company_size: payload.company_size?.trim() || null,
+      linkedin_url: payload.linkedin_url?.trim() || null,
+      status: payload.status || "active",
+      updated_at: new Date().toISOString(),
+    };
+
+    const { error: updateErr } = await supabase
+      .from("companies")
+      .update(updates)
+      .eq("id", companyId);
+
+    if (updateErr) throw updateErr;
+
+    const { AuditLoggerService } = await import("@/lib/services/audit-logger");
+    await AuditLoggerService.log({
+      userId: user.id,
+      role: "mentor",
+      action: "UPDATE_COMPANY",
+      resource: "companies",
+      recordId: companyId,
+      newData: updates,
+    });
+
+    revalidatePath("/mentor/dashboard/companies");
+    return { success: true };
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : "Failed to update company.";
+    console.error("updateMentorCompanyAction error:", err);
+    return { success: false, error: errorMessage };
+  }
+}
+
+/**
+ * Update Company Verification Status (Verify, Reject, Suspend)
+ */
+export async function updateMentorCompanyVerificationAction(
+  companyId: string,
+  verification_status: "pending" | "verified" | "rejected" | "suspended"
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return { success: false, error: "Unauthorized access." };
+
+    const isVerified = verification_status === "verified";
+    const status = verification_status === "suspended" ? "suspended" : verification_status === "rejected" ? "rejected" : "active";
+
+    const { error: updateErr } = await supabase
+      .from("companies")
+      .update({
+        verification_status,
+        is_verified: isVerified,
+        status,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", companyId);
+
+    if (updateErr) throw updateErr;
+
+    const { AuditLoggerService } = await import("@/lib/services/audit-logger");
+    await AuditLoggerService.log({
+      userId: user.id,
+      role: "mentor",
+      action: `COMPANY_VERIFICATION_${verification_status.toUpperCase()}`,
+      resource: "companies",
+      recordId: companyId,
+      newData: { verification_status, is_verified: isVerified, status },
+    });
+
+    revalidatePath("/mentor/dashboard/companies");
+    return { success: true };
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : "Failed to update verification status.";
+    console.error("updateMentorCompanyVerificationAction error:", err);
+    return { success: false, error: errorMessage };
+  }
+}
+
+/**
+ * Delete Company Action by Mentor
+ */
+export async function deleteMentorCompanyAction(
+  companyId: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return { success: false, error: "Unauthorized access." };
+
+    const { error: deleteErr } = await supabase
+      .from("companies")
+      .delete()
+      .eq("id", companyId);
+
+    if (deleteErr) throw deleteErr;
+
+    const { AuditLoggerService } = await import("@/lib/services/audit-logger");
+    await AuditLoggerService.log({
+      userId: user.id,
+      role: "mentor",
+      action: "DELETE_COMPANY",
+      resource: "companies",
+      recordId: companyId,
+    });
+
+    revalidatePath("/mentor/dashboard/companies");
+    return { success: true };
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : "Failed to delete company.";
+    console.error("deleteMentorCompanyAction error:", err);
     return { success: false, error: errorMessage };
   }
 }
